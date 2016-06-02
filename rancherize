@@ -1,0 +1,319 @@
+#!/bin/bash
+
+function require_root {
+
+	if [ "x$DOCKER_HOST" == "x" ] && [ "$EUID" -ne 0 ] && [ $(groups | grep -v docker 2>&1 > /dev/null) ]
+		then echo "Please run as root"
+		exit 1
+	fi
+}
+
+
+SELF="$0"
+if [ -L "$0"  ] ; then
+	SELF=$(readlink -f $0)
+fi
+pushd `dirname $SELF` > /dev/null
+SCRIPTPATH=`pwd`
+popd > /dev/null
+
+. $SCRIPTPATH/upgrade_lib.sh
+
+function read_link {
+	if [ "`uname`" == "Linux" ] ; then
+		DIRECTORY=$(readlink -f $1)
+	else
+		DIRECTORY=$(cd "$(dirname "$1")" && pwd -P)
+	fi
+	echo $DIRECTORY
+}
+
+PARAMETERS=( ${*:2} )
+SVN_VERSION="r$(svn info | grep Revision | awk '{ print $2 }')"
+svn status | egrep -v '\bdeploy' | egrep -v '\bdocker' | awk '{ print $1; }' | egrep 'M|A|D' 2>&1 > /dev/null && SVN_VERSION="$SVN_VERSION"c
+
+#
+# Necessary Configuration:
+#
+# PROJECT_NAME=donepm - docker-compose project name
+# PROJECT_PREFIX=donepm_ - Prefix for docker tags
+# SERVICE_NAME=DonePM - rancher service name
+#
+#
+source deploy/config.cfg
+source $SCRIPTPATH/usage.sh
+
+function getWebId {
+	docker ps | grep Web_ | awk '{ print $1; }'
+}
+
+function getWebTestId {
+	name=`grep Web deploy/docker-test.yml | sed 's/\://' | tr -dc '[[:print:]]'`
+	docker ps | grep $name  | awk '{ print $1; }'
+}
+
+function commit {
+	VERSION=ipunktbs/app:$PROJECT_PREFIX$1
+	docker build -t $VERSION . && docker push $VERSION
+	echo $1 > deploy/latest_commit
+}
+
+function deploy {
+	OLDPWD=$PWD
+	PROJECT_NAME=$1
+	DEPLOY_DIRECTORY=$2
+	NEW_VERSION=$3
+
+	cd $DEPLOY_DIRECTORY
+
+	if ! update_compose $RANCHER_ACCESS_KEY $RANCHER_SECRET_KEY $RANCHER_URL $RANCHER_ENVIRONMENT ; then
+		echo "Failed to update docker-compose.yml and rancher-compose.yml from server"
+		exit 4
+	fi
+
+	CURRENT_SERVICE=$(find_version $SERVICE_NAME | xargs)
+	if [ -z "$CURRENT_SERVICE" ] ; then
+		echo "Failed to find active service for $SERVICE_NAME, unable to upgrade"
+		exit 3
+	fi
+	NEW_SERVICE=$SERVICE_NAME-$NEW_VERSION
+
+	add_version $SERVICE_NAME $NEW_VERSION
+
+	if [ "$CURRENT_SERVICE" == "$NEW_SERVICE" ] ; then
+		echo "Attempting to upgrade to the already active revision"
+		echo "This causes malfunctions in rancher"
+		echo "Attempt canceled"
+
+		cd $OLDPWD
+		exit 2
+	fi
+
+	echo Upgrading from $CURRENT_SERVICE to $NEW_SERVICE
+
+	MAXIMUM_ATTEMPTS=5
+	ATTEMPTS=0
+	until rancher-compose -p $PROJECT_NAME upgrade -w $CURRENT_SERVICE $NEW_SERVICE ; do
+		let ATTEMPTS+=1
+
+		if [ "$ATTEMPTS" -gt "$MAXIMUM_ATTEMPTS" ] ; then
+			echo "Upgrade failed more than $MAXIMUM_ATTEMPTS times, aborting"
+			cd $OLDPWD
+			exit 1
+		fi
+
+		echo "Attempt to upgrade $CURRENT_SERVICE to $NEW_SERVICE failed, trying once more in 1s"
+		sleep 1s
+	done
+
+	echo "Successfuly upgraded"
+
+	cd $OLDPWD
+}
+
+function initialize {
+	OLDPWD=$PWD
+    PROJECT_NAME=$1
+    DEPLOY_DIRECTORY=$2
+    NEW_VERSION=$3
+
+    cd $DEPLOY_DIRECTORY
+
+	rm -f docker-compose.yml
+	rm -f rancher-compose.yml
+
+    NEW_SERVICE=$SERVICE_NAME-$NEW_VERSION
+
+    add_version $SERVICE_NAME $NEW_VERSION
+
+    rancher-compose -p $PROJECT_NAME up
+
+}
+
+case $1 in
+	start)
+		require_root
+		DIRECTORY=$2
+		MOUNTPATH_PATH="deploy/.mountpath"
+		if [ $# -lt 2 ] ; then
+			if [ ! -f "$MOUNTPATH_PATH" ] ; then
+				echo "No mountpath specified and none previously remembered"
+
+				usage start
+				exit 1
+			fi
+			DIRECTORY=$(cat $MOUNTPATH_PATH)
+		fi
+
+		#DIRECTORY=$(cd "$(dirname "$DIRECTORY")" && pwd -P)
+		DIRECTORY=$(read_link $DIRECTORY)
+		ESCAPED_DIRECTORY=$(echo $DIRECTORY | sed -e 's/[\/&]/\\&/g')
+		cat deploy/docker-compose.yml.tpl | sed -e "s/#CODE_DIRECTORY#/$ESCAPED_DIRECTORY/g" > deploy/docker-compose.yml
+		docker-compose -f deploy/docker-compose.yml -p $PROJECT_NAME up -d
+		echo $DIRECTORY > $MOUNTPATH_PATH
+		;;
+	stop)
+		require_root
+		docker-compose -f deploy/docker-compose.yml -p $PROJECT_NAME stop
+		;;
+	test-start)
+		require_root
+		VERSION=$2
+		ENVIRONMENT=$3
+		if [ $# -lt 2 ] ; then
+			VERSION=$SVN_VERSION
+			echo "Defaulting to version '$VERSION'"
+		fi
+		if [ $# -lt 2 ] ; then
+			ENVIRONMENT=staging
+			echo "Defaulting to environment '$ENVIRONMENT'"
+		fi
+		cat deploy/docker-test.yml.tpl | sed -e "s/%VERSION%/$VERSION/g" | sed -e "s/%ENVIRONMENT%/$ENVIRONMENT/g" > deploy/docker-test.yml
+		docker-compose -f deploy/docker-test.yml -p $PROJECT_NAME up -d
+		;;
+	test-stop)
+		require_root
+		docker-compose -f deploy/docker-test.yml -p $PROJECT_NAME stop
+		;;
+	test-command)
+		require_root
+		if [ $# -lt 2 ] ; then
+			echo "Command missing.";
+			exit 1
+		fi
+		COMMAND=$2
+
+		PARAMETERS=( ${*:3} )
+		COMMANDLINE="$COMMAND ${PARAMETERS[@]}"
+		docker exec `getWebTestId` \
+			bash -c "cd /var/www/laravel/ ; $COMMANDLINE"
+		;;
+	artisan)
+		require_root
+		 docker exec -i -t `getWebId` \
+			 /var/www/laravel/artisan ${PARAMETERS[@]}
+		;;
+	logs)
+		require_root
+		 docker logs ${PARAMETERS[@]} `getWebId`
+		;;
+	commit)
+		require_root
+		VERSION=$2
+		ENVIRONMENT=staging
+
+		if [ $# -lt 2 ] ; then
+			VERSION=$SVN_VERSION
+			echo "Defaulting to tag '$VERSION'"
+		fi
+		commit $VERSION
+		;;
+	deploy)
+		ENVIRONMENT=$2
+		VERSION=$3
+
+		if [ $# -lt 2 ] ; then
+			ENVIRONMENT="staging"
+		fi
+
+		ENVIRONMENT_CONFIG="deploy/$ENVIRONMENT/config.cfg"
+		if [ ! -f $ENVIRONMENT_CONFIG ] ; then
+			echo "Error: Configuration file '$ENVIRONMENT_CONFIG' is missing."
+			exit 1
+		fi
+
+		source $ENVIRONMENT_CONFIG
+
+		for VARIABLE in RANCHER_URL RANCHER_ENVIRONMENT RANCHER_ACCESS_KEY RANCHER_SECRET_KEY PROJECT_NAME ; do
+			eval VALUE=\$$VARIABLE
+
+			if [ -z "$VALUE" ] ; then
+				echo "Configuration Value for $VARIABLE is missing in $ENVIRONMENT_CONFIG"
+				MISSING_CONFIG="$MISSING_CONFIG $VARIABLE"
+			fi
+
+		done
+
+		if [ ! -z "$MISSING_CONFIG" ] ; then
+			exit 2
+		fi
+
+		# PROJECT_NAME muss in der config.cfg gesetzt werden
+		DEPLOY_DIRECTORY="deploy/$ENVIRONMENT"
+
+		if [ $# -lt 3 ] ; then
+			VERSION=$(cat deploy/latest_commit)
+		fi
+
+		deploy $PROJECT_NAME $DEPLOY_DIRECTORY $VERSION
+		;;
+	initialize)
+		ENVIRONMENT=$2
+		VERSION=$3
+
+		if [ $# -lt 2 ] ; then
+			ENVIRONMENT="staging"
+		fi
+
+		ENVIRONMENT_CONFIG="deploy/$ENVIRONMENT/config.cfg"
+		if [ ! -f $ENVIRONMENT_CONFIG ] ; then
+			echo "Error: Configuration file '$ENVIRONMENT_CONFIG' is missing."
+			exit 1
+		fi
+
+		source $ENVIRONMENT_CONFIG
+
+		for VARIABLE in RANCHER_URL RANCHER_ENVIRONMENT RANCHER_ACCESS_KEY RANCHER_SECRET_KEY PROJECT_NAME ; do
+			eval VALUE=\$$VARIABLE
+
+			if [ -z "$VALUE" ] ; then
+				echo "Configuration Value for $VARIABLE is missing in $ENVIRONMENT_CONFIG"
+				MISSING_CONFIG="$MISSING_CONFIG $VARIABLE"
+			fi
+
+		done
+
+		if [ ! -z "$MISSING_CONFIG" ] ; then
+			exit 2
+		fi
+
+		# PROJECT_NAME muss in der config.cfg gesetzt werden
+		DEPLOY_DIRECTORY="deploy/$ENVIRONMENT"
+
+		if [ $# -lt 3 ] ; then
+			VERSION=$(cat deploy/latest_commit)
+		fi
+
+		initialize $PROJECT_NAME $DEPLOY_DIRECTORY $VERSION
+		;;
+	test)
+		ENVIRONMENT=$2
+		VERSION=$3
+
+		if [ $# -lt 2 ] ; then
+			ENVIRONMENT="staging"
+		fi
+		;;
+	revision)
+		echo Current revision: $SVN_VERSION
+		exit 0
+		;;
+	help)
+		usage $PARAMETERS
+		exit 0
+		;;
+#	init)
+#   Concept:
+#       Copies files from the docker script directory to the destination directory and fills in project name and some other
+#       configuration variables
+#       Note: Ask for project name and fill them in the config file
+#           Generate secure password for environments
+#           fill DB_USER and DB_PASSWORD with PROJECTNAME_somestring
+#       TODO: Switch laravel-nginx database Variable names to DB_HOST, DB_USERNAME, DB_PASSWORD
+#		exit 0
+#		;;
+	*)
+		usage
+		exit 0
+		;;
+esac
