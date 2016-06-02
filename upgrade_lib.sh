@@ -10,9 +10,11 @@
 #
 ########################################################################################################################
 
-pushd `dirname $0` > /dev/null
-SCRIPTPATH=`pwd`
-popd > /dev/null
+if [ "$SCRIPTPATH" = "" ] ; then
+	pushd `dirname $0` > /dev/null
+	SCRIPTPATH=`pwd`
+	popd > /dev/null
+fi
 
 #
 # Läd die docker-compose.yml und rancher-compose.yml für den in den Parametern angegebenen Rancher-Stack in das aktuelle

@@ -9,13 +9,12 @@ function require_root {
 }
 
 
-SELF="$0"
+SELF=$0
 if [ -L "$0"  ] ; then
 	SELF=$(readlink -f $0)
 fi
-pushd `dirname $SELF` > /dev/null
-SCRIPTPATH=`pwd`
-popd > /dev/null
+SCRIPTPATH=$(dirname $SELF)
+echo $SCRIPTPATH
 
 . $SCRIPTPATH/upgrade_lib.sh
 
