@@ -96,11 +96,28 @@ function usage {
 				return 0
 				;;
 			deploy)
-				echo "Deploy given tag to the rancher environment"
-				echo ""
+				echo "Deploy given tag to the rancher stack"
+				echo
 				echo "Usage $0 deploy [environment] [tag]"
 				echo
-				echo "The deploy command will attempt to do a rolling upgrade from the current version to the"
+				echo "The deploy command will attempt to create the app in rancher"
+				echo "for the first time using the tag given."
+				echo
+				echo "[environment]"
+				echo "If no environment is specified then 'staging' is used."
+				echo
+				echo "[tag]"
+				echo "The tag specifies which version should be online after the rolling upgrade"
+				echo "more specifically the image with tag $DOCKER_TAG_PREFIX[tag] will be used"
+				echo "If no tag is specified then the last one built using the commit command is used"
+				return 0
+				;;
+			upgrade)
+				echo "Upgrade given tag to the rancher environment"
+				echo
+				echo "Usage $0 upgrade [environment] [tag]"
+				echo
+				echo "The upgrade command will attempt to do a rolling upgrade from the current version to the"
 				echo "image with the specified tag."
 				echo
 				echo "[environment]"
@@ -108,7 +125,7 @@ function usage {
 				echo
 				echo "[tag]"
 				echo "The tag specifies which version should be online after the rolling upgrade"
-				echo "more specifically the image with tag $PROJECT_PREFIX""[tag] will be used"
+				echo "more specifically the image with tag $DOCKER_TAG_PREFIX[tag] will be used"
 				echo "If no tag is specified then the last one built using the commit command is used"
 				return 0
 				;;
@@ -128,7 +145,7 @@ function usage {
 	echo "  logs     - Displays the stdout & stderr of the container"
 	echo "  commit   - Build a new data image and commit it to docker. Default Tag $PROJECT_PREFIX"REVISION
 	echo "  deploy   - Deploys an image to rancher. Defaults to the last image built by commit"
-	echo "  initialize - First deploy"
+	echo "  upgrade  - Upgrades the service in rancher to the given revision. Defaults to the last image built by commit"
 	echo "  revision - Shows the currently detected Version for this directory"
 	echo "  test-start - Starts a new test environment, by default for the current svn revision and environment staging"
 	echo "  test-command - Runs a command in the Web container of the currently running test environemnt"
