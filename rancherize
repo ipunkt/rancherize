@@ -40,7 +40,9 @@ svn status | egrep -v '\bdeploy' | egrep -v '\bdocker' | awk '{ print $1; }' | e
 #
 #
 source deploy/config.cfg
+
 source $SCRIPTPATH/usage.sh
+source $SCRIPTPATH/setup.sh
 
 function getWebId {
 	docker ps | grep Web_ | awk '{ print $1; }'
@@ -301,7 +303,8 @@ case $1 in
 		usage $PARAMETERS
 		exit 0
 		;;
-#	init)
+	setup)
+		setup
 #   Concept:
 #       Copies files from the docker script directory to the destination directory and fills in project name and some other
 #       configuration variables
@@ -309,8 +312,8 @@ case $1 in
 #           Generate secure password for environments
 #           fill DB_USER and DB_PASSWORD with PROJECTNAME_somestring
 #       TODO: Switch laravel-nginx database Variable names to DB_HOST, DB_USERNAME, DB_PASSWORD
-#		exit 0
-#		;;
+		exit 0
+		;;
 	*)
 		usage
 		exit 0
