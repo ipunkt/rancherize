@@ -33,7 +33,7 @@ Database:
     REPLICATION_USER: replicationuser
     REPLICATION_PASSWORD: nothing
     DATABASE: db
-    USER: suer
+    USER: user
     PASSWORD: pw
 DatabaseData:
   tty: true
