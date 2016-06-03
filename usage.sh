@@ -21,12 +21,22 @@ function usage {
 				echo "will be used"
 				return 0
 				;;
+			recreate)
+				echo "Recreate the development environment"
+				echo
+				echo "Usage: $0 recreate [path/to/source]"
+				echo
+				echo "The recreate command is for convenience. It is equal to calling"
+				echo "rancherize stop -rm && rancherize start [path/to/source]"
+				return 0
+				;;
 			stop)
 				echo "Stop development environment"
 				echo
-				echo "Usage $0 stop"
+				echo "Usage $0 stop [-rm]"
 				echo
 				echo "The stop command attempts to stop the project on your local machine."
+				echo "If -rm is passed to stop then the stopped containers will be removed."
 				echo
 				echo "it is currently equal to doing a manual docker-compose stop"
 				return 0
@@ -139,18 +149,24 @@ function usage {
 	echo "Usage: $0 [COMMAND] [OPTIONS]"
 	echo
 	echo "Commands:"
-	echo "  start    - Start docker environment"
-	echo "  stop     - Stops docker environment"
-	echo "  artisan  - Passes artisan commands through docker exec"
-	echo "  logs     - Displays the stdout & stderr of the container"
-	echo "  commit   - Build a new data image and commit it to docker. Default Tag $PROJECT_PREFIX"REVISION
-	echo "  deploy   - Deploys an image to rancher. Defaults to the last image built by commit"
-	echo "  upgrade  - Upgrades the service in rancher to the given revision. Defaults to the last image built by commit"
-	echo "  revision - Shows the currently detected Version for this directory"
-	echo "  test-start - Starts a new test environment, by default for the current svn revision and environment staging"
-	echo "  test-command - Runs a command in the Web container of the currently running test environemnt"
-	echo "  test-stop - Stops the currently running test environment"
-	echo "  help     - Show help for each command listed here"
+	echo "- development"
+	echo "  start             - Start docker environment"
+	echo "  stop              - Stops docker environment"
+	echo "  artisan           - Passes artisan commands through docker exec"
+	echo "  logs              - Displays the stdout & stderr of the container"
+	echo "- testing"
+	echo "  test-start        - Starts a new test environment, by default for the current svn revision and environment staging"
+	echo "  test-command      - Runs a command in the Web container of the currently running test environemnt"
+	echo "  test-stop         - Stops the currently running test environment"
+	echo "- deploy"
+	echo "  commit            - Build a new data image and commit it to docker. Default Tag $PROJECT_PREFIX"REVISION
+	echo "  deploy            - Deploys an image to rancher. Defaults to the last image built by commit"
+	echo "  upgrade           - Upgrades the service in rancher to the given revision. Defaults to the last image built by commit"
+	echo "  revision          - Shows the currently detected Version for this directory"
+	echo "- setup"
+	echo "  setup             - Setup your app for local development and docker image building"
+	echo "  setup-environment - Setup a rancher deploy target"
+	echo "  help              - Show help for each command listed here"
 	echo
 	echo "For more specific help please use the help command"
 	echo " $0 help [command]"
