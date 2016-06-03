@@ -48,11 +48,11 @@ source $SCRIPTPATH/usage.sh
 source $SCRIPTPATH/setup.sh
 
 function getWebId {
-	docker ps -q | grep $RANCHER_SERVICE_NAME
+	docker ps | grep $PROJECT_NAME | grep $RANCHER_SERVICE_NAME | awk '{ print $1; }'
 }
 
 function getWebTestId {
-	docker ps -q | grep $RANCHER_SERVICE_NAME
+	docker ps | grep $PROJECT_NAME | grep $RANCHER_SERVICE_NAME | awk '{ print $1; }'
 }
 
 #
@@ -184,7 +184,7 @@ function deploy {
 }
 
 case $1 in
-	start)
+	start|recreate)
 		require_root
 		DIRECTORY=$2
 		MOUNTPATH_PATH="deploy/.mountpath"
@@ -202,12 +202,21 @@ case $1 in
 		DIRECTORY=$(read_link $DIRECTORY)
 		ESCAPED_DIRECTORY=$(echo $DIRECTORY | sed -e 's/[\/&]/\\&/g')
 		cat deploy/docker-compose.yml.tpl | sed -e "s/#CODE_DIRECTORY#/$ESCAPED_DIRECTORY/g" > deploy/docker-compose.yml
+
+		if [ "$1" = "recreate" ] ; then
+			docker-compose -f deploy/docker-compose.yml -p $PROJECT_NAME stop
+			docker-compose -f deploy/docker-compose.yml -p $PROJECT_NAME rm
+		fi
+
 		docker-compose -f deploy/docker-compose.yml -p $PROJECT_NAME up -d
 		echo $DIRECTORY > $MOUNTPATH_PATH
 		;;
 	stop)
 		require_root
 		docker-compose -f deploy/docker-compose.yml -p $PROJECT_NAME stop
+		if [ "$2" = "-rm" ] ; then
+			docker-compose -f deploy/docker-compose.yml -p $PROJECT_NAME rm
+		fi
 		;;
 	test-start)
 		require_root
