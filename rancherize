@@ -48,11 +48,11 @@ source $SCRIPTPATH/usage.sh
 source $SCRIPTPATH/setup.sh
 
 function getWebId {
-	docker ps | grep $PROJECT_NAME | grep $RANCHER_SERVICE_NAME | awk '{ print $1; }'
+	docker ps | grep -i $PROJECT_NAME | grep $RANCHER_SERVICE_NAME | awk '{ print $1; }'
 }
 
 function getWebTestId {
-	docker ps | grep $PROJECT_NAME | grep $RANCHER_SERVICE_NAME | awk '{ print $1; }'
+	docker ps | grep -i $PROJECT_NAME | grep $RANCHER_SERVICE_NAME | awk '{ print $1; }'
 }
 
 #
