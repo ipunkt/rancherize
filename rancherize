@@ -63,14 +63,13 @@ function getWebTestId {
 #
 function readEnvironmentConfig {
 
-		local ENVIRONMENT_CONFIG="deploy/$1/config.cfg"
-		if [ ! -f $ENVIRONMENT_CONFIG ] ; then
-			echo "Error: Configuration file '$ENVIRONMENT_CONFIG' is missing."
-			return 1
-		fi
+	local ENVIRONMENT_CONFIG="deploy/$1/config.cfg"
+	if [ ! -f $ENVIRONMENT_CONFIG ] ; then
+		echo "Error: Configuration file '$ENVIRONMENT_CONFIG' is missing."
+		return 1
+	fi
 
-		source $ENVIRONMENT_CONFIG
-
+	source $ENVIRONMENT_CONFIG
 }
 
 #
@@ -142,7 +141,9 @@ function upgrade {
 
 	MAXIMUM_ATTEMPTS=5
 	ATTEMPTS=0
-	until rancher-compose -c -p $RANCHER_STACK upgrade -w $CURRENT_SERVICE $NEW_SERVICE ; do
+	until rancher-compose -c --access-key "$RANCHER_ACCESS_KEY" --secret-key "$RANCHER_SECRET_KEY" \
+							--url "$RANCHER_API_URL" \
+	                        -p $RANCHER_STACK upgrade -w $CURRENT_SERVICE $NEW_SERVICE ; do
 		let ATTEMPTS+=1
 
 		if [ "$ATTEMPTS" -gt "$MAXIMUM_ATTEMPTS" ] ; then
@@ -179,7 +180,7 @@ function deploy {
 
 	add_version $RANCHER_SERVICE_NAME $NEW_VERSION
 
-	rancher-compose -p $RANCHER_STACK up
+	rancher-compose --url "$RANCHER_API_URL" --access-key "$RANCHER_ACCESS_KEY" --secret-key "$RANCHER_SECRET_KEY" -p $RANCHER_STACK up
 
 }
 
@@ -264,7 +265,7 @@ case $1 in
 		getParameter ENVIRONMENT "staging" "$2"
 		getParameter VERSION "$(cat deploy/latest_commit)" "$3"
 
-		readEnvironmentConfig || exit 1
+		readEnvironmentConfig $ENVIRONMENT || exit 1
 
 		validateConfig || exit 2
 
