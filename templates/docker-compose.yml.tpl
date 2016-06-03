@@ -23,9 +23,9 @@ Database:
   image: ipunktbs/mysql-master:v1
   stdin_open: true
   volumes_from:
-  - Data-DBMaster
+  - DatabaseData
   labels:
-    io.rancher.sidekicks: Data-Database
+    io.rancher.sidekicks: DatabaseData
   ports:
   - 3306:3306/tcp
   environment:
@@ -35,7 +35,7 @@ Database:
     DATABASE: db
     USER: suer
     PASSWORD: pw
-Data-Database:
+DatabaseData:
   tty: true
   command:
   - cat
