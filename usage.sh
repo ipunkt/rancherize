@@ -139,6 +139,31 @@ function usage {
 				echo "If no tag is specified then the last one built using the commit command is used"
 				return 0
 				;;
+			setup)
+				echo "Setup your app for development and docker container building"
+				echo
+				echo "Usage $0 setup"
+				echo
+				echo "The setup will ask you a list of questions related to the project and the docker repository its"
+				echo "images should be published to."
+				echo
+				echo "If you already have configuration present then its values will be presented to you as default."
+				return 0
+				;;
+			setup-environment)
+				echo "Setup your app for deploy to a rancher environment"
+				echo
+				echo "Usage $0 setup-environment [environment] [default-environment]"
+				echo
+				echo "The setup will ask you a list of questions related to the rancher environment, stack and api"
+				echo
+				echo "If you already have this environment present then its values will be presented to you as default."
+				echo "If the environment is not present yet then the values from the default-environment will be"
+				echo "presented as default."
+				echo
+				echo "If [environment] or [default-environment] are not given then they will default to 'staging'"
+				return 0
+				;;
 			*)
 				echo "No help for command '$1' found"
 				echo
