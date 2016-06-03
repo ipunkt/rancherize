@@ -11,9 +11,6 @@
   volumes_from:
   - %RANCHER_SERVICE_NAME%App-%VERSION%
   environment:
-    DATABASE_NAME: %DB_NAME%
-    DATABASE_USER: %DB_USER%
-    DATABASE_PASSWORD: %DB_PASSWORD%
     DB_HOST: database-master
     DB_CONNECTION: %DB_CONNECTION%
     DB_DATABASE: %DB_NAME%

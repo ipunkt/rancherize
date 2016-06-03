@@ -9,9 +9,6 @@
   volumes:
   - #CODE_DIRECTORY#:/var/www/laravel
   environment:
-    DATABASE_NAME: db
-    DATABASE_USER: user
-    DATABASE_PASSWORD: pw
     DB_HOST: database-master
     DB_DATABASE: db
     DB_USERNAME: user
