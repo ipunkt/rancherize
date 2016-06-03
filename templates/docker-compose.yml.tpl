@@ -9,6 +9,7 @@
   volumes:
   - #CODE_DIRECTORY#:/var/www/laravel
   environment:
+    APP_KEY: "base64:KTrTStBMN4uDbzKpnDM6pAiqB5wm/5MJVFvk8XVPZBM="
     DB_HOST: database-master
     DB_DATABASE: db
     DB_USERNAME: user
