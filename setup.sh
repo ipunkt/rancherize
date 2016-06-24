@@ -23,6 +23,7 @@ function printEnvironmentMenu {
 		echo "c: change variable"
 		echo "r: remove variable"
 		echo "d: add Database variables"
+		echo "l: add Laravel variables"
 		echo "q: quit without saving"
 		echo "s: save"
 		echo
@@ -276,13 +277,22 @@ function collect_environment {
 	local ACTION=""
 	echo ""
 	echo ""
+	clear
 	echo "====================================================================="
 	echo "ENVIRONMENT_VARIABLES"
+	echo ""
+	echo "These variables will be passed to your created container uppon creation."
+	echo "Any configuration that changes between different containers should be"
+	echo "added here."
+	echo ""
+	echo "Example:"
+	echo "APP_ENV=staging"
+	echo "APP_KEY=asdfklasjdfm,an sdlfkjxclkfjasdlkfjasdklfjakldf"
+	echo "SOMECONFIG=1.53"
 	echo ""
 	if [[ ! -v ENVIRONMENT_VARIABLES ]] ; then
 		declare -g -a ENVIRONMENT_VARIABLES
 	fi
-	clear
 	printEnvironmentVariables
 	printEnvironmentMenu
 
@@ -317,6 +327,12 @@ function collect_environment {
 			d)
 			echo "Adding the default Laravel5 environment variables for database configuration"
 			ENVIRONMENT_VARIABLES+=('DB_CONNECTION' 'DB_HOST' 'DB_DATABASE' 'DB_USERNAME' 'DB_PASSWORD')
+			DB_CONNECTION="mysql"
+			DB_HOST="database-master"
+			;;
+			d)
+			echo "Adding the default Laravel5 environment variables"
+			ENVIRONMENT_VARIABLES+=('APP_KEY' 'APP_ENV' )
 			DB_CONNECTION="mysql"
 			DB_HOST="database-master"
 			;;
