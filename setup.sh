@@ -196,6 +196,10 @@ function collect_environment {
 	echo ""
 	echo "This is the url to the rancher api."
 	echo "It can be found in the rancher 'api' tab."
+	echo
+	echo "Example:"
+	echo "Written on the api page: 'Endpoint: http://server/v1/projects/1a5'"
+	echo "API_URL: http://server/v1/projects/1a5"
 	echo ""
 	read -e -p "RANCHER_API_URL: " -i "$RANCHER_API_URL" RANCHER_API_URL
 
@@ -205,7 +209,10 @@ function collect_environment {
 	echo "RANCHER_ACCESS_KEY"
 	echo ""
 	echo "This is the username part of an api access token."
-	echo "It can be created and viewed in the rancher api tab"
+	echo "It can be created in the rancher api tab using the Button"
+	echo "'Add Environment Api Key'"
+	echo "once created the access_key part can be viewed in the list displayed on"
+	echo "the page."
 	echo ""
 	read -e -p "RANCHER_ACCESS_KEY: " -i "$RANCHER_ACCESS_KEY" RANCHER_ACCESS_KEY
 
@@ -215,23 +222,12 @@ function collect_environment {
 	echo "RANCHER_SECRET_KEY"
 	echo ""
 	echo "This is the password part of an api access token."
-	echo "It can be created in the rancher api tab."
+	echo "It can be created in the rancher api tab using the Button"
+	echo "'Add Environment Api Key'"
 	echo "It is not possible to retrieve it once the created page is closed."
 	echo "Write it down somewhere or create a new token each time you set one here"
 	echo ""
 	read -e -p "RANCHER_SECRET_KEY: " -i "$RANCHER_SECRET_KEY" RANCHER_SECRET_KEY
-
-	echo ""
-	echo ""
-	echo "====================================================================="
-	echo "RANCHER_STACK_ID"
-	echo ""
-	echo "This is the id of the rancher stack."
-	echo "It is necessary to specify this speratly because rancher-compose does"
-	echo "not allow downloading the docker-/rancher-compose so it is done through"
-	echo "plain wget."
-	echo ""
-	read -e -p "RANCHER_STACK_ID: " -i "$RANCHER_STACK_ID" RANCHER_STACK_ID
 
 	echo ""
 	echo ""
@@ -246,13 +242,33 @@ function collect_environment {
 	echo ""
 	echo ""
 	echo "====================================================================="
+	echo "RANCHER_STACK_ID"
+	echo ""
+	echo "This is fundamentaly the same as the RANCHER_STACK name in the previous"
+	echo "entry and this redundancy will be removed in the future."
+	echo "Currently it is necessary to have this because a simple wget request is"
+	echo "used to retrieve the composer.zip file for the stack and this call"
+	echo "does not know how to map the name to the necessary id"
+	echo ""
+	echo "It can be found at the end of the stack url"
+	echo "Example:"
+	echo "Url: https://server/env/1a5/apps/stacks/1e6"
+	echo "STACK_ID: 1e6"
+	echo ""
+	read -e -p "RANCHER_STACK_ID: " -i "$RANCHER_STACK_ID" RANCHER_STACK_ID
+
+	echo ""
+	echo ""
+	echo "====================================================================="
 	echo "DB_CONTAINER"
 	echo ""
 	echo "The container which you use to connect to your mysql/mariadb."
 	echo "This is done through an external_links entry so the stack has to be specified."
-	echo "Having no database container is supported at this time"
+	echo "Having no database container is not supported at this time"
 	echo ""
-	echo "Example: mysql/DB-Master"
+	echo "Example:"
+	echo "STACKNAME/CONTAINERNAME"
+	echo "mysql/DB-Master"
 	echo ""
 	read -e -p "DB_CONTAINER: " -i "$DB_CONTAINER" DB_CONTAINER
 
