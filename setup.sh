@@ -330,7 +330,7 @@ function collect_environment {
 			DB_CONNECTION="mysql"
 			DB_HOST="database-master"
 			;;
-			d)
+			l)
 			echo "Adding the default Laravel5 environment variables"
 			ENVIRONMENT_VARIABLES+=('APP_KEY' 'APP_ENV' )
 			DB_CONNECTION="mysql"
