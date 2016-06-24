@@ -243,6 +243,19 @@ function collect_environment {
 	echo ""
 	read -e -p "RANCHER_STACK: " -i "$RANCHER_STACK" RANCHER_STACK
 
+	echo ""
+	echo ""
+	echo "====================================================================="
+	echo "DB_CONTAINER"
+	echo ""
+	echo "The container which you use to connect to your mysql/mariadb."
+	echo "This is done through an external_links entry so the stack has to be specified."
+	echo "Having no database container is supported at this time"
+	echo ""
+	echo "Example: mysql/DB-Master"
+	echo ""
+	read -e -p "DB_CONTAINER: " -i "$DB_CONTAINER" DB_CONTAINER
+
 	local ENVIRONMENT_EDITED=""
 	local ACTION=""
 	echo ""
@@ -287,7 +300,7 @@ function collect_environment {
 			;;
 			d)
 			echo "Adding the default Laravel5 environment variables for database configuration"
-			ENVIRONMENT_VARIABLES+=('DB_CONNECTION' 'DB_HOST' 'DB_NAME' 'DB_USER' 'DB_PASSWORD')
+			ENVIRONMENT_VARIABLES+=('DB_CONNECTION' 'DB_HOST' 'DB_DATABASE' 'DB_USERNAME' 'DB_PASSWORD')
 			DB_CONNECTION="mysql"
 			DB_HOST="database-master"
 			;;
@@ -346,6 +359,7 @@ function create_environment {
 			-e "s/%RANCHER_SECRET_KEY%/$RANCHER_SECRET_KEY/g" \
 			-e "s/%RANCHER_STACK_ID%/$RANCHER_STACK_ID/g" \
 			-e "s/%RANCHER_STACK%/$RANCHER_STACK/g" \
+			-e "s~%DB_CONTAINER%~$DB_CONTAINER~g" \
 			-e "s/%USE_DB%/$USE_DB/g" \
 			-e "s/%ENVIRONMENT_VARIABLES%/$ENV_VARS/g" \
 			-e "s/%ENVIRONMENT_VALUES%/$ENV_VAR_VALUES/g" \
