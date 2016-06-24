@@ -177,6 +177,8 @@ function usage {
 	echo "- development"
 	echo "  start             - Start docker environment"
 	echo "  stop              - Stops docker environment"
+	echo "  recreate          - Stop and delete the current environment, then"
+	echo "                      start a clean one"
 	echo "  artisan           - Passes artisan commands through docker exec"
 	echo "  logs              - Displays the stdout & stderr of the container"
 	echo "- testing"
