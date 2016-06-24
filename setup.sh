@@ -251,7 +251,7 @@ function collect_environment {
 	echo "ENVIRONMENT_VARIABLES"
 	echo ""
 	if [[ ! -v ENVIRONMENT_VARIABLES ]] ; then
-		declare -a ENVIRONMENT_VARIABLES
+		declare -g -a ENVIRONMENT_VARIABLES
 	fi
 	clear
 	printEnvironmentVariables
