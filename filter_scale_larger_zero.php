@@ -34,7 +34,7 @@ function filterByRegex($input, $regex) {
 	foreach($input as $containerName => $containerData) {
 		$match = preg_match('~'.$regex.'~', $containerName);
 		if( $match === false )
-			throw new InvalidArgumentException("Matching regex '$regex' failed." );
+			throw new InvalidArgumentException("Matching regex '$regex' failed.");
 
 		if( $match == 0 )
 			continue;
