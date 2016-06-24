@@ -98,7 +98,7 @@ function getParameter {
 }
 
 function commit {
-	VERSION=$DOCKER_REPOSITORY_USER/:$DOCKER_TAG_PREFIX$1
+	VERSION=$DOCKER_REPOSITORY_USER/$DOCKER_REPOSITORY_NAME:$DOCKER_TAG_PREFIX$1
 	docker build -t $VERSION . && docker push $VERSION
 	echo $1 > deploy/latest_commit
 }
