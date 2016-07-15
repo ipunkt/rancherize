@@ -314,13 +314,13 @@ function collect_environment {
 			eval $VARIABLE_NAME="$VARIABLE_VALUE"
 			;;
 			c)
-			read -e -p "varbiable number: " VARIABLE_NUMBER
+			read -e -p "variable number: " VARIABLE_NUMBER
 			read -e -p "variable value: " VARIABLE_VALUE
 			eval ${ENVIRONMENT_VARIABLES[$VARIABLE_NUMBER]}="$VARIABLE_VALUE"
 			;;
 			r)
 			echo "Removing"
-			read -e -p "Variable number: " DELETE_VARIABLE
+			read -e -p "variable number: " DELETE_VARIABLE
 			VARIABLE_NAME=(${ENVIRONMENT_VARIABLES[$DELETE_VARIABLE]})
 			ENVIRONMENT_VARIABLES=( ${ENVIRONMENT_VARIABLES[@]/$VARIABLE_NAME} )
 			;;

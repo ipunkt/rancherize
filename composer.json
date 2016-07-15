@@ -1,6 +1,7 @@
 {
     "name": "ipunkt/rancherize",
     "description": "Rancherize your development workflow",
+    "keywords": ["rancher", "docker", "laravel"],
     "license": "MIT",
     "authors": [
         {
@@ -8,6 +9,6 @@
             "email": "sps@ipunkt.biz"
         }
     ],
-	 "bin": ["rancherize"],
+    "bin": ["rancherize"],
     "require": {}
 }
