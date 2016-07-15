@@ -298,6 +298,7 @@ case $1 in
 		echo "$ENVIRONMENT_REVISION"
 		cd "$OLDPWD"
 
+		;;
 	pull-up)
 		getParameter SOURCE_ENVIRONMENT "staging" "$2"
 		getParameter TARGET_ENVIRONMENT "production" "$3"
