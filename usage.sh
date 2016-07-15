@@ -142,7 +142,7 @@ function usage {
 			pull-up)
 				echo "Upgrade given tag to the rancher environment"
 				echo
-				echo "Usage $0 upgrade [source-environment] [target-environment]"
+				echo "Usage $0 pull-up [source-environment] [target-environment]"
 				echo
 				echo "The pull-up command will attempt to retrieve the current active revision from the source-environment"
 				echo "and then upgrade the target-environment to this revision"
