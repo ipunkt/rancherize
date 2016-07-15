@@ -1,5 +1,5 @@
 %RANCHER_SERVICE_NAME%:
-  restart: always
+  restart: unless-stopped
   ports:
   - 8080:80
   tty: true

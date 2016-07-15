@@ -4,6 +4,10 @@
 
 Rancherize your development workflow.
 
+Rancherize is currently specialized in deploying php apps with a database server, namely
+laravel apps. It will learn to support you with more features for your container
+as the need arises
+
 ## Features
 - Start a development webserver for your local development environment
 - Build and publish a new docker image
@@ -12,3 +16,20 @@ Rancherize your development workflow.
 - Perform a rolling upgrade in rancher to your lastest published version
 - Setup wizard for easy project setup
 - Setup wizard for easy environment setup
+
+## Install
+Install via composer:
+
+  composer require "ipunkt/rancherize:*@dev"
+
+## Usage
+Start with
+
+  vendor/bin/rancherize setup
+
+The setup will ask for your docker repositories and project name to set up your
+local development environment
+
+Once this is done you should be able to start your environment with 
+
+  vendor/bin/rancherize start

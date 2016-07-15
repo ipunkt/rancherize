@@ -1,5 +1,5 @@
 %RANCHER_SERVICE_NAME%-%VERSION%:
-  restart: always
+  restart: unless-stopped
   tty: true
   image: ipunktbs/laravel-nginx:1.9.7_php7_v5
   external_links:
