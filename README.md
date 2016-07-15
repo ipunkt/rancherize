@@ -8,8 +8,7 @@ Rancherize your development workflow.
 - Start a development webserver for your local development environment
 - Build and publish a new docker image
 - Deploy your last published version to a rancher stack
-- Perform a rolling upgrade in rancher to your last published version
-
-## TODO
+- Perform a deploy to a rancher stack to start your app there
+- Perform a rolling upgrade in rancher to your lastest published version
 - Setup wizard for easy project setup
 - Setup wizard for easy environment setup
