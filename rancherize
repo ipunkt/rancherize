@@ -279,6 +279,43 @@ case $1 in
 		fi
 
 		;;
+	pull-up)
+		getParameter SOURCE_ENVIRONMENT "staging" "$2"
+		getParameter TARGET_ENVIRONMENT "production" "$3"
+
+		#
+		# Retrieve SOURCE_ENVIRONMENT current revision
+		#
+		readEnvironmentConfig $SOURCE_ENVIRONMENT || exit 1
+
+		validateConfig || exit 2
+
+		OLDPWD="$PWD"
+		cd $DEPLOY_DIRECTORY
+
+		if ! update_compose $RANCHER_ACCESS_KEY $RANCHER_SECRET_KEY $RANCHER_API_URL $RANCHER_STACK_ID ; then
+			echo "Failed to update docker-compose.yml and rancher-compose.yml from server"
+			exit 4
+		fi
+
+		TARGET_REVISION=$(find_version $RANCHER_SERVICE_NAME | xargs | sed "s/$RANCHER_SERVICE_NAME-//g")
+		echo "current revision on $SOURCE_ENVIRONMENT: $TARGET_REVISION"
+		cd "$OLDPWD"
+
+
+		#
+		# Upgrade TARGET_ENVIRONMENT revision
+		#
+
+		readEnvironmentConfig $TARGET_ENVIRONMENT || exit 1
+
+		validateConfig || exit 2
+		DEPLOY_DIRECTORY="deploy/$TARGET_ENVIRONMENT"
+
+		echo $DEPLOY_DIRECTORY
+		upgrade $RANCHER_STACK $DEPLOY_DIRECTORY $TARGET_REVISION
+
+		;;
 	revision)
 		echo Current revision: $SVN_VERSION
 		exit 0
