@@ -35,7 +35,7 @@ function update_compose {
 
 	MAXIMUM_ATTEMPTS=5
 	ATTEMPTS=0
-	until wget --user $USER --password $PASSWORD $URL/environments/$ENVIRONMENT/composeconfig -O compose.zip ; do
+	until wget -q --user $USER --password $PASSWORD $URL/environments/$ENVIRONMENT/composeconfig -O compose.zip ; do
 		let ATTEMPTS+=1
 
 		if [ "$ATTEMPTS" -gt "$MAXIMUM_ATTEMPTS" ]  ; then
@@ -46,7 +46,7 @@ function update_compose {
 		echo "Update compose fehlgeschlagen, warte 1s"
 		sleep 1s
 	done
-	unzip -o compose.zip
+	unzip -qq -o compose.zip
 	return 0
 }
 

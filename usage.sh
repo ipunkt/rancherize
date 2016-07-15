@@ -139,13 +139,12 @@ function usage {
 				echo "If no tag is specified then the last one built using the commit command is used"
 				return 0
 				;;
-			pull-up)
+			environment-revision)
 				echo "Upgrade given tag to the rancher environment"
 				echo
-				echo "Usage $0 pull-up [source-environment] [target-environment]"
+				echo "Usage $0 environment-revision [environment]"
 				echo
-				echo "The pull-up command will attempt to retrieve the current active revision from the source-environment"
-				echo "and then upgrade the target-environment to this revision"
+				echo "This attempts to find out which revision is currently running in the given environment"
 				echo
 				return 0
 				;;
@@ -199,7 +198,7 @@ function usage {
 	echo "  commit            - Build a new data image and commit it to docker. Default Tag $PROJECT_PREFIX"REVISION
 	echo "  deploy            - Deploys an image to rancher. Defaults to the last image built by commit"
 	echo "  upgrade           - Upgrades the service in rancher to the given revision. Defaults to the last image built by commit"
-	echo "  pull-up           - Retrieves the revision from one environment and upgrades the second environment to it"
+	echo "  environment-revision - Retrieve the currently running revision for an environment"
 	echo "  revision          - Shows the currently detected Version for this directory"
 	echo "- setup"
 	echo "  setup             - Setup your app for local development and docker image building"
