@@ -33,3 +33,9 @@ local development environment
 Once this is done you should be able to start your environment with 
 
   vendor/bin/rancherize start
+
+This will create an nginx serving your app with a database on your localhost
+prot 8080.
+To stop it, run
+
+  vendor/bin/rancherize stop
