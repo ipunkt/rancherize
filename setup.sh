@@ -380,6 +380,12 @@ function create_environment {
 	for FILE in config.cfg service.yml.tpl scale.yml.tpl ; do
 		echo "Writing $FILE"
 
+		local TEMPLATEFILE="$SCRIPTPATH/templates/environment/$FILE"
+		local ALTERNATIVE_TEMPLATEFILE="deploy/templates/environment/$FILE"
+		if [ -f "$ALTERNATIVE_TEMPLATEFILE" ] ; then
+			TEMPLATEFILE="$ALTERNATIVE_TEMPLATEFILE"
+		fi
+
 
 		sed \
 			-e "s~%PROJECT_NAME%~$PROJECT_NAME~g" \
@@ -397,7 +403,7 @@ function create_environment {
 			-e "s~%ENVIRONMENT_VARIABLES%~$ENV_VARS~g" \
 			-e "s~%ENVIRONMENT_VALUES%~$ENV_VAR_VALUES~g" \
 			-e "s~%ENVIRONMENT_DATA%~$ENV_YAML~g" \
-			$SCRIPTPATH/templates/environment/$FILE > $ENVIRONMENT_DIRECTORY/$FILE
+			"$TEMPLATEFILE" > "$ENVIRONMENT_DIRECTORY/$FILE"
 	done
 }
 
