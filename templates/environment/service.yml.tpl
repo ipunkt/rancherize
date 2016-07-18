@@ -14,7 +14,7 @@
     DB_HOST: database-master%ENVIRONMENT_DATA%
 %RANCHER_SERVICE_NAME%App-%VERSION%:
   image: %DOCKER_REPOSITORY_USER%/%DOCKER_REPOSITORY_NAME%:%DOCKER_TAG_PREFIX%%VERSION%
-  restart: never
+  restart: 'no'
   command: /bin/true
   stdin_open: true
   labels:
