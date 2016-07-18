@@ -143,7 +143,7 @@ function upgrade {
 	ATTEMPTS=0
 	until rancher-compose --access-key "$RANCHER_ACCESS_KEY" --secret-key "$RANCHER_SECRET_KEY" \
 							--url "$RANCHER_API_URL" \
-	                        -p $RANCHER_STACK upgrade -w $CURRENT_SERVICE $NEW_SERVICE ; do
+	                        -p $RANCHER_STACK upgrade -w -c $CURRENT_SERVICE $NEW_SERVICE ; do
 		let ATTEMPTS+=1
 
 		if [ "$ATTEMPTS" -gt "$MAXIMUM_ATTEMPTS" ] ; then
