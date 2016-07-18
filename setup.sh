@@ -157,13 +157,21 @@ function do_copy {
 
 	for FILE in config.cfg docker-compose.yml.tpl ; do
 		echo "Writing $FILE"
+
+		local TEMPLATEFILE="$SCRIPTPATH/templates/$FILE"
+		local ALTERNATIVE_TEMPLATEFILE="dpeloy/templates/$FILE"
+		if [ -f "$ALTERNATIVE_TEMPLATEFILE" ] ; then
+			TEMPLATEFILE="$ALTERNATIVE_TEMPLATEFILE"
+			echo "Using local template for $FILE: $ALTERNATIVE_TEMPLATEFILE"
+		fi
+
 		sed \
 			-e "s/%PROJECT_NAME%/$PROJECT_NAME/g" \
 			-e "s/%DOCKER_REPOSITORY_NAME%/$DOCKER_REPOSITORY_NAME/g" \
 			-e "s/%DOCKER_REPOSITORY_USER%/$DOCKER_REPOSITORY_USER/g" \
 			-e "s/%DOCKER_TAG_PREFIX%/$DOCKER_TAG_PREFIX/g" \
 			-e "s/%RANCHER_SERVICE_NAME%/$RANCHER_SERVICE_NAME/g" \
-			$SCRIPTPATH/templates/$FILE > deploy/$FILE
+			> deploy/$FILE
 	done
 
 
@@ -384,6 +392,7 @@ function create_environment {
 		local ALTERNATIVE_TEMPLATEFILE="deploy/templates/environment/$FILE"
 		if [ -f "$ALTERNATIVE_TEMPLATEFILE" ] ; then
 			TEMPLATEFILE="$ALTERNATIVE_TEMPLATEFILE"
+			echo "Using local template for $FILE: $ALTERNATIVE_TEMPLATEFILE"
 		fi
 
 
