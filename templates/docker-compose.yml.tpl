@@ -34,6 +34,7 @@ Database:
     USER: user
     PASSWORD: pw
 DatabaseData:
+  restart: never
   tty: true
   command:
   - cat
