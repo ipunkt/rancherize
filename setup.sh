@@ -171,7 +171,7 @@ function do_copy {
 			-e "s/%DOCKER_REPOSITORY_USER%/$DOCKER_REPOSITORY_USER/g" \
 			-e "s/%DOCKER_TAG_PREFIX%/$DOCKER_TAG_PREFIX/g" \
 			-e "s/%RANCHER_SERVICE_NAME%/$RANCHER_SERVICE_NAME/g" \
-			> deploy/$FILE
+			"$TEMPLATEFILE" > deploy/$FILE
 	done
 
 
