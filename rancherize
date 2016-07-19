@@ -48,11 +48,13 @@ source $SCRIPTPATH/usage.sh
 source $SCRIPTPATH/setup.sh
 
 function getWebId {
-	docker ps | grep -i $PROJECT_NAME | grep $RANCHER_SERVICE_NAME | awk '{ print $1; }'
+	MANGLED_NAME=$(echo "$PROJECT_NAME" | sed 's/-//')
+	docker ps | grep -i $MANGLED_NAME | grep $RANCHER_SERVICE_NAME | awk '{ print $1; }'
 }
 
 function getWebTestId {
-	docker ps | grep -i $PROJECT_NAME | grep $RANCHER_SERVICE_NAME | awk '{ print $1; }'
+	MANGLED_NAME=$(echo "$PROJECT_NAME" | sed 's/-//')
+	docker ps | grep -i $MANGLED_NAME | grep $RANCHER_SERVICE_NAME | awk '{ print $1; }'
 }
 
 #
@@ -247,8 +249,9 @@ case $1 in
 		;;
 	artisan)
 		require_root
+		echo docker ps | grep -i $PROJECT_NAME | grep $RANCHER_SERVICE_NAME | awk '{ print $1; }'
 		 docker exec -i -t `getWebId` \
-			 /var/www/laravel/artisan ${PARAMETERS[@]}
+			 php /var/www/laravel/artisan ${PARAMETERS[@]}
 		;;
 	logs)
 		require_root
