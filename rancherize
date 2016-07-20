@@ -54,7 +54,7 @@ function getWebId {
 
 function getWebTestId {
 	MANGLED_NAME=$(echo "$PROJECT_NAME" | sed 's/-//')
-	docker ps | grep -i $MANGLED_NAME | grep $RANCHER_SERVICE_NAME | awk '{ print $1; }'
+	docker ps | grep -i $MANGLED_NAME | grep "$RANCHER_SERVICE_NAME"Web | awk '{ print $1; }'
 }
 
 #
@@ -223,11 +223,11 @@ case $1 in
 		;;
 	test-start)
 		require_root
-		getParameter VERSRION $SVN_VERSION "$2"
+		getParameter VERSION "$SVN_VERSION" "$2"
 
 		getParameter ENVIRONMENT "staging" "$3"
 
-		cat deploy/docker-test.yml.tpl | sed -e "s/%VERSION%/$VERSION/g" | sed -e "s/%ENVIRONMENT%/$ENVIRONMENT/g" > deploy/docker-test.yml
+		sed -e "s/%VERSION%/$VERSION/g" -e "s/%ENVIRONMENT%/$ENVIRONMENT/g" deploy/docker-test.yml.tpl > deploy/docker-test.yml
 		docker-compose -f deploy/docker-test.yml -p $PROJECT_NAME up -d
 		;;
 	test-stop)
@@ -244,6 +244,7 @@ case $1 in
 
 		PARAMETERS=( ${*:3} )
 		COMMANDLINE="$COMMAND ${PARAMETERS[@]}"
+		MANGLED_NAME=$(echo "$PROJECT_NAME" | sed 's/-//')
 		docker exec `getWebTestId` \
 			bash -c "cd /var/www/laravel/ ; $COMMANDLINE"
 		;;
