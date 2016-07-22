@@ -32,7 +32,8 @@ function stack_name_to_id {
 	URL=$3
 	STACK_NAME=$4
 
-	wget -q --user $USER --password $PASSWORD $URL/environments/ -O - | jq '.data[] | select(.name == "donepm-staging") | .id'
+	wget -q --user $USER --password $PASSWORD $URL/environments/ -O - \
+	  | jq '.data[] | select(.name == "donepm-staging") | .id' | sed -e 's/"//g'
 }
 
 #
@@ -50,7 +51,7 @@ function update_compose {
 	USER=$1
 	PASSWORD=$2
 	URL=$3
-	ENVIRONMENT=$(stack_name_to_id "$4")
+	ENVIRONMENT=$(stack_name_to_id "$1" "$2" "$3" "$4")
 
 	MAXIMUM_ATTEMPTS=5
 	ATTEMPTS=0
