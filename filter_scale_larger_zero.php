@@ -1,7 +1,12 @@
 #!/usr/bin/php
 <?PHP
 
-require_once 'vendor/autoload.php';
+$outsideAutoload = __DIR__ . '/../autoload.php';
+$insideAutoload = __DIR__ . '/vendor/autoload.php';
+if ( file_exists($outsideAutoload ) )
+	require_once $outsideAutoload;
+else
+	require_once $insideAutoload;
 
 use Symfony\Component\Yaml\Yaml;
 
