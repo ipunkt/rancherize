@@ -54,8 +54,6 @@ function update_compose {
 
 	MAXIMUM_ATTEMPTS=5
 	ATTEMPTS=0
-	wget -q --user $USER --password $PASSWORD $URL/environments/ -O -
-	exit
 
 	until wget -q --user $USER --password $PASSWORD $URL/environments/$ENVIRONMENT/composeconfig -O compose.zip ; do
 		let ATTEMPTS+=1
