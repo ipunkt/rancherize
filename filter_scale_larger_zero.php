@@ -1,6 +1,9 @@
 #!/usr/bin/php
-
 <?PHP
+
+require_once 'vendor/autoload.php';
+
+use Symfony\Component\Yaml\Yaml;
 
 function parseYaml($file) {
 	$fileContents = file_get_contents($file);
@@ -48,7 +51,9 @@ function filterByRegex($input, $regex) {
 $file = 'rancher-compose.yml';
 $regex = $argv[1];
 
-$data = parseYaml($file);
+//$data = parseYaml($file);
+//$data = Spyc::YAMLLoad($file);
+$data = Yaml::parse(file_get_contents($file));
 $containers = filterScale($data);
 
 if( ! empty($regex) ) {

@@ -10,5 +10,7 @@
         }
     ],
     "bin": ["rancherize"],
-    "require": {}
+    "require": {
+        "symfony/yaml": "^3.1"
+    }
 }

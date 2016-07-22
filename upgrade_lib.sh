@@ -16,6 +16,25 @@ if [ "$SCRIPTPATH" = "" ] ; then
 	popd > /dev/null
 fi
 
+
+#
+# Nimmt den Namen eines Stacks und holt die dazu passende Id aus der api.
+#
+# Parameter:
+# 1. Benutzername: in Rancher ACCESS_KEY genannt. Variable RANCHER_ACCESS_KEY in docker-compose
+# 2. Passwort: in Rancher SECRET_KEY genannt. Variable RANCHER_SECREKT_KEY in docker-compose
+# 3. Url: Die Url zur Rancher API. Variable RACHER_RUL in docker-compose
+# 4. Stackname: Der name des Stacks für den die Id ausgegeben werden soll
+#
+function stack_name_to_id {
+	USER=$1
+	PASSWORD=$2
+	URL=$3
+	STACK_NAME=$4
+
+	wget -q --user $USER --password $PASSWORD $URL/environments/ -O - | jq '.data[] | select(.name == "donepm-staging") | .id'
+}
+
 #
 # Läd die docker-compose.yml und rancher-compose.yml für den in den Parametern angegebenen Rancher-Stack in das aktuelle
 # Verzeichnis
@@ -31,10 +50,13 @@ function update_compose {
 	USER=$1
 	PASSWORD=$2
 	URL=$3
-	ENVIRONMENT=$4
+	ENVIRONMENT=$(stack_name_to_id "$4")
 
 	MAXIMUM_ATTEMPTS=5
 	ATTEMPTS=0
+	wget -q --user $USER --password $PASSWORD $URL/environments/ -O -
+	exit
+
 	until wget -q --user $USER --password $PASSWORD $URL/environments/$ENVIRONMENT/composeconfig -O compose.zip ; do
 		let ATTEMPTS+=1
 

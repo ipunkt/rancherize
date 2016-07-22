@@ -57,7 +57,7 @@ function validateConfig {
 function validateEnvironment {
 
 	MISSING_CONFIG=""
-	for VARIABLE in RANCHER_API_URL RANCHER_STACK_ID RANCHER_ACCESS_KEY RANCHER_SECRET_KEY RANCHER_STACK ; do
+	for VARIABLE in RANCHER_API_URL RANCHER_ACCESS_KEY RANCHER_SECRET_KEY RANCHER_STACK ; do
 		eval VALUE=\$$VARIABLE
 
 		if [ -z "$VALUE" ] ; then
@@ -251,24 +251,6 @@ function collect_environment {
 	echo ""
 	echo ""
 	echo "====================================================================="
-	echo "RANCHER_STACK_ID"
-	echo ""
-	echo "This is fundamentaly the same as the RANCHER_STACK name in the previous"
-	echo "entry and this redundancy will be removed in the future."
-	echo "Currently it is necessary to have this because a simple wget request is"
-	echo "used to retrieve the composer.zip file for the stack and this call"
-	echo "does not know how to map the name to the necessary id"
-	echo ""
-	echo "It can be found at the end of the stack url"
-	echo "Example:"
-	echo "Url: https://server/env/1a5/apps/stacks/1e6"
-	echo "STACK_ID: 1e6"
-	echo ""
-	read -e -p "RANCHER_STACK_ID: " -i "$RANCHER_STACK_ID" RANCHER_STACK_ID
-
-	echo ""
-	echo ""
-	echo "====================================================================="
 	echo "DB_CONTAINER"
 	echo ""
 	echo "The container which you use to connect to your mysql/mariadb."
@@ -405,7 +387,6 @@ function create_environment {
 			-e "s~%RANCHER_API_URL%~$RANCHER_API_URL~g" \
 			-e "s~%RANCHER_ACCESS_KEY%~$RANCHER_ACCESS_KEY~g" \
 			-e "s~%RANCHER_SECRET_KEY%~$RANCHER_SECRET_KEY~g" \
-			-e "s~%RANCHER_STACK_ID%~$RANCHER_STACK_ID~g" \
 			-e "s~%RANCHER_STACK%~$RANCHER_STACK~g" \
 			-e "s~%DB_CONTAINER%~$DB_CONTAINER~g" \
 			-e "s~%USE_DB%~$USE_DB~g" \

@@ -116,7 +116,7 @@ function upgrade {
 
 	cd $DEPLOY_DIRECTORY
 
-	if ! update_compose $RANCHER_ACCESS_KEY $RANCHER_SECRET_KEY $RANCHER_API_URL $RANCHER_STACK_ID ; then
+	if ! update_compose $RANCHER_ACCESS_KEY $RANCHER_SECRET_KEY $RANCHER_API_URL $RANCHER_STACK ; then
 		echo "Failed to update docker-compose.yml and rancher-compose.yml from server"
 		exit 4
 	fi
@@ -297,7 +297,7 @@ case $1 in
 		OLDPWD="$PWD"
 		cd $DEPLOY_DIRECTORY
 
-		if ! update_compose $RANCHER_ACCESS_KEY $RANCHER_SECRET_KEY $RANCHER_API_URL $RANCHER_STACK_ID ; then
+		if ! update_compose $RANCHER_ACCESS_KEY $RANCHER_SECRET_KEY $RANCHER_API_URL $RANCHER_STACK; then
 			echo "Failed to update docker-compose.yml and rancher-compose.yml from server"
 			exit 4
 		fi
