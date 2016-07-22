@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?PHP
 
-$outsideAutoload = __DIR__ . '/../autoload.php';
+$outsideAutoload = __DIR__ . '/../../autoload.php';
 $insideAutoload = __DIR__ . '/vendor/autoload.php';
 if ( file_exists($outsideAutoload ) )
 	require_once $outsideAutoload;
