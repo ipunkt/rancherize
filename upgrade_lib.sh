@@ -33,7 +33,7 @@ function stack_name_to_id {
 	STACK_NAME=$4
 
 	wget -q --user $USER --password $PASSWORD $URL/environments/ -O - \
-	  | jq '.data[] | select(.name == "donepm-staging") | .id' | sed -e 's/"//g'
+	  | jq '.data[] | select(.name == "'$STACK_NAME'") | .id' | sed -e 's/"//g'
 }
 
 #
