@@ -1,7 +1,7 @@
 %RANCHER_SERVICE_NAME%:
   restart: unless-stopped
   ports:
-  - 8080:80
+  - %DEVELOPMENT_PORT%:80
   tty: true
   image: ipunktbs/laravel-nginx:1.9.7_php7_v5
   links:

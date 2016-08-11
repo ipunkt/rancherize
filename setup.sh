@@ -137,6 +137,21 @@ function collect_data {
 	echo ""
 
 	read -e -p "RANCHER_SERVICE_NAME: " -i "$RANCHER_SERVICE_NAME" RANCHER_SERVICE_NAME
+
+	echo ""
+	echo ""
+	echo "====================================================================="
+	echo "DEVELOPMENT_PORT"
+	echo ""
+	echo "The port which the local development environment uses to expose the webserver"
+	echo ""
+
+	if [ -z "$DEVELOPMENT_PORT" ] ; then
+		let RANDOM_PORT=$RANDOM%999
+		let DEVELOPMENT_PORT=8001+$RANDOM_PORT
+	fi
+
+	read -e -p "DEVELOPMENT_PORT: " -i "$DEVELOPMENT_PORT" DEVELOPMENT_PORT
 }
 
 #
@@ -159,7 +174,7 @@ function do_copy {
 		echo "Writing $FILE"
 
 		local TEMPLATEFILE="$SCRIPTPATH/templates/$FILE"
-		local ALTERNATIVE_TEMPLATEFILE="dpeloy/templates/$FILE"
+		local ALTERNATIVE_TEMPLATEFILE="deploy/templates/$FILE"
 		if [ -f "$ALTERNATIVE_TEMPLATEFILE" ] ; then
 			TEMPLATEFILE="$ALTERNATIVE_TEMPLATEFILE"
 			echo "Using local template for $FILE: $ALTERNATIVE_TEMPLATEFILE"
@@ -171,6 +186,7 @@ function do_copy {
 			-e "s/%DOCKER_REPOSITORY_USER%/$DOCKER_REPOSITORY_USER/g" \
 			-e "s/%DOCKER_TAG_PREFIX%/$DOCKER_TAG_PREFIX/g" \
 			-e "s/%RANCHER_SERVICE_NAME%/$RANCHER_SERVICE_NAME/g" \
+			-e "s/%DEVELOPMENT_PORT%/$DEVELOPMENT_PORT/g" \
 			"$TEMPLATEFILE" > deploy/$FILE
 	done
 
