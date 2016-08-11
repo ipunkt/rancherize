@@ -192,7 +192,14 @@ function do_copy {
 
 
 	echo "Writing Dockerfile"
-	cp $SCRIPTPATH/templates/Dockerfile .
+
+	local DOCKERFILE="$SCRIPTPATH/templates/Dockerfile"
+	local ALTERNATIVE_DOCKERFILE="deploy/templates/Dockerfile"
+	if [ -f "$ALTERNATIVE_DOCKERFILE" ] ; then
+		DOCKERFILE="$ALTERNATIVE_DOCKERFILE"
+	fi
+
+	cp "$DOCKERFILE" .
 
 	echo "== Config written =="
 }
