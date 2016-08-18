@@ -10,6 +10,10 @@
 #
 ########################################################################################################################
 
+if [ -z "$PHP" ] ; then
+	PHP="php"
+fi
+
 if [ "$SCRIPTPATH" = "" ] ; then
 	pushd `dirname $0` > /dev/null
 	SCRIPTPATH=`pwd`
@@ -83,10 +87,6 @@ function find_version {
 
 	NAME=$1
 
-	PHP="php"
-	if [ -x "./php" ] ; then
-		PHP="./php"
-	fi
 	$PHP $SCRIPTPATH/filter_scale_larger_zero.php $NAME'-r[0-9]*'
 	echo
 

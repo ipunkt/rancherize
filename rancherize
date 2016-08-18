@@ -15,6 +15,11 @@ if [ -L "$0"  ] ; then
 fi
 SCRIPTPATH=$(dirname $SELF)
 
+PHP="php"
+if [ -x "./php" ] ; then
+	PHP="$(readlink -f ./php) -d $(readlink -f $(pwd))"
+fi
+
 . $SCRIPTPATH/upgrade_lib.sh
 
 function read_link {
