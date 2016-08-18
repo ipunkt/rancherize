@@ -83,7 +83,11 @@ function find_version {
 
 	NAME=$1
 
-	php $SCRIPTPATH/filter_scale_larger_zero.php $NAME'-r[0-9]*'
+	PHP="php"
+	if [ -x "./php" ] ; then
+		PHP="./php"
+	fi
+	$PHP $SCRIPTPATH/filter_scale_larger_zero.php $NAME'-r[0-9]*'
 	echo
 
 	return
