@@ -1,7 +1,7 @@
 %RANCHER_SERVICE_NAME%-%VERSION%:
   restart: unless-stopped
   tty: true
-  image: ipunktbs/laravel-nginx:1.9.7_php7_v5
+  image: ipunktbs/laravel-nginx:1.9.7_php7_v6
   external_links:
   - %DB_CONTAINER%:database-master
   labels:

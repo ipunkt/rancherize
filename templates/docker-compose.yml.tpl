@@ -3,7 +3,7 @@
   ports:
   - %DEVELOPMENT_PORT%:80
   tty: true
-  image: ipunktbs/laravel-nginx:1.9.7_php7_v5
+  image: ipunktbs/laravel-nginx:1.9.7_php7_v6-debug
   links:
   - Database:database-master
   volumes:
