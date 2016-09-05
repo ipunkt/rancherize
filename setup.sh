@@ -199,7 +199,10 @@ function do_copy {
 		DOCKERFILE="$ALTERNATIVE_DOCKERFILE"
 	fi
 
-	cp "$DOCKERFILE" .
+	# Do not overwrite local Dockerfiles at this point
+	if [ ! -f "./Dockerfile" ] ; then
+		cp "$DOCKERFILE" .
+	fi
 
 	echo "== Config written =="
 }
