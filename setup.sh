@@ -205,7 +205,7 @@ function do_copy {
 
 	if [ "$USE_DATABASE" = "y" ] ; then
 		echo "Adding Database"
-		local TEMPLATEFILE="$SCRIPTPATH/templates/database.yml"
+		local TEMPLATEFILE="$SCRIPTPATH/templates/database.yml.tpl"
 		cat "$TEMPLATEFILE" >> deploy/docker-compose.yml.tpl
 	fi
 
