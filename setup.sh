@@ -151,7 +151,17 @@ function collect_data {
 		let DEVELOPMENT_PORT=8001+$RANDOM_PORT
 	fi
 
-	read -e -p "DEVELOPMENT_PORT: " -i "$DEVELOPMENT_PORT" DEVELOPMENT_PORT
+	echo ""
+	echo ""
+	echo "====================================================================="
+	echo "USE_DATABASE"
+	echo ""
+	echo "Start a database container for your local development enviroment"
+	echo "[y/n]"
+	echo ""
+
+
+	read -e -p "DEVELOPMENT_PORT: " -i "$USE_DATABASE" USE_DATABASE
 }
 
 #
@@ -188,7 +198,13 @@ function do_copy {
 			-e "s/%RANCHER_SERVICE_NAME%/$RANCHER_SERVICE_NAME/g" \
 			-e "s/%DEVELOPMENT_PORT%/$DEVELOPMENT_PORT/g" \
 			"$TEMPLATEFILE" > deploy/$FILE
+
 	done
+
+	if [ "$USE_DATABASE" = "y" ] ; then
+		local TEMPLATEFILE="$SCRIPTPATH/templates/database.yml"
+		cat "$TEMPLATEFILE" >> deploy/docker-compose.yml.tpl
+	fi
 
 
 	echo "Writing Dockerfile"
