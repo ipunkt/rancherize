@@ -199,9 +199,7 @@ function do_copy {
 		DOCKERFILE="$ALTERNATIVE_DOCKERFILE"
 	fi
 
-	if [ ! -f "./Dockerfile" ] ; then
-		cp "$DOCKERFILE" .
-	fi
+	cp "$DOCKERFILE" .
 
 	echo "== Config written =="
 }
