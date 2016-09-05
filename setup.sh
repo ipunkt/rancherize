@@ -145,6 +145,7 @@ function collect_data {
 	echo ""
 	echo "The port which the local development environment uses to expose the webserver"
 	echo ""
+	read -e -p "DEVELOPMENT_PORT: " -i "$DEVELOPMENT_PORT" DEVELOPMENT_PORT
 
 	if [ -z "$DEVELOPMENT_PORT" ] ; then
 		let RANDOM_PORT=$RANDOM%999
@@ -197,11 +198,13 @@ function do_copy {
 			-e "s/%DOCKER_TAG_PREFIX%/$DOCKER_TAG_PREFIX/g" \
 			-e "s/%RANCHER_SERVICE_NAME%/$RANCHER_SERVICE_NAME/g" \
 			-e "s/%DEVELOPMENT_PORT%/$DEVELOPMENT_PORT/g" \
+			-e "s/%USE_DATABASE%/$USE_DATABASE/g" \
 			"$TEMPLATEFILE" > deploy/$FILE
 
 	done
 
 	if [ "$USE_DATABASE" = "y" ] ; then
+		echo "Adding Database"
 		local TEMPLATEFILE="$SCRIPTPATH/templates/database.yml"
 		cat "$TEMPLATEFILE" >> deploy/docker-compose.yml.tpl
 	fi
