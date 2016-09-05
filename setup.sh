@@ -161,7 +161,7 @@ function collect_data {
 	echo ""
 
 
-	read -e -p "DEVELOPMENT_PORT: " -i "$USE_DATABASE" USE_DATABASE
+	read -e -p "USE_DATABASE: " -i "$USE_DATABASE" USE_DATABASE
 }
 
 #
