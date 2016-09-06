@@ -138,6 +138,11 @@ function collect_data {
 
 	read -e -p "RANCHER_SERVICE_NAME: " -i "$RANCHER_SERVICE_NAME" RANCHER_SERVICE_NAME
 
+	if [ -z "$DEVELOPMENT_PORT" ] ; then
+		let RANDOM_PORT=$RANDOM%999
+		let DEVELOPMENT_PORT=8001+$RANDOM_PORT
+	fi
+
 	echo ""
 	echo ""
 	echo "====================================================================="
@@ -146,11 +151,6 @@ function collect_data {
 	echo "The port which the local development environment uses to expose the webserver"
 	echo ""
 	read -e -p "DEVELOPMENT_PORT: " -i "$DEVELOPMENT_PORT" DEVELOPMENT_PORT
-
-	if [ -z "$DEVELOPMENT_PORT" ] ; then
-		let RANDOM_PORT=$RANDOM%999
-		let DEVELOPMENT_PORT=8001+$RANDOM_PORT
-	fi
 
 	echo ""
 	echo ""
