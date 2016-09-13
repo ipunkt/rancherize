@@ -192,6 +192,35 @@ function deploy {
 
 }
 
+#
+# Ensure required Packages are installed
+#
+if ! which jq > /dev/null ; then
+	echo "Required program jq - shell jquery parser - missing."
+	echo
+	echo "Please install via"
+	echo "sudo apt-get install jq"
+	echo "or contact your system administrator to install it for you."
+	exit
+fi
+
+if ! which rancher-compose  > /dev/null ; then
+	echo "Required program rancher-compose - rancher cli client - missing."
+	echo
+	echo "Please download it from your Rancher Webinterface - bottom right corner 'Download CLI'"
+	echo "After downloading it please make the file executable and place it somewhere in your PATH"
+	echo
+	echo "Example Process:"
+	echo "tar -xzf rancher-compose-v0.8.6.tar.gz"
+	echo "cd rancher-compose-v0.8.6"
+	echo "chmod +x rancher-compose"
+	echo "sudo chown root.root rancher-compose"
+	echo "sudo cp rancher-compose /usr/local/bin"
+	echo
+	echo "or contact your system administrator to do these steps for you"
+	exit
+fi
+
 case $1 in
 	start|recreate)
 		require_root
@@ -245,8 +274,6 @@ case $1 in
 		shift
 		require_root
 		ENVIRONMENT=$(grep Web- deploy/docker-test.yml | sed 's~.*Web-\([^-]*\).*~\1~')
-		getWebTestId $ENVIRONMENT
-		exit
 
 		if [ $# -lt 1 ] ; then
 			echo "Command missing.";
