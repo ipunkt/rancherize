@@ -59,8 +59,13 @@ function getWebId {
 
 function getWebTestId {
 	ENVIRONMENT="$1"
+
+	SERVICE=$(cat deploy/docker-test.yml | grep "$PROJECTNAME"Web"-$ENVIRONMENT" | sed 's/:.*//')
+
 	MANGLED_NAME=$(echo "$PROJECT_NAME" | sed 's/-//')
-	docker ps | grep -i $MANGLED_NAME | grep "$RANCHER_SERVICE_NAME"Web-$ENVIRONMENT | awk '{ print $1; }'
+	FULLIMAGE="${MANGLED_NAME}_$SERVICE"
+
+	docker ps | grep "$FULLIMAGE" | awk '{ print $1; }'
 }
 
 #
