@@ -52,13 +52,13 @@ function stack_name_to_id {
 #                   TODO: Die Id sollte hier aus dem Namen aufgelöst werden, dann kann Id oder Name übergeben werden
 #
 function update_compose {
-	USER=$1
-	PASSWORD=$2
-	URL=$3
-	ENVIRONMENT=$(stack_name_to_id "$1" "$2" "$3" "$4")
+	local USER=$1
+	local PASSWORD=$2
+	local URL=$3
+	local ENVIRONMENT=$(stack_name_to_id "$1" "$2" "$3" "$4")
 
-	MAXIMUM_ATTEMPTS=5
-	ATTEMPTS=0
+	local MAXIMUM_ATTEMPTS=5
+	local ATTEMPTS=0
 
 	until wget -q --user $USER --password $PASSWORD $URL/environments/$ENVIRONMENT/composeconfig -O compose.zip ; do
 		let ATTEMPTS+=1
