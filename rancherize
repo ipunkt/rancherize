@@ -124,6 +124,7 @@ function upgrade {
 	RANCHER_STACK=$1
 	DEPLOY_DIRECTORY=$2
 	NEW_VERSION=$3
+	local ENVIRONMENT=$4
 
 	cd $DEPLOY_DIRECTORY
 
@@ -139,7 +140,7 @@ function upgrade {
 	fi
 	NEW_SERVICE=$RANCHER_SERVICE_NAME-$NEW_VERSION
 
-	add_version $RANCHER_SERVICE_NAME $NEW_VERSION
+	add_version $RANCHER_SERVICE_NAME $NEW_VERSION ${ENVIRONMENT}
 
 	if [ "$CURRENT_SERVICE" == "$NEW_SERVICE" ] ; then
 		echo "Attempting to upgrade to the already active revision"
@@ -183,6 +184,7 @@ function deploy {
 	RANCHER_STACK=$1
 	DEPLOY_DIRECTORY=$2
 	NEW_VERSION=$3
+	local ENVIRONMENT=$4
 
 	cd $DEPLOY_DIRECTORY
 
@@ -191,7 +193,7 @@ function deploy {
 
 	NEW_SERVICE=$RANCHER_SERVICE_NAME-$NEW_VERSION
 
-	add_version $RANCHER_SERVICE_NAME $NEW_VERSION
+	add_version $RANCHER_SERVICE_NAME $NEW_VERSION ${ENVIRONMENT}
 
 	rancher-compose --url "$RANCHER_API_URL" --access-key "$RANCHER_ACCESS_KEY" --secret-key "$RANCHER_SECRET_KEY" -p $RANCHER_STACK up
 
@@ -325,9 +327,9 @@ case $1 in
 		DEPLOY_DIRECTORY="deploy/$ENVIRONMENT"
 
 		if [ "$1" = "deploy" ] ; then
-			deploy $RANCHER_STACK $DEPLOY_DIRECTORY $VERSION
+			deploy $RANCHER_STACK $DEPLOY_DIRECTORY $VERSION ${ENVIRONMENT}
 		else
-			upgrade $RANCHER_STACK $DEPLOY_DIRECTORY $VERSION
+			upgrade $RANCHER_STACK $DEPLOY_DIRECTORY $VERSION ${ENVIRONMENT}
 		fi
 
 		;;

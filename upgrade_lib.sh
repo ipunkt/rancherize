@@ -108,12 +108,10 @@ function add_version {
 	SERVICE_NAME=$1
 	SVN_VERSION=$2
 	TEMPLATE=service.yml.tpl
-	if [ "$#" -ge "3" ] ; then
-		TEMPLATE=$3
-	fi
+	local ENVIRONMENT=$3
 
 	if ! grep $SERVICE_NAME-$SVN_VERSION docker-compose.yml > /dev/null 2>&1 ; then
-		sed "s/%VERSION%/$SVN_VERSION/g" $TEMPLATE >> docker-compose.yml
+		sed -e "s/%ENVIRONMENT%/${ENVIRONMENT}/g" -e "s/%VERSION%/$SVN_VERSION/g" $TEMPLATE >> docker-compose.yml
 	fi
 
 	return
