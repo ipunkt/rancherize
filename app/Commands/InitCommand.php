@@ -5,20 +5,20 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class StartCommand
+ * Class InitCommand
  * @package Rancherize\Commands
  */
-class StartCommand extends Command {
+class InitCommand extends Command {
 
 	protected function configure() {
-		$this->setName('start')
-			->setDescription('Start an environment on the local machine')
-			->addArgument('environment', InputArgument::REQUIRED)
+		$this->setName('init')
+			->setDescription('Initialize all given arguments')
+			->addArgument('environment', InputArgument::IS_ARRAY)
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$output->writeln('Hi!');
+		$output->writeln('Init.');
 
 		return 0;
 	}

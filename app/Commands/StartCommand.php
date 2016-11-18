@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Class StartCommand
  * @package Rancherize\Commands
  */
-class InitCommand extends Command {
+class StartCommand extends Command {
 
 	protected function configure() {
 		$this->setName('start')

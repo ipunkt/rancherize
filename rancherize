@@ -11,4 +11,14 @@ $application->add(new \Rancherize\Commands\StartCommand());
 
 // ... register commands
 
-$application->run();
+try{
+
+	$returnCode = $application->run();
+
+} catch(Exception $e) {
+
+	return $e->getCode();
+
+}
+
+return $returnCode;
