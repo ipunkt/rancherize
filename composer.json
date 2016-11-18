@@ -1,0 +1,15 @@
+{
+    "name": "ipunkt/rancherize2",
+    "description": "rancherize your development workflow",
+    "keywords": ["rancher", "docker"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sven Speckmaier",
+            "email": "sps@ipunkt.biz"
+        }
+    ],
+    "bin": ["rancherize"],
+    "require": {}
+}
