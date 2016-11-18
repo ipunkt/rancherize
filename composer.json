@@ -12,7 +12,8 @@
     ],
     "autoload": {
         "psr-4": {
-          "Rancherize\\": "app/"
+          "Rancherize\\": "app/",
+          "RancherizeTest\\": "tests/"
         }
     },
     "bin": ["rancherize"],
