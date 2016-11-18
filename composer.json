@@ -11,5 +11,7 @@
         }
     ],
     "bin": ["rancherize"],
-    "require": {}
+    "require": {
+        "symfony/console": "^3.1"
+    }
 }
