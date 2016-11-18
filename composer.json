@@ -10,6 +10,11 @@
             "email": "sps@ipunkt.biz"
         }
     ],
+    "autoload": {
+        "psr-4": {
+          "Rancherize\\": "app/"
+        }
+    },
     "bin": ["rancherize"],
     "require": {
         "symfony/console": "^3.1"
