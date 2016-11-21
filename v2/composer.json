@@ -1,0 +1,25 @@
+{
+    "name": "ipunkt/rancherize2",
+    "description": "rancherize your development workflow",
+    "keywords": ["rancher", "docker"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sven Speckmaier",
+            "email": "sps@ipunkt.biz"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+          "Rancherize\\": "app/",
+          "RancherizeTest\\": "tests/"
+        }
+    },
+    "bin": ["rancherize"],
+    "require": {
+        "symfony/console": "^3.1",
+        "symfony/event-dispatcher": "^3.1",
+        "symfony/framework-bundle": "^3.1"
+    }
+}
