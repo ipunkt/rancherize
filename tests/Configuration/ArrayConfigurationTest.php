@@ -45,4 +45,23 @@ class ArrayConfigurationTest extends TestCase  {
 		$this->assertArrayHasKey( 'b', $aValue );
 
 	}
+
+	/**
+	 * @test
+	 */
+	public function can_set_nested_values() {
+
+		$configuration = new ArrayConfiguration();
+
+		$configuration->set('a.b', 'c');
+
+		$value = $configuration->get('a.b');
+
+		$this->assertEquals('c', $value);
+
+		$aValue = $configuration->get('a');
+		$this->assertTrue( is_array($aValue) );
+		$this->assertArrayHasKey( 'b', $aValue );
+
+	}
 }

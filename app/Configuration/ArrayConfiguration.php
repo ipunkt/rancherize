@@ -29,13 +29,13 @@ class ArrayConfiguration implements Configuration {
 
 		$keyParts = explode('.', $key);
 
-		$currentValues = $this->values;
+		$currentValues = &$this->values;
 
 		foreach($keyParts as $keyPart) {
 			if( !array_key_exists($keyPart, $currentValues) )
 				$currentValues[$keyPart] = [];
 
-			$currentValues = $currentValues[$keyPart];
+			$currentValues = &$currentValues[$keyPart];
 		}
 
 		$currentValues = $value;
