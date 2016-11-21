@@ -19,6 +19,7 @@
     "bin": ["rancherize"],
     "require": {
         "symfony/console": "^3.1",
-        "symfony/event-dispatcher": "^3.1"
+        "symfony/event-dispatcher": "^3.1",
+        "symfony/framework-bundle": "^3.1"
     }
 }

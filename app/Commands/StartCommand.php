@@ -1,5 +1,5 @@
 <?php namespace Rancherize\Commands;
-use Symfony\Component\Console\Command\Command;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Class StartCommand
  * @package Rancherize\Commands
  */
-class StartCommand extends Command {
+class StartCommand extends ContainerAwareCommand  {
 
 	protected function configure() {
 		$this->setName('start')
