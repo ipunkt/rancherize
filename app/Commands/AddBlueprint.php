@@ -8,17 +8,18 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Class StartCommand
  * @package Rancherize\Commands
  */
-class StartCommand extends Command   {
+class AddBlueprint extends Command   {
 
 	protected function configure() {
-		$this->setName('start')
-			->setDescription('Start an environment on the local machine')
-			->addArgument('environment', InputArgument::REQUIRED)
+		$this->setName('blueprint:add')
+			->setDescription('Add a known blueprint')
+			->addArgument('name', InputArgument::REQUIRED)
+			->addArgument('classpath', InputArgument::REQUIRED)
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$output->writeln('Hi!');
+		$output->writeln('');
 
 		return 0;
 	}

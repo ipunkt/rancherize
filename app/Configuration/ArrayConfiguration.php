@@ -4,7 +4,7 @@
  * Class ArrayConfiguration
  * @package Rancherize\Configuration
  */
-class ArrayConfiguration implements Configuration {
+class ArrayConfiguration implements Configuration, Configurable  {
 
 	/**
 	 * @var mixed[]
