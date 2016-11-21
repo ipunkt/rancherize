@@ -13,6 +13,7 @@ class InitCommand extends Command {
 	protected function configure() {
 		$this->setName('init')
 			->setDescription('Initialize all given arguments')
+			->addArgument('blueprint', InputArgument::REQUIRED)
 			->addArgument('environment', InputArgument::IS_ARRAY)
 		;
 	}
@@ -20,6 +21,7 @@ class InitCommand extends Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$output->writeln('Init.');
 
+		$blueprintName = $input->getArgument('blueprint');
 		$environment = $input->getArgument('environment');
 		var_dump($environment);
 
