@@ -17,5 +17,5 @@ interface Configuration {
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	function get(string $key, $default = null);
+	function get(string $key = null, $default = null);
 }

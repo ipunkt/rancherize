@@ -70,9 +70,12 @@ class ArrayConfiguration implements Configuration, Configurable  {
 	 * @param null $default
 	 * @return mixed
 	 */
-	public function get(string $key, $default = null) {
+	public function get(string $key = null, $default = null) {
 
-		$keyParts = explode('.', $key);
+		if($key === null)
+			$keyParts = [];
+		else
+			$keyParts = explode('.', $key);
 
 		$currentValues = $this->values;
 

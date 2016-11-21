@@ -12,6 +12,10 @@ $container['loader'] = function($container) {
 	return new \Rancherize\Configuration\Loader\JsonLoader();
 };
 
+$container['writer'] = function($container) {
+	return new \Rancherize\Configuration\Writer\JsonWriter();
+};
+
 if( ! function_exists('container') ) {
 
 	/**

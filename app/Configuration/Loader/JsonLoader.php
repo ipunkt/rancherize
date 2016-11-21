@@ -6,7 +6,7 @@ use Rancherize\Configuration\Exceptions\FileNotFoundException;
  * Class JsonLoader
  * @package Rancherize\Configuration\Loader
  */
-class JsonLoader {
+class JsonLoader implements Loader {
 
 	/**
 	 * @var string
@@ -35,7 +35,7 @@ class JsonLoader {
 	 * @param string $prefix
 	 * @return JsonLoader
 	 */
-	public function setPrefix(string $prefix = null): JsonLoader {
+	public function setPrefix(string $prefix = null): Loader {
 		$this->prefix = $prefix;
 		return $this;
 	}
