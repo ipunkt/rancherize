@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Configuration\Writer;
 use Rancherize\Configuration\Configuration;
+use Rancherize\Configuration\Exceptions\SaveFailedException;
 
 /**
  * Class JsonWriter
@@ -17,6 +18,8 @@ class JsonWriter implements Writer {
 
 		$jsonContent = json_encode($config, JSON_PRETTY_PRINT);
 
-		file_put_contents($path, $jsonContent);
+		if( !file_put_contents($path, $jsonContent) )
+			throw new SaveFailedException($path, 1);
+
 	}
 }
