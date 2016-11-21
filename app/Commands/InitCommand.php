@@ -20,6 +20,9 @@ class InitCommand extends Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$output->writeln('Init.');
 
+		$environment = $input->getArgument('environment');
+		var_dump($environment);
+
 		return 0;
 	}
 
