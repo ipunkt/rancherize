@@ -1,7 +1,7 @@
 <?php namespace Rancherize\Blueprint\Factory;
 use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Exceptions\BlueprintNotFoundException;
-use Rancherize\Configuration\Configuration;
+use Rancherize\Configuration\Configurable;
 
 /**
  * Class ConfigurationBlueprintFactory
@@ -9,15 +9,15 @@ use Rancherize\Configuration\Configuration;
  */
 class ConfigurationBlueprintFactory implements BlueprintFactory  {
 	/**
-	 * @var Configuration
+	 * @var Configurable
 	 */
 	private $configuration;
 
 	/**
 	 * ConfigurationBlueprintFactory constructor.
-	 * @param Configuration $configuration
+	 * @param Configurable $configuration
 	 */
-	public function __construct(Configuration $configuration) {
+	public function __construct(Configurable $configuration) {
 		$this->configuration = $configuration;
 	}
 
@@ -26,7 +26,7 @@ class ConfigurationBlueprintFactory implements BlueprintFactory  {
 	 * @param string $classpath
 	 */
 	public function add(string $name, string $classpath) {
-		// TODO: Implement add() method.
+		$this->configuration->set('project.blueprints.'.$name, $classpath);
 	}
 
 	/**
@@ -48,6 +48,17 @@ class ConfigurationBlueprintFactory implements BlueprintFactory  {
 	 * @return array
 	 */
 	protected function getBlueprints() {
-		return $this->configuration->get('blueprints');
+		return $this->configuration->get('project.blueprints');
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function available() : array {
+		$blueprints = $this->getBlueprints();
+
+		$names = array_keys($blueprints);
+
+		return $names;
 	}
 }

@@ -3,6 +3,8 @@
 
 require __DIR__.'/app/bootstrap.php';
 
+use Rancherize\Blueprint\Commands\BlueprintAdd;
+use Rancherize\Blueprint\Commands\BlueprintList;
 use Symfony\Component\Console\Application;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -12,7 +14,8 @@ $application->setDispatcher($dispatcher);
 
 $application->add(new \Rancherize\Commands\StartCommand());
 $application->add(new \Rancherize\Commands\InitCommand());
-$application->add(new \Rancherize\Commands\AddBlueprint());
+$application->add(new BlueprintAdd());
+$application->add(new BlueprintList());
 
 // ... register commands
 

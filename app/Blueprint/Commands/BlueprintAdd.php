@@ -1,9 +1,6 @@
-<?php namespace Rancherize\Commands;
-use Rancherize\Configuration\Configurable;
-use Rancherize\Configuration\Configuration;
-use Rancherize\Configuration\Exceptions\FileNotFoundException;
-use Rancherize\Configuration\Loader\Loader;
-use Rancherize\Configuration\Writer\Writer;
+<?php namespace Rancherize\Blueprint\Commands;
+use Rancherize\Blueprint\Factory\BlueprintFactory;
+use Rancherize\Configuration\Services\ProjectConfiguration;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Class StartCommand
  * @package Rancherize\Commands
  */
-class AddBlueprint extends Command   {
+class BlueprintAdd extends Command   {
 
 	protected function configure() {
 		$this->setName('blueprint:add')
@@ -30,26 +27,12 @@ class AddBlueprint extends Command   {
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		/**
-		 * @var Configuration|Configurable $configuration
+		 * @var ProjectConfiguration $projectConfig
 		 */
-		$configuration = container('configuration');
+		$projectConfig = container('project-config-service');
+		$configuration = $projectConfig->load();
+		container()->offsetSet('project-configuration', $configuration);
 
-		/**
-		 * @var Loader $loader
-		 */
-		$loader = container('loader');
-
-		$rancherizePath = implode('', [
-			getenv('PWD'),
-			DIRECTORY_SEPARATOR,
-			'rancherize.json'
-		]);
-
-		try{
-			$loader->load($configuration, $rancherizePath);
-		} catch(FileNotFoundException $e) {
-			// Fine, do nothing
-		}
 
 
 		$name = $input->getArgument('name');
@@ -57,10 +40,16 @@ class AddBlueprint extends Command   {
 		$configuration->set('project.blueprints.'.$name, $classpath);
 
 		/**
-		 * @var Writer $writer
+		 * @var BlueprintFactory $blueprintFactory
 		 */
-		$writer = container('writer');
-		$writer->write($configuration, $rancherizePath);
+		$blueprintFactory = container('blueprint-factory');
+		$blueprintFactory->add($name, $classpath);
+
+		/**
+		 * TODO: logical combination of add -> projectConfig->save
+		 */
+
+		$projectConfig->save($configuration);
 
 		return 0;
 	}

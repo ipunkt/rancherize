@@ -16,6 +16,17 @@ $container['writer'] = function($container) {
 	return new \Rancherize\Configuration\Writer\JsonWriter();
 };
 
+$container['project-config-service'] = function($c) {
+	return new \Rancherize\Configuration\Services\ProjectConfiguration(
+		$c['loader'],
+		$c['writer']
+	);
+};
+
+$container['blueprint-factory'] = function($c) {
+	return new \Rancherize\Blueprint\Factory\ConfigurationBlueprintFactory($c['configuration']);
+};
+
 if( ! function_exists('container') ) {
 
 	/**
@@ -24,8 +35,11 @@ if( ! function_exists('container') ) {
 	 * @param string $instance
 	 * @return \Pimple\Container
 	 */
-	function container(string $instance) {
+	function container(string $instance = null) {
 		global $container;
+
+		if($instance === null)
+			return $container;
 
 		return $container[$instance];
 	}

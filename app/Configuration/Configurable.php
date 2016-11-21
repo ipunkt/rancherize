@@ -4,7 +4,7 @@
  * Interface Configurable
  * @package Rancherize\Configuration
  */
-interface Configurable {
+interface Configurable extends Configuration {
 	/**
 	 * @param string $key
 	 * @param $value

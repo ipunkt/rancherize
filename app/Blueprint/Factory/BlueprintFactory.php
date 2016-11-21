@@ -20,4 +20,10 @@ interface BlueprintFactory {
 	 * @throws BlueprintNotFoundException
 	 */
 	function get(string $name) : Blueprint;
+
+
+	/**
+	 * @return string[]
+	 */
+	function available() : array;
 }
