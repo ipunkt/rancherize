@@ -1,2 +1,0 @@
-%RANCHER_SERVICE_NAME%-%VERSION%:
-  scale: 1
