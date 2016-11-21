@@ -32,6 +32,10 @@ class ArrayConfiguration implements Configuration {
 		$currentValues = &$this->values;
 
 		foreach($keyParts as $keyPart) {
+
+			if( !is_array($currentValues) )
+				$currentValues = [];
+
 			if( !array_key_exists($keyPart, $currentValues) )
 				$currentValues[$keyPart] = [];
 

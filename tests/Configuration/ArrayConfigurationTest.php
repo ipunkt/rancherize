@@ -64,4 +64,17 @@ class ArrayConfigurationTest extends TestCase  {
 		$this->assertArrayHasKey( 'b', $aValue );
 
 	}
+
+	/**
+	 * @test
+	 */
+	public function can_overwrite_values_with_nesting() {
+		$configuration = new ArrayConfiguration();
+
+		$configuration->set('a', 'c');
+		$this->assertEquals('c', $configuration->get('a') );
+
+		$configuration->set('a.b', 'c');
+		$this->assertEquals('c', $configuration->get('a.b') );
+	}
 }
