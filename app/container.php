@@ -49,6 +49,10 @@ $container['config-wrapper'] = function($c) {
 	);
 };
 
+$container['build-service'] = function($c) {
+	return new \Rancherize\Services\BuildService();
+};
+
 if( ! function_exists('container') ) {
 
 	/**

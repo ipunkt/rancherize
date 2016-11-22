@@ -41,6 +41,8 @@ class ServiceWriter {
 			$ports[] = "$external:$internal";
 		$this->addNonEmpty('ports', $ports, $content);
 
+		$this->addNonEmpty('stdin_open', $service->isKeepStdin(), $content);
+
 		$volumes = [];
 		foreach($service->getVolumes() as $name => $value)
 			$volumes[] = "$name:$value";
@@ -50,6 +52,24 @@ class ServiceWriter {
 		foreach($service->getVolumesFrom() as $name => $value)
 			$volumesFrom[] = "$name:$value";
 		$this->addNonEmpty('volumes_from', $volumesFrom, $content);
+
+		$links = [];
+		foreach($service->getLinks() as $name => $linkedService) {
+			$serviceName = $linkedService->getName();
+			if( is_string($name) )
+				$links[] = "$serviceName:$name";
+			else
+				$links[] = "$serviceName";
+
+		}
+		$this->addNonEmpty('links', $links, $content);
+
+		$restartValues = [
+			Service::RESTART_UNLESS_STOPPED => 'unless-stopped',
+			Service::RESTART_AWAYS => 'always',
+			Service::RESTART_NEVER => 'never',
+		];
+		$content['restart'] = $restartValues[ $service->getRestart() ];
 
 		$yamlContent = Yaml::dump([$service->getName() => $content], 100, 2);
 

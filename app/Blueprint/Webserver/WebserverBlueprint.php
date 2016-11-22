@@ -43,6 +43,7 @@ class WebserverBlueprint implements Blueprint {
 			$initializer->init($projectConfigurable, 'EXPOSED_PORT', $port);
 			$initializer->init($projectConfigurable, 'USE_APP_CONTAINER', false);
 			$initializer->init($projectConfigurable, 'MOUNT_REPOSITORY', true);
+			$initializer->init($projectConfigurable, 'ADD_REDIS', false);
 		} else {
 			$initializer->init($projectConfigurable, 'IMAGE', 'ipunkt/nginx');
 		}
@@ -102,23 +103,17 @@ class WebserverBlueprint implements Blueprint {
 		$dockerfile = $this->makeDockerfile($config);
 		$infrastructure->setDockerfile($dockerfile);
 
-		$serverService = new Service();
-		$serverService->setName( $config->get('NAME') );
-		$serverService->setImage( $config->get('IMAGE', 'ipunktbs/nginx:1.9.7-7-1.2.0') );
-
-		if($config->has('EXPOSED_PORT'))
-			$serverService->expose(80, $config->get('EXPOSED_PORT') );
-
-		if( $config->get('MOUNT_REPOSITORY', false) )
-			$serverService->addVolume( getcwd(), '/var/www/app' );
-
-		if($config->has('environment')) {
-			foreach($config->get('environment') as $name => $value)
-				$serverService->setEnvironmentVariable($name, $value);
-
+		$serverService = $this->makeServerService($config);
+		if( $config->get('ADD_REDIS', false) ) {
+			$redisService = $this->makeRedisService($config);
+			$serverService->addLink($redisService, 'redis');
+			$serverService->setEnvironmentVariable('REDIS_HOST', 'redis');
+			$serverService->setEnvironmentVariable('REDIS_PORT', '6379');
 		}
 
+
 		$infrastructure->addService($serverService);
+		$infrastructure->addService($redisService);
 
 		return $infrastructure;
 	}
@@ -145,5 +140,41 @@ class WebserverBlueprint implements Blueprint {
 		$dockerfile->run('rm -Rf /var/www/app/.rancherize');
 		$dockerfile->setCommand('/bin/true');
 		return $dockerfile;
+	}
+
+	/**
+	 * @param $config
+	 * @return Service
+	 */
+	protected function makeServerService($config):Service {
+		$serverService = new Service();
+		$serverService->setName($config->get('NAME'));
+		$serverService->setImage($config->get('IMAGE', 'ipunktbs/nginx:1.9.7-7-1.2.0'));
+
+		if ($config->has('EXPOSED_PORT'))
+			$serverService->expose(80, $config->get('EXPOSED_PORT'));
+
+		if ($config->get('MOUNT_REPOSITORY', false))
+			$serverService->addVolume(getcwd(), '/var/www/app');
+
+		if ($config->has('environment')) {
+			foreach ($config->get('environment') as $name => $value)
+				$serverService->setEnvironmentVariable($name, $value);
+			return $serverService;
+
+		}
+		return $serverService;
+	}
+
+	private function makeRedisService($config) {
+		$redisService = new Service();
+
+		$redisService->setName('Redis');
+		$redisService->setRestart(Service::RESTART_UNLESS_STOPPED);
+		$redisService->setTty(true);
+		$redisService->setImage('redis:3.2-alpine');
+		$redisService->setKeepStdin(true);
+
+		return $redisService;
 	}
 }

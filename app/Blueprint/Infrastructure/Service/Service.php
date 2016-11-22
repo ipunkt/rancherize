@@ -30,6 +30,11 @@ class Service {
 	 */
 	protected $exposedPorts = [];
 
+	/**
+	 * @var bool
+	 */
+	protected $keepStdin = false;
+
 	const RESTART_UNLESS_STOPPED = 0;
 	const RESTART_NEVER = 1;
 	const RESTART_AWAYS = 1;
@@ -48,6 +53,11 @@ class Service {
 	 * @var string[]
 	 */
 	protected $environmentVariables = [];
+
+	/**
+	 * @var Service[]
+	 */
+	protected $links = [];
 
 	/**
 	 * @return string
@@ -162,6 +172,39 @@ class Service {
 	 */
 	public function setEnvironmentVariable(string $name, string $value) {
 		$this->environmentVariables[$name] = $value;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function isKeepStdin(): bool {
+		return $this->keepStdin;
+	}
+
+	/**
+	 * @param boolean $keepStdin
+	 */
+	public function setKeepStdin(bool $keepStdin) {
+		$this->keepStdin = $keepStdin;
+	}
+
+	/**
+	 * @return Service[]
+	 */
+	public function getLinks(): array {
+		return $this->links;
+	}
+
+	/**
+	 * @param \string[] $links
+	 */
+	public function addLink(Service $service, $name = null) {
+		if($name === null) {
+			$this->links[] = $service;
+			return;
+		}
+
+		$this->links[$name] = $service;
 	}
 
 
