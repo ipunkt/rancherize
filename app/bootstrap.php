@@ -20,8 +20,15 @@ $container['loader'] = function($c) {
 	return new \Rancherize\Configuration\Loader\JsonLoader($c['file-loader']);
 };
 
-$container['writer'] = function($container) {
+$container['writer'] = function($c) {
 	return new \Rancherize\Configuration\Writer\JsonWriter($c['file-writer']);
+};
+
+$container['global-config-service'] = function($c) {
+	return new \Rancherize\Configuration\Services\GlobalConfiguration(
+		$c['loader'],
+		$c['writer']
+	);
 };
 
 $container['project-config-service'] = function($c) {

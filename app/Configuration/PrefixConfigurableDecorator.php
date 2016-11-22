@@ -43,7 +43,7 @@ class PrefixConfigurableDecorator implements Configurable {
 	 */
 	public function has(string $key) : bool {
 		$prefixedKey = $this->prefix.$key;
-		$this->configurable->has($prefixedKey);
+		return $this->configurable->has($prefixedKey);
 	}
 
 	/**
@@ -53,6 +53,6 @@ class PrefixConfigurableDecorator implements Configurable {
 	 */
 	public function get(string $key = null, $default = null) {
 		$prefixedKey = $this->prefix.$key;
-		$this->configurable->get($prefixedKey, $default);
+		return $this->configurable->get($prefixedKey, $default);
 	}
 }

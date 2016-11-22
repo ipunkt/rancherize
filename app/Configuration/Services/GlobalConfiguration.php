@@ -31,51 +31,38 @@ class GlobalConfiguration {
 	}
 
 	/**
-	 *
+	 * @param Configuration $configuration
 	 */
-	public function load() {
-		/**
-		 * @var Configuration|Configurable $configuration
-		 */
-		$configuration = container('configuration');
+	public function load(Configuration $configuration) {
 
 		/**
 		 * Global values should be loaded to global.*
 		 */
 		$prefixDecorator = new PrefixConfigurableDecorator($configuration, 'global.');
 
-		$globalConfigPath = $this->getConfigPath();
+		$globalConfigPath = $this->getPath();
 
-		try{
-			$this->loader->load($prefixDecorator, $globalConfigPath);
-		} catch(FileNotFoundException $e) {
-			// No config yet, nothing to do
-		}
-
+		$this->loader->load($prefixDecorator, $globalConfigPath);
 	}
 
 	/**
-	 *
+	 * @param Configurable $configuration
 	 */
-	public function save() {
-		/**
-		 * @var Configuration|Configurable $configuration
-		 */
-		$configuration = container('configuration');
+	public function save(Configurable $configuration) {
 
 		/**
 		 * Only values under the `global` key should be written to the global config
 		 */
-		$prefixDecorator = new PrefixConfigurableDecorator($configuration, 'global.');
+		$prefixDecorator = new PrefixConfigurableDecorator($configuration, 'global');
 
-		$globalConfigPath = $this->getConfigPath();
+		$globalConfigPath = $this->getPath();
 		$this->writer->write($prefixDecorator, $globalConfigPath);
 	}
 
 	/**
 	 * @return string
 	 */
-	private function getConfigPath() {
+	public function getPath() {
 		return implode('', [
 			getenv('HOME'),
 			DIRECTORY_SEPARATOR,
