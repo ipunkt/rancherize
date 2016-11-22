@@ -3,6 +3,11 @@ Rancherize your development workflow - in php
 
 # Installation
 	composer require ipunkt/rancherize
+	
+# Use
+	vendor/bin/rancherize rancher:access
+	vendor/bin/rancherize rancher:init webserver production staging
+	vendor/bin/rancherize rancher:init --dev webserver local
 
 # Configuration
 
