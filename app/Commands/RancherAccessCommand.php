@@ -1,4 +1,5 @@
 <?php namespace Rancherize\Commands;
+use Rancherize\Commands\Traits\IoCommandTrait;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Exceptions\FileNotFoundException;
@@ -16,6 +17,8 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  */
 class RancherAccessCommand extends Command {
 
+	use IoCommandTrait;
+
 	protected function configure() {
 		$this->setName('rancher:access')
 			->setDescription('Initialize Rancher access')
@@ -25,7 +28,9 @@ class RancherAccessCommand extends Command {
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 
-		$this->assertInteractive($input, $output);
+		$this->setIo($input, $output);
+
+		$this->assertInteractive();
 
 
 		/**
@@ -38,69 +43,63 @@ class RancherAccessCommand extends Command {
 		 */
 		$globalConfiguration = container('global-config-service');
 
-		$this->validateGlobalConfiguration($input, $output, $globalConfiguration, $configuration);
+		$this->validateGlobalConfiguration( $globalConfiguration, $configuration);
 
-		$this->editGlobalConfiguration($input, $output, $globalConfiguration, $configuration);
+		$this->editGlobalConfiguration( $globalConfiguration, $configuration);
 	}
 
 	/**
-	 * @param OutputInterface $output
 	 * @param Configurable $configuration
 	 * @param GlobalConfiguration $globalConfiguration
 	 */
-	protected function createDefaultConfiguration(OutputInterface $output, Configurable $configuration, GlobalConfiguration $globalConfiguration):void {
+	protected function createDefaultConfiguration( Configurable $configuration, GlobalConfiguration $globalConfiguration) {
 		$formatter = $this->getHelper('formatter');
 
 		$globalConfiguration->makeDefault($configuration);
 		$globalConfiguration->save($configuration);
 
-		if (OutputInterface::VERBOSITY_VERY_VERBOSE <= $output->getVerbosity())
-			$output->writeln($formatter->formatSection('Default', "Global configuration file was created."));
+		if (OutputInterface::VERBOSITY_VERY_VERBOSE <= $this->output->getVerbosity())
+			$this->output->writeln($formatter->formatSection('Default', "Global configuration file was created."));
 	}
 
 	/**
-	 * @param InputInterface $input
-	 * @param OutputInterface $output
 	 * @param Configurable $configuration
 	 * @param GlobalConfiguration $globalConfiguration
 	 */
-	private function invalidFormatDetected( InputInterface $input, OutputInterface $output,Configurable $configuration, GlobalConfiguration $globalConfiguration) {
-		if($output->isQuiet())
+	private function invalidFormatDetected( Configurable $configuration, GlobalConfiguration $globalConfiguration) {
+		if($this->output->isQuiet())
 			return;
 
 		$formatter = $this->getHelper('formatter');
 		$question = $this->getHelper('question');
 		$overwriteWithDefaultQuestion = new ConfirmationQuestion('The global configuration file is not in a valid format. Replace with default? [y/N]', false);
 
-		if( !$question->ask($input, $output, $overwriteWithDefaultQuestion) ) {
-			if( OutputInterface::VERBOSITY_VERBOSE <= $output->getVerbosity() )
-				$output->writeln( $formatter->formatSection( 'Default', 'NOT overriding invalid config') );
+		if( !$question->ask($this->input, $this->output, $overwriteWithDefaultQuestion) ) {
+			if( OutputInterface::VERBOSITY_VERBOSE <= $this->output->getVerbosity() )
+				$this->output->writeln( $formatter->formatSection( 'Default', 'NOT overriding invalid config') );
 
 			return;
 		}
 
 
-		$this->createDefaultConfiguration($output, $configuration, $globalConfiguration);
+		$this->createDefaultConfiguration( $configuration, $globalConfiguration);
 	}
 
 	/**
-	 * @param InputInterface $input
-	 * @param OutputInterface $output
+	 *
 	 */
-	private function assertInteractive(InputInterface $input, OutputInterface $output) {
-		if( $input->isInteractive() )
+	private function assertInteractive() {
+		if( $this->input->isInteractive() )
 			return;
 
 		throw new Exception("Configuring rancher access requires an interactive terminal session");
 	}
 
 	/**
-	 * @param InputInterface $input
-	 * @param OutputInterface $output
 	 * @param GlobalConfiguration $globalConfiguration
 	 * @param Configurable $configuration
 	 */
-	protected function validateGlobalConfiguration(InputInterface $input, OutputInterface $output, GlobalConfiguration $globalConfiguration, Configurable $configuration):void {
+	protected function validateGlobalConfiguration(GlobalConfiguration $globalConfiguration, Configurable $configuration) {
 
 		$formatter = $this->getHelper('formatter');
 
@@ -108,26 +107,24 @@ class RancherAccessCommand extends Command {
 			$globalConfiguration->load($configuration);
 		} catch (InvalidFormatException $e) {
 
-			$this->invalidFormatDetected($input, $output, $configuration, $globalConfiguration);
+			$this->invalidFormatDetected($configuration, $globalConfiguration);
 
 		} catch (FileNotFoundException $e) {
 
-			$this->createDefaultConfiguration($output, $configuration, $globalConfiguration);
+			$this->createDefaultConfiguration($configuration, $globalConfiguration);
 
-			if (OutputInterface::VERBOSITY_VERBOSE <= $output->getVerbosity())
-				$output->writeln($formatter->formatSection('Default', "No configuration file was found. Creating default"));
+			if (OutputInterface::VERBOSITY_VERBOSE <= $this->output->getVerbosity())
+				$this->output->writeln($formatter->formatSection('Default', "No configuration file was found. Creating default"));
 
-			$this->createDefaultConfiguration($output, $configuration, $globalConfiguration);
+			$this->createDefaultConfiguration($configuration, $globalConfiguration);
 		}
 	}
 
 	/**
-	 * @param InputInterface $input
-	 * @param OutputInterface $output
 	 * @param $globalConfiguration
 	 * @param $configuration
 	 */
-	protected function editGlobalConfiguration(InputInterface $input, OutputInterface $output, GlobalConfiguration $globalConfiguration, Configurable $configuration):void {
+	protected function editGlobalConfiguration(GlobalConfiguration $globalConfiguration, Configurable $configuration) {
 
 		$question = $this->getHelper('question');
 
@@ -147,7 +144,7 @@ class RancherAccessCommand extends Command {
 				$globalConfiguration->load($configuration);
 			} catch (InvalidFormatException $e) {
 				$validConfig = false;
-				$force = $question->ask($input, $output, $forceInvalidConfigurationQuestion);
+				$force = $question->ask($this->input, $this->output, $forceInvalidConfigurationQuestion);
 
 			}
 
