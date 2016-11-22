@@ -1,6 +1,7 @@
 <?php namespace Rancherize\Configuration\Loader;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Exceptions\FileNotFoundException;
+use Rancherize\Configuration\Exceptions\InvalidFormatException;
 use Rancherize\File\FileLoader;
 
 /**
@@ -38,6 +39,9 @@ class JsonLoader implements Loader {
 		$fileContents = $this->fileLoader->get($path);
 
 		$values = json_decode($fileContents, true);
+		if($values === null)
+			throw new InvalidFormatException('json', $path, $fileContents);
+
 		foreach($values as $key => $value) {
 			$configurable->set($key, $value);
 		}

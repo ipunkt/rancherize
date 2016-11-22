@@ -73,4 +73,17 @@ class GlobalConfiguration {
 			'.rancherize'
 		]);
 	}
+
+	/**
+	 * @param Configurable $configuration
+	 */
+	public function makeDefault(Configurable $configuration) {
+		$configuration->set('global.rancher', [
+			'default' => [
+				'url' => 'http://rancher:8080/api/v1',
+				'key' => 'key',
+				'secret' => 'secret',
+			]
+		]);
+	}
 }
