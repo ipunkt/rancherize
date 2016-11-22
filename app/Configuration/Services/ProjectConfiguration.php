@@ -35,13 +35,10 @@ class ProjectConfiguration {
 	}
 
 	/**
-	 * @return Configuration|Configurable
+	 * @param Configurable $configuration
+	 * @return Configurable|Configuration
 	 */
-	public function load() {
-		/**
-		 * @var Configuration|Configurable $configuration
-		 */
-		$configuration = container('configuration');
+	public function load(Configurable $configuration) {
 
 		$rancherizePath = $this->getConfigPath();
 

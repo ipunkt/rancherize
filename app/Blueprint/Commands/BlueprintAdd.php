@@ -30,7 +30,10 @@ class BlueprintAdd extends Command   {
 		 * @var ProjectConfiguration $projectConfig
 		 */
 		$projectConfig = container('project-config-service');
-		$configuration = $projectConfig->load();
+
+		$configuration = container('configuration');
+		$configuration = $projectConfig->load($configuration);
+
 		container()->offsetSet('project-configuration', $configuration);
 
 

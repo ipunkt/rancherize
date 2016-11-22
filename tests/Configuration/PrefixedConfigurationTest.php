@@ -44,7 +44,6 @@ class PrefixedConfigurationTest extends TestCase {
 
 		$prefixedDecorator = new PrefixConfigurableDecorator($configuration, 'prefix.');
 
-
 		$this->assertEquals( 'is-set', $prefixedDecorator->get('test') );
 	}
 }

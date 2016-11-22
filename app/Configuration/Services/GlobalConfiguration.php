@@ -1,7 +1,7 @@
 <?php namespace Rancherize\Configuration\Services;
 use Rancherize\Configuration\Configurable;
-use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Exceptions\FileNotFoundException;
+use Rancherize\Configuration\Exceptions\GlobalConfigurationNotFoundException;
 use Rancherize\Configuration\Loader\Loader;
 use Rancherize\Configuration\PrefixConfigurableDecorator;
 use Rancherize\Configuration\Writer\Writer;
@@ -31,9 +31,9 @@ class GlobalConfiguration {
 	}
 
 	/**
-	 * @param Configuration $configuration
+	 * @param Configurable $configuration
 	 */
-	public function load(Configuration $configuration) {
+	public function load(Configurable $configuration) {
 
 		/**
 		 * Global values should be loaded to global.*
@@ -42,7 +42,11 @@ class GlobalConfiguration {
 
 		$globalConfigPath = $this->getPath();
 
-		$this->loader->load($prefixDecorator, $globalConfigPath);
+		try {
+			$this->loader->load($prefixDecorator, $globalConfigPath);
+		} catch(FileNotFoundException $e) {
+			throw new GlobalConfigurationNotFoundException($e->getPath());
+		}
 	}
 
 	/**
