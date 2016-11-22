@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Blueprint\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
+use Rancherize\Blueprint\Infrastructure\Service\Service;
 
 /**
  * Class Infrastructure
@@ -22,5 +23,26 @@ class Infrastructure {
 	 */
 	public function setDockerfile(Dockerfile $dockerfile) {
 		$this->dockerfile = $dockerfile;
+	}
+
+	/**
+	 * @return Dockerfile
+	 */
+	public function getDockerfile(): Dockerfile {
+		return $this->dockerfile;
+	}
+
+	/**
+	 * @param Service $service
+	 */
+	public function addService(Service $service) {
+		$this->services[] = $service;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getServices() {
+		return $this->services;
 	}
 }

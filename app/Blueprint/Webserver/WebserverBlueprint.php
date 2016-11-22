@@ -3,8 +3,10 @@ use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Flags\HasFlagsTrait;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
+use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Configuration\Configurable;
+use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\PrefixConfigurableDecorator;
 use Rancherize\Configuration\Services\ConfigurationFallback;
 use Rancherize\Configuration\Services\ConfigurationInitializer;
@@ -32,7 +34,7 @@ class WebserverBlueprint implements Blueprint {
 		$initializer = new ConfigurationInitializer($output);
 
 		if( $this->getFlag('dev', false) ) {
-			$initializer->init($projectConfigurable, 'IMAGE', 'ipunkt/nginx-debug');
+			$initializer->init($projectConfigurable, 'IMAGE', 'ipunktbs/nginx-debug');
 
 			$minPort = $configurable->get('global.min-port', 9000);
 			$maxPort = $configurable->get('global.max-port', 20000);
@@ -44,6 +46,7 @@ class WebserverBlueprint implements Blueprint {
 			$initializer->init($projectConfigurable, 'IMAGE', 'ipunkt/nginx');
 		}
 
+		$initializer->init($projectConfigurable, 'NAME', 'Project');
 		$initializer->init($projectConfigurable, 'BASE_IMAGE', 'busybox');
 
 
@@ -62,7 +65,8 @@ class WebserverBlueprint implements Blueprint {
 		$config = new ConfigurationFallback($environmentConfigurable, $projectConfigurable);
 
 		$required = [
-			'BASE_IMAGE'
+			'BASE_IMAGE',
+			'NAME'
 		];
 
 		$errors = [
@@ -93,24 +97,39 @@ class WebserverBlueprint implements Blueprint {
 		$environmentConfigurable = new PrefixConfigurableDecorator($configurable, "project.$environment.");
 		$config = new ConfigurationFallback($environmentConfigurable, $projectConfigurable);
 
+		$dockerfile = $this->makeDockerfile($config);
+		$infrastructure->setDockerfile($dockerfile);
+
+		$serverService = new Service();
+		$serverService->setName( $config->get('NAME') );
+		$serverService->setImage( $config->get('IMAGE', 'ipunktbs/nginx') );
+
+		$infrastructure->addService($serverService);
+
+		return $infrastructure;
+	}
+
+	/**
+	 * @param $config
+	 * @return Dockerfile
+	 */
+	protected function makeDockerfile(Configuration $config):Dockerfile {
 		$dockerfile = new Dockerfile();
 
-		$dockerfile->setFrom( $config->get('BASE_IMAGE') );
+		$dockerfile->setFrom($config->get('BASE_IMAGE'));
 
 		$dockerfile->addVolume('/var/www/app');
 		$dockerfile->copy('.', '/var/www/app');
 
 		$nginxConfig = $config->get('NGINX_CONFIG');
-		if( !empty($nginxConfig) ) {
+		if (!empty($nginxConfig)) {
 			$dockerfile->addVolume('/etc/nginx/conf.template.d');
-			$dockerfile->copy($nginxConfig, '/etc/nginx/conf.template.d');
+			$dockerfile->copy($nginxConfig, '/etc/nginx/conf.template.d/');
 
 		}
 
+		$dockerfile->run('rm -Rf /var/www/app/.rancherize');
 		$dockerfile->setCommand('/bin/true');
-
-		$infrastructure->setDockerfile($dockerfile);
-
-		return $infrastructure;
+		return $dockerfile;
 	}
 }

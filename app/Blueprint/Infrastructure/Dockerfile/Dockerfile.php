@@ -9,17 +9,17 @@ class Dockerfile {
 	/**
 	 * @var string
 	 */
-	protected $from;
+	protected $from = '';
 
 	/**
 	 * @var string
 	 */
-	protected $command;
+	protected $command = '';
 
 	/**
 	 * @var string
 	 */
-	protected $entrypoint;
+	protected $entrypoint = '';
 
 	/**
 	 * @var string[]

@@ -1,7 +1,6 @@
 <?php namespace Rancherize\Blueprint;
-use Rancherize\Blueprint\Infrastrukture\Infrastructure;
+use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
-use Rancherize\Configuration\ArrayConfiguration;
 use Rancherize\Configuration\Configurable;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

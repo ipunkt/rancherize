@@ -16,7 +16,16 @@ class FileWriter {
 	 * @param string $content
 	 */
 	public function put(string $path, string $content) {
-		if( !file_put_contents($path, $content) )
+		if( !file_put_contents($path, $content) && strlen($content) !== 0 )
+			throw new SaveFailedException($path, 100);
+	}
+
+	/**
+	 * @param string $path
+	 * @param string $content
+	 */
+	public function append(string $path, string $content) {
+		if( !file_put_contents($path, $content, FILE_APPEND) )
 			throw new SaveFailedException($path, 100);
 	}
 }

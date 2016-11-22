@@ -5,7 +5,7 @@ use Rancherize\Configuration\Configuration;
  * Class ConfigurationFallback
  * @package Rancherize\Configuration\Services
  */
-class ConfigurationFallback {
+class ConfigurationFallback implements Configuration {
 	/**
 	 * @var Configuration
 	 */
@@ -26,17 +26,19 @@ class ConfigurationFallback {
 	}
 
 	/**
-	 * @param $key
+	 * @param string $key
+	 * @param null $default
+	 * @return mixed
 	 */
-	public function get($key) {
-		return $this->configuration->get( $key, $this->fallback->get($key) );
+	public function get(string $key = null, $default = null) {
+		return $this->configuration->get( $key, $this->fallback->get($key, $default) );
 	}
 
 	/**
 	 * @param $key
 	 * @return bool
 	 */
-	public function has($key) {
+	public function has(string $key) : bool {
 		return $this->configuration->has($key) || $this->fallback->has($key);
 	}
 }

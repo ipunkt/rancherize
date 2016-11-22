@@ -1,7 +1,11 @@
 <?php namespace Rancherize\Commands;
+use Rancherize\Blueprint\Infrastructure\Dockerfile\DockerfileWriter;
+use Rancherize\Blueprint\Infrastructure\InfrastructureWriter;
+use Rancherize\Blueprint\Infrastructure\Service\ServiceWriter;
 use Rancherize\Blueprint\Traits\LoadsBlueprintTrait;
 use Rancherize\Configuration\PrefixConfigurableDecorator;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
+use Rancherize\File\FileWriter;
 use RancherizeTest\Configuration\PrefixedConfigurationTest;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -33,7 +37,10 @@ class StartCommand extends Command   {
 		$blueprint = $this->loadBlueprint($input, $blueprintName);
 
 		$blueprint->validate($configuration, $environment);
-		$blueprint->build($configuration, $environment);
+		$infrastructure = $blueprint->build($configuration, $environment);
+
+		$infrastructureWriter = new InfrastructureWriter('./.rancherize/');
+		$infrastructureWriter->write($infrastructure, new FileWriter());
 
 		return 0;
 	}
