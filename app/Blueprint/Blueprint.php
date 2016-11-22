@@ -18,9 +18,10 @@ interface Blueprint {
 
 	/**
 	 * @param Configurable $configurable
+	 * @param string $environment
 	 * @param InputInterface $input
 	 * @param OutputInterface $output
 	 * @return
 	 */
-	function init(Configurable $configurable, InputInterface $input, OutputInterface $output);
+	function init(Configurable $configurable, string $environment, InputInterface $input, OutputInterface $output);
 }

@@ -1,13 +1,10 @@
 <?php namespace Rancherize\Commands;
 use Rancherize\Blueprint\Blueprint;
-use Rancherize\Blueprint\Factory\BlueprintFactory;
+use Rancherize\Blueprint\Traits\LoadsBlueprintTrait;
 use Rancherize\Commands\Traits\IoTrait;
-use Rancherize\Configuration\ArrayConfiguration;
 use Rancherize\Configuration\Configurable;
-use Rancherize\Configuration\Exceptions\FileNotFoundException;
-use Rancherize\Configuration\Loader\JsonLoader;
-use Rancherize\Configuration\PrefixConfigurableDecorator;
 use Rancherize\Configuration\Services\ConfigWrapper;
+use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,6 +18,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class InitCommand extends Command {
 
 	use IoTrait;
+	use LoadsConfigurationTrait;
+	use LoadsBlueprintTrait;
 
 	protected function configure() {
 		$this->setName('init')
@@ -60,30 +59,6 @@ class InitCommand extends Command {
 		return 0;
 	}
 
-	/**
-	 * @return BlueprintFactory
-	 */
-	private function getBlueprintFactory() {
-		return container('blueprint-factory');
-	}
-
-	/**
-	 * @return Configurable
-	 */
-	private function loadConfiguration() {
-		/**
-		 * @var ConfigWrapper $configWrapper
-		 */
-		$configWrapper = container('config-wrapper');
-		$config = $configWrapper->configuration();
-
-		$configWrapper->loadGlobalConfig($config);
-		$configWrapper->loadProjectConfig($config);
-
-
-		return $config;
-	}
-
 
 	/**
 	 * @param Blueprint $blueprint
@@ -99,9 +74,8 @@ class InitCommand extends Command {
 				"=========================================",
 			]);
 
-		$prefixedConfiguration = new PrefixConfigurableDecorator($configuration, "project.$environmentName.");
 
-		$blueprint->init($prefixedConfiguration, $this->getInput(), $this->getOutput());
+		$blueprint->init($configuration, $environmentName, $this->getInput(), $this->getOutput());
 
 	}
 
@@ -110,24 +84,10 @@ class InitCommand extends Command {
 		/**
 		 * @var ConfigWrapper $configWrapper
 		 */
-
 		$configWrapper = container('config-wrapper');
 		$configWrapper->saveProjectConfig($configuration);
 	}
 
-	/**
-	 * @param InputInterface $input
-	 * @param $blueprintName
-	 * @return Blueprint
-	 */
-	protected function loadBlueprint(InputInterface $input, $blueprintName):Blueprint {
-		$blueprintFactory = $this->getBlueprintFactory();
-		$blueprint = $blueprintFactory->get($blueprintName);
-
-		foreach ($input->getOptions() as $name => $value)
-			$blueprint->setFlag($name, $value);
-		return $blueprint;
-	}
 
 
 }

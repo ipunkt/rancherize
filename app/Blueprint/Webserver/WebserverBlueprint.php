@@ -3,6 +3,7 @@ use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Flags\HasFlagsTrait;
 use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Configuration\Configurable;
+use Rancherize\Configuration\PrefixConfigurableDecorator;
 use Rancherize\Configuration\Services\ConfigurationInitializer;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,20 +18,27 @@ class WebserverBlueprint implements Blueprint {
 
 	/**
 	 * @param Configurable $configurable
+	 * @param string $environment
 	 * @param InputInterface $input
 	 * @param OutputInterface $output
 	 */
-	public function init(Configurable $configurable, InputInterface $input, OutputInterface $output) {
+	public function init(Configurable $configurable, string $environment, InputInterface $input, OutputInterface $output) {
+
+		$projectConfigurable = new PrefixConfigurableDecorator($configurable, "project.$environment.");
 
 		$initializer = new ConfigurationInitializer($output);
 
 		if( $this->getFlag('dev', false) ) {
-			$initializer->init($configurable, 'IMAGE', 'ipunkt/nginx-debug');
-			$port = mt_rand(9000, 20000);
-			$initializer->init($configurable, 'EXPOSED_PORT', $port);
-			$initializer->init($configurable, 'USE_APP_CONTAINER', false);
+			$initializer->init($projectConfigurable, 'IMAGE', 'ipunkt/nginx-debug');
+
+			$minPort = $configurable->get('global.min-port', 9000);
+			$maxPort = $configurable->get('global.max-port', 20000);
+			$port = mt_rand($minPort, $maxPort);
+
+			$initializer->init($projectConfigurable, 'EXPOSED_PORT', $port);
+			$initializer->init($projectConfigurable, 'USE_APP_CONTAINER', false);
 		} else {
-			$initializer->init($configurable, 'IMAGE', 'ipunkt/nginx');
+			$initializer->init($projectConfigurable, 'IMAGE', 'ipunkt/nginx');
 		}
 
 
