@@ -42,12 +42,14 @@ class WebserverBlueprint implements Blueprint {
 
 			$initializer->init($projectConfigurable, 'EXPOSED_PORT', $port);
 			$initializer->init($projectConfigurable, 'USE_APP_CONTAINER', false);
+			$initializer->init($projectConfigurable, 'MOUNT_REPOSITORY', true);
 		} else {
 			$initializer->init($projectConfigurable, 'IMAGE', 'ipunkt/nginx');
 		}
 
 		$initializer->init($projectConfigurable, 'NAME', 'Project');
 		$initializer->init($projectConfigurable, 'BASE_IMAGE', 'busybox');
+		$initializer->init($projectConfigurable, 'environment', ["EXAMPLE" => 'value']);
 
 
 	}
@@ -102,7 +104,19 @@ class WebserverBlueprint implements Blueprint {
 
 		$serverService = new Service();
 		$serverService->setName( $config->get('NAME') );
-		$serverService->setImage( $config->get('IMAGE', 'ipunktbs/nginx') );
+		$serverService->setImage( $config->get('IMAGE', 'ipunktbs/nginx:1.9.7-7-1.2.0') );
+
+		if($config->has('EXPOSED_PORT'))
+			$serverService->expose(80, $config->get('EXPOSED_PORT') );
+
+		if( $config->get('MOUNT_REPOSITORY', false) )
+			$serverService->addVolume( getcwd(), '/var/www/app' );
+
+		if($config->has('environment')) {
+			foreach($config->get('environment') as $name => $value)
+				$serverService->setEnvironmentVariable($name, $value);
+
+		}
 
 		$infrastructure->addService($serverService);
 

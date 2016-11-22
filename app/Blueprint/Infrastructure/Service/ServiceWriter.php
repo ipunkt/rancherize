@@ -36,6 +36,11 @@ class ServiceWriter {
 			$environment[$name] = $value;
 		$this->addNonEmpty('environment', $environment, $content);
 
+		$ports = [];
+		foreach($service->getExposedPorts() as $internal => $external)
+			$ports[] = "$external:$internal";
+		$this->addNonEmpty('ports', $ports, $content);
+
 		$volumes = [];
 		foreach($service->getVolumes() as $name => $value)
 			$volumes[] = "$name:$value";
@@ -46,7 +51,7 @@ class ServiceWriter {
 			$volumesFrom[] = "$name:$value";
 		$this->addNonEmpty('volumes_from', $volumesFrom, $content);
 
-		$yamlContent = Yaml::dump([$service->getName() => $content]);
+		$yamlContent = Yaml::dump([$service->getName() => $content], 100, 2);
 
 		$fileWriter->append($this->path.'docker-compose.yml', $yamlContent);
 	}

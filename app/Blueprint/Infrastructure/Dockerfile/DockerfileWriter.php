@@ -39,11 +39,11 @@ class DockerfileWriter {
 			$lines[] = "RUN $command";
 
 		$command = $dockerfile->getCommand();
-		if($command !== null)
+		if( !empty($command) )
 			$lines[] = "CMD ". $command;
 
 		$entrypoint = $dockerfile->getEntrypoint();
-		if($entrypoint !== null)
+		if( !empty($entrypoint) )
 			$lines[] = "ENTRYPOINT ". $entrypoint;
 
 		$writer->put($this->path.'Dockerfile', implode("\n", $lines));
