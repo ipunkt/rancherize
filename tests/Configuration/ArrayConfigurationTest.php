@@ -5,6 +5,7 @@ use RancherizeTest\TestCase;
 /**
  * Class ArrayConfigurationTest
  * @package RancherizeTest\Configuration
+ *
  */
 class ArrayConfigurationTest extends TestCase  {
 

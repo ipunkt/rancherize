@@ -24,7 +24,8 @@
         "pimple/pimple": "^3.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.6"
+        "phpunit/phpunit": "^5.6",
+        "mockery/mockery": "^0.9.6"
     },
     "post-install-cmd": [
         "php vendor/bin/rancherize blueprint:add 'Rancherize\\Blueprint\\Webserver\\WebserverBlueprint'"

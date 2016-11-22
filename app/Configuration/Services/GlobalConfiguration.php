@@ -3,18 +3,14 @@ use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Exceptions\FileNotFoundException;
 use Rancherize\Configuration\Loader\Loader;
+use Rancherize\Configuration\PrefixConfigurableDecorator;
 use Rancherize\Configuration\Writer\Writer;
 
 /**
- * Class ProjectConfiguration
+ * Class GlobalConfiguration
  * @package Rancherize\Configuration\Services
  */
-class ProjectConfiguration {
-
-	/**
-	 * @var string
-	 */
-	protected $configPath;
+class GlobalConfiguration {
 	/**
 	 * @var Loader
 	 */
@@ -25,7 +21,7 @@ class ProjectConfiguration {
 	private $writer;
 
 	/**
-	 * ProjectConfiguration constructor.
+	 * GlobalConfiguration constructor.
 	 * @param Loader $loader
 	 * @param Writer $writer
 	 */
@@ -35,7 +31,7 @@ class ProjectConfiguration {
 	}
 
 	/**
-	 * @return Configuration|Configurable
+	 *
 	 */
 	public function load() {
 		/**
@@ -43,26 +39,37 @@ class ProjectConfiguration {
 		 */
 		$configuration = container('configuration');
 
-		$rancherizePath = $this->getConfigPath();
+		/**
+		 * Global values should be loaded to global.*
+		 */
+		$prefixDecorator = new PrefixConfigurableDecorator($configuration, 'global.');
+
+		$globalConfigPath = $this->getConfigPath();
 
 		try{
-			$this->loader->load($configuration, $rancherizePath);
+			$this->loader->load($prefixDecorator, $globalConfigPath);
 		} catch(FileNotFoundException $e) {
 			// No config yet, nothing to do
 		}
 
-		return $configuration;
 	}
 
 	/**
-	 * @param Configuration $configuration
+	 *
 	 */
-	public function save(Configuration $configuration) {
+	public function save() {
+		/**
+		 * @var Configuration|Configurable $configuration
+		 */
+		$configuration = container('configuration');
 
-		$rancherizePath = $this->getConfigPath();
+		/**
+		 * Only values under the `global` key should be written to the global config
+		 */
+		$prefixDecorator = new PrefixConfigurableDecorator($configuration, 'global.');
 
-		$this->writer->write($configuration, $rancherizePath);
-
+		$globalConfigPath = $this->getConfigPath();
+		$this->writer->write($prefixDecorator, $globalConfigPath);
 	}
 
 	/**
@@ -70,9 +77,9 @@ class ProjectConfiguration {
 	 */
 	private function getConfigPath() {
 		return implode('', [
-			getenv('PWD'),
+			getenv('HOME'),
 			DIRECTORY_SEPARATOR,
-			'rancherize.json'
+			'.rancherize'
 		]);
 	}
 }

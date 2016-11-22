@@ -4,16 +4,24 @@ require __DIR__.'/../vendor/autoload.php';
 
 $container = new \Pimple\Container();
 
+$container['file-loader'] = function($c) {
+	return new \Rancherize\File\FileLoader();
+};
+
+$container['file-writer'] = function($c) {
+	return new \Rancherize\File\FileWriter();
+};
+
 $container['configuration'] = function($container) {
 	return new \Rancherize\Configuration\ArrayConfiguration();
 };
 
-$container['loader'] = function($container) {
-	return new \Rancherize\Configuration\Loader\JsonLoader();
+$container['loader'] = function($c) {
+	return new \Rancherize\Configuration\Loader\JsonLoader($c['file-loader']);
 };
 
 $container['writer'] = function($container) {
-	return new \Rancherize\Configuration\Writer\JsonWriter();
+	return new \Rancherize\Configuration\Writer\JsonWriter($c['file-writer']);
 };
 
 $container['project-config-service'] = function($c) {
@@ -22,6 +30,7 @@ $container['project-config-service'] = function($c) {
 		$c['writer']
 	);
 };
+
 
 $container['blueprint-factory'] = function($c) {
 	return new \Rancherize\Blueprint\Factory\ConfigurationBlueprintFactory($c['configuration']);
