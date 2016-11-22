@@ -78,7 +78,7 @@ class ProjectConfiguration {
 	 */
 	private function getConfigPath() {
 		return implode('', [
-			getenv('PWD'),
+			getcwd(),
 			DIRECTORY_SEPARATOR,
 			'rancherize.json'
 		]);
