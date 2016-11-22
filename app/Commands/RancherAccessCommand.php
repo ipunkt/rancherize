@@ -38,9 +38,9 @@ class RancherAccessCommand extends Command {
 		 */
 		$globalConfiguration = container('global-config-service');
 
-		$this->validateGlobalConfiguration($input, $output, $globalConfiguration, $configuration, $formatter);
+		$this->validateGlobalConfiguration($input, $output, $globalConfiguration, $configuration);
 
-		$this->editGlobalConfiguration($input, $output, $globalConfiguration, $configuration, $question);
+		$this->editGlobalConfiguration($input, $output, $globalConfiguration, $configuration);
 	}
 
 	/**
