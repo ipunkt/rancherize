@@ -32,24 +32,29 @@ class InitCommand extends Command {
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 
-		$this->setIo($input, $output);
+		$blueprintName = $input->getArgument('blueprint');
+		$environments = $input->getArgument('environments');
 
-		$output->writeln('Init.');
+		if( empty($environments) )
+			$output->writeln( $this->getHelper('formatter')->formatSection('Error', 'At least one environment mus be given for init to run') );
+
+		$this->setIo($input, $output);
 
 		$configuration = $this->loadConfiguration();
 
-		$blueprintName = $input->getArgument('blueprint');
-		$environments = $input->getArgument('environments');
 
 		$blueprintFactory = $this->getBlueprintFactory();
 		$blueprint = $blueprintFactory->get($blueprintName);
 
+		$configuration->set('project.blueprint', $blueprintName);
 
 		foreach($environments as $environment) {
 
 			$this->initEnvironment($blueprint, $configuration, $environment);
 
 		}
+
+		$this->saveConfiguration($configuration);
 
 		return 0;
 	}
@@ -90,6 +95,16 @@ class InitCommand extends Command {
 
 		$blueprint->init($prefixedConfiguration, $this->getInput(), $this->getOutput());
 
+	}
+
+	private function saveConfiguration($configuration) {
+
+		/**
+		 * @var ConfigWrapper $configWrapper
+		 */
+
+		$configWrapper = container('config-wrapper');
+		$configWrapper->saveProjectConfig($configuration);
 	}
 
 

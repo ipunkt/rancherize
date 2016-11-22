@@ -67,4 +67,8 @@ class ConfigWrapper {
 	public function loadProjectConfig(Configurable $configurable) {
 		$this->projectConfiguration()->load($configurable);
 	}
+
+	public function saveProjectConfig($configuration) {
+		$this->projectConfiguration()->save($configuration);
+	}
 }
