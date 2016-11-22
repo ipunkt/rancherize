@@ -1,5 +1,5 @@
 <?php namespace Rancherize\Commands;
-use Rancherize\Commands\Traits\IoCommandTrait;
+use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Exceptions\FileNotFoundException;
@@ -17,7 +17,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  */
 class RancherAccessCommand extends Command {
 
-	use IoCommandTrait;
+	use IoTrait;
 
 	protected function configure() {
 		$this->setName('rancher:access')

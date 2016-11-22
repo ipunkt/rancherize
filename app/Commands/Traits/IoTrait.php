@@ -7,12 +7,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 /**
- * Class IoCommandTrait
+ * Class IoTrait
  * @package Rancherize\Commands\Traits
  *
  * Helps with the parameter spam within commands by setting $this->input and $this->output to InputInterface and OutputInterface
  */
-trait IoCommandTrait {
+trait IoTrait {
 	/**
 	 * @var InputInterface
 	 */

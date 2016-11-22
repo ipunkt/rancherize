@@ -1,7 +1,7 @@
 <?php namespace Rancherize\Commands;
 use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Factory\BlueprintFactory;
-use Rancherize\Commands\Traits\IoCommandTrait;
+use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Configuration\ArrayConfiguration;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Exceptions\FileNotFoundException;
@@ -11,6 +11,7 @@ use Rancherize\Configuration\Services\ConfigWrapper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -19,13 +20,14 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class InitCommand extends Command {
 
-	use IoCommandTrait;
+	use IoTrait;
 
 	protected function configure() {
 		$this->setName('init')
 			->setDescription('Initialize all given arguments')
 			->addArgument('blueprint', InputArgument::REQUIRED)
 			->addArgument('environments', InputArgument::IS_ARRAY)
+			->addOption('dev', null, InputOption::VALUE_NONE, false)
 		;
 		parent::configure();
 	}
@@ -43,8 +45,7 @@ class InitCommand extends Command {
 		$configuration = $this->loadConfiguration();
 
 
-		$blueprintFactory = $this->getBlueprintFactory();
-		$blueprint = $blueprintFactory->get($blueprintName);
+		$blueprint = $this->loadBlueprint($input, $blueprintName);
 
 		$configuration->set('project.blueprint', $blueprintName);
 
@@ -91,7 +92,14 @@ class InitCommand extends Command {
 	 */
 	private function initEnvironment(Blueprint $blueprint, Configurable $configuration, string $environmentName) {
 
-		$prefixedConfiguration = new PrefixConfigurableDecorator($configuration, "project.$environmentName");
+		if( !$this->getOutput()->isQuiet() )
+			$this->getOutput()->writeln( [
+				"",
+				"Initializing environment $environmentName",
+				"=========================================",
+			]);
+
+		$prefixedConfiguration = new PrefixConfigurableDecorator($configuration, "project.$environmentName.");
 
 		$blueprint->init($prefixedConfiguration, $this->getInput(), $this->getOutput());
 
@@ -105,6 +113,20 @@ class InitCommand extends Command {
 
 		$configWrapper = container('config-wrapper');
 		$configWrapper->saveProjectConfig($configuration);
+	}
+
+	/**
+	 * @param InputInterface $input
+	 * @param $blueprintName
+	 * @return Blueprint
+	 */
+	protected function loadBlueprint(InputInterface $input, $blueprintName):Blueprint {
+		$blueprintFactory = $this->getBlueprintFactory();
+		$blueprint = $blueprintFactory->get($blueprintName);
+
+		foreach ($input->getOptions() as $name => $value)
+			$blueprint->setFlag($name, $value);
+		return $blueprint;
 	}
 
 
