@@ -3,6 +3,7 @@ use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Exceptions\FileNotFoundException;
 use Rancherize\Configuration\Loader\Loader;
+use Rancherize\Configuration\PrefixConfigurableDecorator;
 use Rancherize\Configuration\Writer\Writer;
 
 /**
@@ -43,7 +44,12 @@ class ProjectConfiguration {
 		$rancherizePath = $this->getConfigPath();
 
 		try{
-			$this->loader->load($configuration, $rancherizePath);
+			/**
+			 * Only values under the `project` key should be written to the project config
+			 */
+			$prefixDecorator = new PrefixConfigurableDecorator($configuration, 'project.');
+
+			$this->loader->load($prefixDecorator, $rancherizePath);
 		} catch(FileNotFoundException $e) {
 			// No config yet, nothing to do
 		}
@@ -56,9 +62,14 @@ class ProjectConfiguration {
 	 */
 	public function save(Configuration $configuration) {
 
+		/**
+		 * Only values under the `project` key should be written to the project config
+		 */
+		$prefixDecorator = new PrefixConfigurableDecorator($configuration, 'project');
+
 		$rancherizePath = $this->getConfigPath();
 
-		$this->writer->write($configuration, $rancherizePath);
+		$this->writer->write($prefixDecorator, $rancherizePath);
 
 	}
 

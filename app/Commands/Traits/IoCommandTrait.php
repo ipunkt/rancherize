@@ -16,12 +16,26 @@ trait IoCommandTrait {
 	/**
 	 * @var InputInterface
 	 */
-	protected $input;
+	private $input;
 
 	/**
 	 * @var OutputInterface
 	 */
-	protected $output;
+	private $output;
+
+	/**
+	 * @return InputInterface
+	 */
+	protected function getInput() {
+		return $this->input;
+	}
+
+	/**
+	 * @return OutputInterface
+	 */
+	protected function getOutput() {
+		return $this->output;
+	}
 
 	protected function setIo(InputInterface $input, OutputInterface $output) {
 		$this->input = $input;

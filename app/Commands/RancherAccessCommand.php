@@ -58,8 +58,8 @@ class RancherAccessCommand extends Command {
 		$globalConfiguration->makeDefault($configuration);
 		$globalConfiguration->save($configuration);
 
-		if (OutputInterface::VERBOSITY_VERY_VERBOSE <= $this->output->getVerbosity())
-			$this->output->writeln($formatter->formatSection('Default', "Global configuration file was created."));
+		if (OutputInterface::VERBOSITY_VERY_VERBOSE <= $this->getOutput()->getVerbosity())
+			$this->getOutput()->writeln($formatter->formatSection('Default', "Global configuration file was created."));
 	}
 
 	/**
@@ -67,16 +67,16 @@ class RancherAccessCommand extends Command {
 	 * @param GlobalConfiguration $globalConfiguration
 	 */
 	private function invalidFormatDetected( Configurable $configuration, GlobalConfiguration $globalConfiguration) {
-		if($this->output->isQuiet())
+		if($this->getOutput()->isQuiet())
 			return;
 
 		$formatter = $this->getHelper('formatter');
 		$question = $this->getHelper('question');
 		$overwriteWithDefaultQuestion = new ConfirmationQuestion('The global configuration file is not in a valid format. Replace with default? [y/N]', false);
 
-		if( !$question->ask($this->input, $this->output, $overwriteWithDefaultQuestion) ) {
-			if( OutputInterface::VERBOSITY_VERBOSE <= $this->output->getVerbosity() )
-				$this->output->writeln( $formatter->formatSection( 'Default', 'NOT overriding invalid config') );
+		if( !$question->ask($this->getInput(), $this->getOutput(), $overwriteWithDefaultQuestion) ) {
+			if( OutputInterface::VERBOSITY_VERBOSE <= $this->getOutput()->getVerbosity() )
+				$this->getOutput()->writeln( $formatter->formatSection( 'Default', 'NOT overriding invalid config') );
 
 			return;
 		}
@@ -89,7 +89,7 @@ class RancherAccessCommand extends Command {
 	 *
 	 */
 	private function assertInteractive() {
-		if( $this->input->isInteractive() )
+		if( $this->getInput()->isInteractive() )
 			return;
 
 		throw new Exception("Configuring rancher access requires an interactive terminal session");
@@ -111,8 +111,8 @@ class RancherAccessCommand extends Command {
 
 		} catch (FileNotFoundException $e) {
 
-			if (OutputInterface::VERBOSITY_VERBOSE <= $this->output->getVerbosity())
-				$this->output->writeln($formatter->formatSection('Default', "No configuration file was found. Creating default"));
+			if (OutputInterface::VERBOSITY_VERBOSE <= $this->getOutput()->getVerbosity())
+				$this->getOutput()->writeln($formatter->formatSection('Default', "No configuration file was found. Creating default"));
 
 			$this->createDefaultConfiguration($configuration, $globalConfiguration);
 		}
@@ -142,7 +142,7 @@ class RancherAccessCommand extends Command {
 				$globalConfiguration->load($configuration);
 			} catch (InvalidFormatException $e) {
 				$validConfig = false;
-				$force = $question->ask($this->input, $this->output, $forceInvalidConfigurationQuestion);
+				$force = $question->ask($this->getInput(), $this->getOutput(), $forceInvalidConfigurationQuestion);
 
 			}
 

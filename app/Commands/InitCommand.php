@@ -6,6 +6,7 @@ use Rancherize\Configuration\ArrayConfiguration;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Exceptions\FileNotFoundException;
 use Rancherize\Configuration\Loader\JsonLoader;
+use Rancherize\Configuration\PrefixConfigurableDecorator;
 use Rancherize\Configuration\Services\ConfigWrapper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -83,9 +84,12 @@ class InitCommand extends Command {
 	 * @param Configurable $configuration
 	 * @param string $environmentName
 	 */
-	private function initEnvironment(Blueprint $blueprint, Configurable $configuration, string $environmentName, $input, $output) {
+	private function initEnvironment(Blueprint $blueprint, Configurable $configuration, string $environmentName) {
 
-		$blueprint->init();
+		$prefixedConfiguration = new PrefixConfigurableDecorator($configuration, "project.$environmentName");
+
+		$blueprint->init($prefixedConfiguration, $this->getInput(), $this->getOutput());
+
 	}
 
 

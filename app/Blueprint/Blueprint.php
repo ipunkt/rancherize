@@ -1,5 +1,7 @@
 <?php namespace Rancherize\Blueprint;
 use Rancherize\Configuration\Configurable;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Interface Blueprint
@@ -9,7 +11,9 @@ interface Blueprint {
 
 	/**
 	 * @param Configurable $configurable
+	 * @param InputInterface $input
+	 * @param OutputInterface $output
 	 * @return
 	 */
-	function init(Configurable $configurable);
+	function init(Configurable $configurable, InputInterface $input, OutputInterface $output);
 }
