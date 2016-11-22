@@ -111,8 +111,6 @@ class RancherAccessCommand extends Command {
 
 		} catch (FileNotFoundException $e) {
 
-			$this->createDefaultConfiguration($configuration, $globalConfiguration);
-
 			if (OutputInterface::VERBOSITY_VERBOSE <= $this->output->getVerbosity())
 				$this->output->writeln($formatter->formatSection('Default', "No configuration file was found. Creating default"));
 
