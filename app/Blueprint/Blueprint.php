@@ -1,4 +1,6 @@
 <?php namespace Rancherize\Blueprint;
+use Rancherize\Blueprint\Infrastrukture\Infrastructure;
+use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Configuration\ArrayConfiguration;
 use Rancherize\Configuration\Configurable;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,4 +26,18 @@ interface Blueprint {
 	 * @return
 	 */
 	function init(Configurable $configurable, string $environment, InputInterface $input, OutputInterface $output);
+
+	/**
+	 * @param Configurable $configurable
+	 * @param string $environment
+	 * @throws ValidationFailedException
+	 */
+	function validate(Configurable $configurable, string $environment);
+
+	/**
+	 * @param Configurable $configurable
+	 * @param string $environment
+	 * @return Infrastructure
+	 */
+	function build(Configurable $configurable, string $environment);
 }

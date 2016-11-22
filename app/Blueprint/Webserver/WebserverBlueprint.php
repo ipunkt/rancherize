@@ -1,9 +1,12 @@
 <?php namespace Rancherize\Blueprint\Webserver;
 use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Flags\HasFlagsTrait;
-use Rancherize\Commands\Traits\IoTrait;
+use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
+use Rancherize\Blueprint\Infrastructure\Infrastructure;
+use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\PrefixConfigurableDecorator;
+use Rancherize\Configuration\Services\ConfigurationFallback;
 use Rancherize\Configuration\Services\ConfigurationInitializer;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -41,8 +44,73 @@ class WebserverBlueprint implements Blueprint {
 			$initializer->init($projectConfigurable, 'IMAGE', 'ipunkt/nginx');
 		}
 
+		$initializer->init($projectConfigurable, 'BASE_IMAGE', 'busybox');
+
 
 	}
 
 
+	/**
+	 * @param Configurable $configurable
+	 * @param string $environment
+	 * @throws ValidationFailedException
+	 */
+	public function validate(Configurable $configurable, string $environment) {
+
+		$projectConfigurable = new PrefixConfigurableDecorator($configurable, "project.");
+		$environmentConfigurable = new PrefixConfigurableDecorator($configurable, "project.$environment.");
+		$config = new ConfigurationFallback($environmentConfigurable, $projectConfigurable);
+
+		$required = [
+			'BASE_IMAGE'
+		];
+
+		$errors = [
+
+		];
+
+		foreach($required as $key) {
+
+			if( !$config->has($key))
+				$errors[] = "Missing required variable '$key'";
+
+		}
+
+		if( !empty($errors) )
+			throw new ValidationFailedException($errors);
+
+	}
+
+	/**
+	 * @param Configurable $configurable
+	 * @param string $environment
+	 * @return mixed
+	 */
+	public function build(Configurable $configurable, string $environment) {
+		$infrastructure = new Infrastructure();
+
+		$projectConfigurable = new PrefixConfigurableDecorator($configurable, "project.");
+		$environmentConfigurable = new PrefixConfigurableDecorator($configurable, "project.$environment.");
+		$config = new ConfigurationFallback($environmentConfigurable, $projectConfigurable);
+
+		$dockerfile = new Dockerfile();
+
+		$dockerfile->setFrom( $config->get('BASE_IMAGE') );
+
+		$dockerfile->addVolume('/var/www/app');
+		$dockerfile->copy('.', '/var/www/app');
+
+		$nginxConfig = $config->get('NGINX_CONFIG');
+		if( !empty($nginxConfig) ) {
+			$dockerfile->addVolume('/etc/nginx/conf.template.d');
+			$dockerfile->copy($nginxConfig, '/etc/nginx/conf.template.d');
+
+		}
+
+		$dockerfile->setCommand('/bin/true');
+
+		$infrastructure->setDockerfile($dockerfile);
+
+		return $infrastructure;
+	}
 }

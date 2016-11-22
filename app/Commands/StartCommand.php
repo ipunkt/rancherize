@@ -29,8 +29,11 @@ class StartCommand extends Command   {
 		$environment = $input->getArgument('environment');
 
 		$configuration = $this->loadConfiguration();
-		$blueprintName = $configuration->get("project.blueprint");
+		$blueprintName = $configuration->get('project.blueprint');
 		$blueprint = $this->loadBlueprint($input, $blueprintName);
+
+		$blueprint->validate($configuration, $environment);
+		$blueprint->build($configuration, $environment);
 
 		return 0;
 	}
