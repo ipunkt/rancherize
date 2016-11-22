@@ -14,6 +14,7 @@ $application->setDispatcher($dispatcher);
 
 $application->add(new \Rancherize\Commands\StartCommand());
 $application->add(new \Rancherize\Commands\StopCommand());
+$application->add(new \Rancherize\Commands\BuildCommand());
 $application->add(new \Rancherize\Commands\InitCommand());
 $application->add(new \Rancherize\Commands\RancherAccessCommand());
 $application->add(new BlueprintAdd());

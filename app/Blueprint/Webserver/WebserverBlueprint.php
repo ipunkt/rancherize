@@ -45,7 +45,7 @@ class WebserverBlueprint implements Blueprint {
 			$initializer->init($projectConfigurable, 'MOUNT_REPOSITORY', true);
 			$initializer->init($projectConfigurable, 'ADD_REDIS', false);
 		} else {
-			$initializer->init($projectConfigurable, 'IMAGE', 'ipunkt/nginx');
+			$initializer->init($projectConfigurable, 'IMAGE', 'ipunkt/nginx:1.9.7-7-1.2.0');
 		}
 
 		$initializer->init($projectConfigurable, 'NAME', 'Project');
@@ -69,7 +69,8 @@ class WebserverBlueprint implements Blueprint {
 
 		$required = [
 			'BASE_IMAGE',
-			'NAME'
+			'NAME',
+			'IMAGE',
 		];
 
 		$errors = [
@@ -109,11 +110,11 @@ class WebserverBlueprint implements Blueprint {
 			$serverService->addLink($redisService, 'redis');
 			$serverService->setEnvironmentVariable('REDIS_HOST', 'redis');
 			$serverService->setEnvironmentVariable('REDIS_PORT', '6379');
+			$infrastructure->addService($redisService);
 		}
 
 
 		$infrastructure->addService($serverService);
-		$infrastructure->addService($redisService);
 
 		return $infrastructure;
 	}
@@ -149,7 +150,7 @@ class WebserverBlueprint implements Blueprint {
 	protected function makeServerService($config):Service {
 		$serverService = new Service();
 		$serverService->setName($config->get('NAME'));
-		$serverService->setImage($config->get('IMAGE', 'ipunktbs/nginx:1.9.7-7-1.2.0'));
+		$serverService->setImage($config->get('IMAGE'));
 
 		if ($config->has('EXPOSED_PORT'))
 			$serverService->expose(80, $config->get('EXPOSED_PORT'));

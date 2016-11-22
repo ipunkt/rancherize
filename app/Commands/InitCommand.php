@@ -5,6 +5,7 @@ use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Services\ConfigWrapper;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
+use Rancherize\RancherAccess\RancherAccessService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -47,6 +48,11 @@ class InitCommand extends Command {
 		$blueprint = $this->loadBlueprint($input, $blueprintName);
 
 		$configuration->set('project.blueprint', $blueprintName);
+		$rancherAccessService = new RancherAccessService($configuration);
+
+		$accounts = $rancherAccessService->availableAccounts();
+		if( !$configuration->has('project.account') )
+			$configuration->set('project.account', reset($accounts) );
 
 		foreach($environments as $environment) {
 
