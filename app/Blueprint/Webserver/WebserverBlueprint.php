@@ -103,7 +103,6 @@ class WebserverBlueprint implements Blueprint {
 	/**
 	 * @param Configurable $configurable
 	 * @param string $environment
-	 * @param string $imageName
 	 * @param string $version
 	 * @return Infrastructure
 	 */
@@ -132,11 +131,12 @@ class WebserverBlueprint implements Blueprint {
 
 		if( $config->get('USE_APP_CONTAINER', true) ) {
 
-			$imageName = $config->get('repository').'-'.$version;
+			$imageName = $config->get('repository').':'.$config->get('repository-prefix').$version;
 			$appService = new AppService( $imageName );
 			$appService->setName($config->get('NAME').'-App');
 
 			$serverService->addSidekick($appService);
+			$serverService->addVolumeFrom($appService);
 			$infrastructure->addService($appService);
 		}
 

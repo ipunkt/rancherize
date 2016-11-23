@@ -138,7 +138,7 @@ class Service {
 	/**
 	 * @param Service $service
 	 */
-	public function setVolumeFrom(Service $service) {
+	public function addVolumeFrom(Service $service) {
 		$this->volumesFrom[] = $service;
 	}
 

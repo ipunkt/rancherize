@@ -117,8 +117,6 @@ class RancherService {
 
 	/**
 	 * @param string $stackName
-	 * @param null $dockerCompose
-	 * @param null $rancherCompose
 	 */
 	public function createStack(string $stackName, $dockerCompose = null, $rancherCompose = null) {
 		if($dockerCompose === null)
@@ -180,7 +178,7 @@ class RancherService {
 
 		$commands = [
 			'upgrade' => array_merge($baseCommand, ['upgrade', '-w', '-c', $activeService, $replacementService]),
-			'up' => array_merge($baseCommand, ['up', '-d', '-c', '--force-upgrade', '-p']),
+			'up' => array_merge($baseCommand, ['up', '-d', '-c', '--force-upgrade']),
 		];
 
 		$usedCommand = 'upgrade';

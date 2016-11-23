@@ -50,7 +50,7 @@ class ServiceWriter {
 
 		$volumesFrom = [];
 		foreach($service->getVolumesFrom() as $name => $value)
-			$volumesFrom[] = "$name:$value";
+			$volumesFrom[] = $value->getName();
 		$this->addNonEmpty('volumes_from', $volumesFrom, $content);
 
 		$labels = [];
