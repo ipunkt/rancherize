@@ -19,11 +19,6 @@ class BuildService {
 	/**
 	 * @var string
 	 */
-	protected $image;
-
-	/**
-	 * @var string
-	 */
 	protected $version;
 
 	/**
@@ -38,7 +33,7 @@ class BuildService {
 		$blueprint = $this->loadBlueprint($input, $blueprintName);
 
 		$blueprint->validate($configuration, $environment);
-		$infrastructure = $blueprint->build($configuration, $environment, $this->image, $this->version);
+		$infrastructure = $blueprint->build($configuration, $environment, $this->version);
 
 		$infrastructureWriter = new InfrastructureWriter('./.rancherize/');
 		$infrastructureWriter->setSkipClear($skipClear);
@@ -63,16 +58,8 @@ class BuildService {
 	}
 
 	/**
-	 * @param string $image
-	 * @return $this
-	 */
-	public function setImage(string $image) {
-		$this->image = $image;
-		return $this;
-	}
-
-	/**
 	 * @param string $version
+	 * @return $this
 	 */
 	public function setVersion(string $version) {
 		$this->version = $version;

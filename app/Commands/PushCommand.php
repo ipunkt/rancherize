@@ -71,7 +71,6 @@ class PushCommand extends Command   {
 		$image = $repository.':'.$repositoryPrefix.$version;
 
 		$this->getBuildService()
-			->setImage($image)
 			->setVersion($version)
 			->build($environment, $input, true);
 

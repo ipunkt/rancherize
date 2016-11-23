@@ -107,7 +107,7 @@ class WebserverBlueprint implements Blueprint {
 	 * @param string $version
 	 * @return Infrastructure
 	 */
-	public function build(Configurable $configurable, string $environment, string $imageName = null, string $version = null) : Infrastructure {
+	public function build(Configurable $configurable, string $environment, string $version = null) : Infrastructure {
 		$infrastructure = new Infrastructure();
 
 		$versionSuffix = '-'.$version;
@@ -130,8 +130,10 @@ class WebserverBlueprint implements Blueprint {
 			$infrastructure->addService($redisService);
 		}
 
-		if($imageName !== null) {
-			$appService = new AppService($imageName);
+		if( $config->get('USE_APP_CONTAINER', true) ) {
+
+			$imageName = $config->get('repository').'-'.$version;
+			$appService = new AppService( $imageName );
 			$appService->setName($config->get('NAME').'-App');
 
 			$serverService->addSidekick($appService);

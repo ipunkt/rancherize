@@ -17,14 +17,21 @@ class BuildCommand extends Command   {
 		$this->setName('build')
 			->setDescription('Build deployment files for the given environment')
 			->addArgument('environment', InputArgument::REQUIRED)
+			->addArgument('version', InputArgument::OPTIONAL)
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 
 		$environment = $input->getArgument('environment');
+		$version = $input->getArgument('version');
 
-		$this->getBuildService()->build($environment, $input);
+		$buildService = $this->getBuildService();
+
+		if($version !== null)
+			$buildService->setVersion($version);
+
+		$buildService->build($environment, $input);
 
 		return 0;
 	}
