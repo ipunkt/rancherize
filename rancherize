@@ -31,6 +31,7 @@ $dispatcher->addListener(\Symfony\Component\Console\ConsoleEvents::EXCEPTION, fu
 
 		$headline = ' Validation failed ';
 		$output->writeln( [
+			'',
 			' ' . $formatter->format( sprintf( "<error> %s </error>", str_repeat(' ', strlen($headline)) ) ) . ' ',
 			$formatter->format(" <error> $headline </error>"),
 			' ' . $formatter->format( sprintf( "<error> %s </error>", str_repeat('=', strlen($headline)) ) ) . ' ',

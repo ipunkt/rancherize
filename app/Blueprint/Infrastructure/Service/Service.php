@@ -60,6 +60,11 @@ class Service {
 	protected $links = [];
 
 	/**
+	 * @var string[]
+	 */
+	protected $externalLinks = [];
+
+	/**
 	 * @return string
 	 */
 	public function getName(): string {
@@ -205,6 +210,26 @@ class Service {
 		}
 
 		$this->links[$name] = $service;
+	}
+
+	/**
+	 * @return \string[]
+	 */
+	public function getExternalLinks(): array {
+		return $this->externalLinks;
+	}
+
+	/**
+	 * @param string $externalLink
+	 * @param string $name
+	 */
+	public function addExternalLink(string $externalLink, string $name) {
+		if($name === null) {
+			$this->externalLinks[] = $externalLink;
+			return;
+		}
+
+		$this->externalLinks[$name] = $externalLink;
 	}
 
 

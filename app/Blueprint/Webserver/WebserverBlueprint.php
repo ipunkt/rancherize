@@ -4,10 +4,12 @@ use Rancherize\Blueprint\Flags\HasFlagsTrait;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
+use Rancherize\Blueprint\Infrastructure\Service\Services\RedisService;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\PrefixConfigurableDecorator;
+use Rancherize\Configuration\Services\ConfigurableFallback;
 use Rancherize\Configuration\Services\ConfigurationFallback;
 use Rancherize\Configuration\Services\ConfigurationInitializer;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,28 +31,34 @@ class WebserverBlueprint implements Blueprint {
 	 */
 	public function init(Configurable $configurable, string $environment, InputInterface $input, OutputInterface $output) {
 
-		$projectConfigurable = new PrefixConfigurableDecorator($configurable, "project.$environment.");
+		$environmentConfigurable = new PrefixConfigurableDecorator($configurable, "project.$environment.");
+		$projectConfigurable = new PrefixConfigurableDecorator($configurable, "project.");
+		$fallbackConfigurable = new ConfigurableFallback($environmentConfigurable, $projectConfigurable);
 
 		$initializer = new ConfigurationInitializer($output);
 
 		if( $this->getFlag('dev', false) ) {
-			$initializer->init($projectConfigurable, 'IMAGE', 'ipunktbs/nginx-debug');
+			$initializer->init($fallbackConfigurable, 'IMAGE', 'ipunktbs/nginx-debug');
 
 			$minPort = $configurable->get('global.min-port', 9000);
 			$maxPort = $configurable->get('global.max-port', 20000);
 			$port = mt_rand($minPort, $maxPort);
 
-			$initializer->init($projectConfigurable, 'EXPOSED_PORT', $port);
-			$initializer->init($projectConfigurable, 'USE_APP_CONTAINER', false);
-			$initializer->init($projectConfigurable, 'MOUNT_REPOSITORY', true);
-			$initializer->init($projectConfigurable, 'ADD_REDIS', false);
+			$initializer->init($fallbackConfigurable, 'EXPOSED_PORT', $port);
+			$initializer->init($fallbackConfigurable, 'USE_APP_CONTAINER', false);
+			$initializer->init($fallbackConfigurable, 'MOUNT_REPOSITORY', true);
+			$initializer->init($fallbackConfigurable, 'ADD_REDIS', false);
+
 		} else {
-			$initializer->init($projectConfigurable, 'IMAGE', 'ipunkt/nginx:1.9.7-7-1.2.0');
+
+			$initializer->init($fallbackConfigurable, 'external_links', [
+				'Frontend/mysql-tunnel',
+			]);
 		}
 
-		$initializer->init($projectConfigurable, 'NAME', 'Project');
-		$initializer->init($projectConfigurable, 'BASE_IMAGE', 'busybox');
-		$initializer->init($projectConfigurable, 'environment', ["EXAMPLE" => 'value']);
+		$initializer->init($fallbackConfigurable, 'NAME', 'Project', $projectConfigurable);
+		$initializer->init($fallbackConfigurable, 'BASE_IMAGE', 'busybox', $projectConfigurable);
+		$initializer->init($fallbackConfigurable, 'environment', ["EXAMPLE" => 'value']);
 
 
 	}
@@ -70,7 +78,6 @@ class WebserverBlueprint implements Blueprint {
 		$required = [
 			'BASE_IMAGE',
 			'NAME',
-			'IMAGE',
 		];
 
 		$errors = [
@@ -106,7 +113,7 @@ class WebserverBlueprint implements Blueprint {
 
 		$serverService = $this->makeServerService($config);
 		if( $config->get('ADD_REDIS', false) ) {
-			$redisService = $this->makeRedisService($config);
+			$redisService = new RedisService();
 			$serverService->addLink($redisService, 'redis');
 			$serverService->setEnvironmentVariable('REDIS_HOST', 'redis');
 			$serverService->setEnvironmentVariable('REDIS_PORT', '6379');
@@ -147,10 +154,10 @@ class WebserverBlueprint implements Blueprint {
 	 * @param $config
 	 * @return Service
 	 */
-	protected function makeServerService($config):Service {
+	protected function makeServerService(Configuration $config) : Service {
 		$serverService = new Service();
 		$serverService->setName($config->get('NAME'));
-		$serverService->setImage($config->get('IMAGE'));
+		$serverService->setImage($config->get('IMAGE', 'ipunktbs/nginx:1.9.7-7-1.2.0'));
 
 		if ($config->has('EXPOSED_PORT'))
 			$serverService->expose(80, $config->get('EXPOSED_PORT'));
@@ -161,21 +168,13 @@ class WebserverBlueprint implements Blueprint {
 		if ($config->has('environment')) {
 			foreach ($config->get('environment') as $name => $value)
 				$serverService->setEnvironmentVariable($name, $value);
-			return $serverService;
-
 		}
+
+		if ($config->has('external_links')) {
+			foreach ($config->get('external_links') as $name => $value)
+				$serverService->addExternalLink($value, $name);
+		}
+
 		return $serverService;
-	}
-
-	private function makeRedisService($config) {
-		$redisService = new Service();
-
-		$redisService->setName('Redis');
-		$redisService->setRestart(Service::RESTART_UNLESS_STOPPED);
-		$redisService->setTty(true);
-		$redisService->setImage('redis:3.2-alpine');
-		$redisService->setKeepStdin(true);
-
-		return $redisService;
 	}
 }

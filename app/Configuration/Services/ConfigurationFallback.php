@@ -9,11 +9,11 @@ class ConfigurationFallback implements Configuration {
 	/**
 	 * @var Configuration
 	 */
-	private $configuration;
+	protected $configuration;
 	/**
 	 * @var Configuration
 	 */
-	private $fallback;
+	protected $fallback;
 
 	/**
 	 * ConfigurationFallback constructor.

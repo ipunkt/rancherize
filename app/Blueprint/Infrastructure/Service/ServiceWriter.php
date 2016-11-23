@@ -64,6 +64,17 @@ class ServiceWriter {
 		}
 		$this->addNonEmpty('links', $links, $content);
 
+		$externalLinks = [];
+		foreach($service->getExternalLinks() as $name => $serviceName) {
+
+			if( is_string($name) )
+				$externalLinks[] = "$serviceName:$name";
+			else
+				$externalLinks[] = "$serviceName";
+
+		}
+		$this->addNonEmpty('external_links', $externalLinks, $content);
+
 		$restartValues = [
 			Service::RESTART_UNLESS_STOPPED => 'unless-stopped',
 			Service::RESTART_AWAYS => 'always',

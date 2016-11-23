@@ -25,8 +25,12 @@ class ConfigurationInitializer {
 	 * @param Configurable $configurable
 	 * @param string $key
 	 * @param $value
+	 * @param Configurable $set
 	 */
-	public function init(Configurable $configurable, string $key, $value) {
+	public function init(Configurable $configurable, string $key, $value, Configurable $set = null) {
+		if($set === null)
+			$set = $configurable;
+
 		if( $configurable->has($key) ) {
 			if ( $this->output->isVerbose() )
 				$this->output->writeln( "$key already exists, not generated." );
@@ -36,7 +40,7 @@ class ConfigurationInitializer {
 		if ( !$this->output->isQuiet() )
 			$this->output->writeln( "$key not found, setting." );
 
-		$configurable->set($key, $value);
+		$set->set($key, $value);
 	}
 
 }
