@@ -5,6 +5,7 @@ require __DIR__.'/app/bootstrap.php';
 
 use Rancherize\Blueprint\Commands\BlueprintAdd;
 use Rancherize\Blueprint\Commands\BlueprintList;
+use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Symfony\Component\Console\Application;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -20,16 +21,39 @@ $application->add(new \Rancherize\Commands\RancherAccessCommand());
 $application->add(new BlueprintAdd());
 $application->add(new BlueprintList());
 
+$dispatcher->addListener(\Symfony\Component\Console\ConsoleEvents::EXCEPTION, function(\Symfony\Component\Console\Event\ConsoleExceptionEvent $event) {
+
+	$e = $event->getException();
+	$output = $event->getOutput();
+
+	if ( $e instanceof ValidationFailedException ) {
+		$formatter = $output->getFormatter();
+
+		$headline = ' Validation failed ';
+		$output->writeln( [
+			' ' . $formatter->format( sprintf( "<error> %s </error>", str_repeat(' ', strlen($headline)) ) ) . ' ',
+			$formatter->format(" <error> $headline </error>"),
+			' ' . $formatter->format( sprintf( "<error> %s </error>", str_repeat('=', strlen($headline)) ) ) . ' ',
+			' ' . $formatter->format( sprintf( "<error> %s </error>", str_repeat(' ', strlen($headline)) ) ) . ' ',
+			"",
+		]);
+
+		$event->getCommand()->getHelper('formatter');
+		$table = new \Symfony\Component\Console\Helper\Table($output);
+		$table->setHeaders( ['Field', 'Problem'] );
+
+		$i = 0;
+		foreach( $e->getFailures() as $field => $message )
+			$table->setRow( $i++, [$field, $message] );
+
+		$table->render();
+	}
+
+});
+
 // ... register commands
 
-try{
+$returnCode = $application->run();
 
-	$returnCode = $application->run();
-
-} catch(Exception $e) {
-
-	return $e->getCode();
-
-}
 
 return $returnCode;

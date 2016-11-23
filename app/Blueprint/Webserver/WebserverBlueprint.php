@@ -80,7 +80,7 @@ class WebserverBlueprint implements Blueprint {
 		foreach($required as $key) {
 
 			if( !$config->has($key))
-				$errors[] = "Missing required variable '$key'";
+				$errors[$key] = "Missing.";
 
 		}
 
