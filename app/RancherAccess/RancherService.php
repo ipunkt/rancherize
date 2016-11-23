@@ -106,7 +106,7 @@ class RancherService {
 	}
 
 	/**
-	 * @return array
+	 * @param $headers
 	 */
 	protected function addAuthHeader(&$headers) {
 		$user = $this->account->getKey();
@@ -117,6 +117,8 @@ class RancherService {
 
 	/**
 	 * @param string $stackName
+	 * @param null $dockerCompose
+	 * @param null $rancherCompose
 	 */
 	public function createStack(string $stackName, $dockerCompose = null, $rancherCompose = null) {
 		if($dockerCompose === null)
