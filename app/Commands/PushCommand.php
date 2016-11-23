@@ -6,6 +6,8 @@ use Rancherize\Commands\Traits\RancherTrait;
 use Rancherize\Configuration\PrefixConfigurableDecorator;
 use Rancherize\Configuration\Services\ConfigurationFallback;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
+use Rancherize\Docker\DockerAccessService;
+use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
 use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
 use Rancherize\RancherAccess\RancherAccessService;
 use Symfony\Component\Console\Command\Command;
@@ -29,12 +31,14 @@ class PushCommand extends Command   {
 		$this->setName('push')
 			->setDescription('Start an environment on the local machine')
 			->addArgument('environment', InputArgument::REQUIRED)
+			->addArgument('version', InputArgument::REQUIRED)
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 
 		$environment = $input->getArgument('environment');
+		$version = $input->getArgument('version');
 
 		$configuration = $this->loadConfiguration();
 
@@ -46,7 +50,9 @@ class PushCommand extends Command   {
 		$account = $rancherConfiguration->getAccount( $config->get('account') );
 
 		$rancher = $this->getRancher();
-		$rancher->setAccount($account);
+		$rancher->setAccount($account)
+			->setOutput($output)
+			->setProcessHelper( $this->getHelper('process'));
 
 		$stackName = $config->get('stack');
 		try {
@@ -59,18 +65,37 @@ class PushCommand extends Command   {
 			$rancher->createStack($stackName);
 		}
 
-		$name = $config->get('NAME');
 		$repository = $config->get('repository');
 		$repositoryPrefix = $config->get('repository-prefix', '');
 
-		$image = $repository.':'.$repositoryPrefix;
+		$image = $repository.':'.$repositoryPrefix.$version;
 
 		$this->getBuildService()
 			->setImage($image)
+			->setVersion($version)
 			->build($environment, $input, true);
 
-		$this->getDocker()->build($image, './.rancherize/Dockerfile');
-		$this->getDocker()->push($image);
+		$dockerService = $this->getDocker();
+		$dockerService->setOutput($output)
+			->setProcessHelper($this->getHelper('process'));
+		$dockerService->build($image, './.rancherize/Dockerfile');
+
+		$dockerConfiguration = new DockerAccessService($configuration);
+		$dockerAccount = $dockerConfiguration->getAccount( $config->get('docker-account') );
+
+		$dockerService->login( $dockerAccount->getUsername(), $dockerAccount->getPassword() );
+		$dockerService->push($image);
+
+		$name = $config->get('NAME');
+		$versionizedName = $name.'-'.$version;
+		try {
+			$activeStack = $this->getRancher()->getActiveService($stackName, $name);
+
+			$this->getRancher()->upgrade('./.rancherize', $stackName, $activeStack, $versionizedName);
+		} catch(NoActiveServiceException $e) {
+			$this->getRancher()->start('./.rancherize', $stackName);
+		}
+
 
 		//passthru('docker-compose -f ./.rancherize/docker-compose.yml up -d');
 

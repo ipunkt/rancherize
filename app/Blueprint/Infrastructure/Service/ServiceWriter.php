@@ -72,6 +72,8 @@ class ServiceWriter {
 		$labels = [];
 		foreach($service->getLinks() as $name => $value)
 			$labels[$name] = $value;
+		if($service->getRestart() == Service::RESTART_START_ONCE)
+			$labels['io.rancher.container.start_once'] = 'true';
 
 		if( !empty($service->getSidekicks()) ) {
 

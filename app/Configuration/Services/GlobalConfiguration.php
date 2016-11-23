@@ -83,5 +83,9 @@ class GlobalConfiguration {
 			'key' => 'key',
 			'secret' => 'secret',
 		]);
+		$configuration->set('global.repository.default', [
+			'username' => 'user',
+			'password' => 'password',
+		]);
 	}
 }

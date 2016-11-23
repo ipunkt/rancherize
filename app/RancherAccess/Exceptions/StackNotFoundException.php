@@ -13,12 +13,12 @@ class StackNotFoundException extends Exception  {
 
 	/**
 	 * StackNotFoundException constructor.
-	 * @param string $stackName
+	 * @param string $serviceName
 	 * @param int $code
 	 * @param \Exception $e
 	 */
-	public function __construct(string $stackName, int $code = 0, \Exception $e = null) {
-		$this->stackName = $stackName;
-		parent::__construct("Stack not found $stackName", $code, $e);
+	public function __construct(string $serviceName, int $code = 0, \Exception $e = null) {
+		$this->stackName = $serviceName;
+		parent::__construct("Stack not found $serviceName", $code, $e);
 	}
 }

@@ -5,6 +5,7 @@ use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Services\ConfigWrapper;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
+use Rancherize\Docker\DockerAccessService;
 use Rancherize\RancherAccess\RancherAccessService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -53,6 +54,11 @@ class InitCommand extends Command {
 		$accounts = $rancherAccessService->availableAccounts();
 		if( !$configuration->has('project.account') )
 			$configuration->set('project.account', reset($accounts) );
+
+		$dockerAccessService = new DockerAccessService($configuration);
+		$dockerAccounts = $dockerAccessService->availableAccounts();
+		if( !$configuration->has('project.docker-account') )
+			$configuration->set('project.docker-account', reset( $dockerAccounts ) );
 
 		foreach($environments as $environment) {
 

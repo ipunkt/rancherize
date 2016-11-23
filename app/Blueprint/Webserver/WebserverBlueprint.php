@@ -49,7 +49,6 @@ class WebserverBlueprint implements Blueprint {
 			$initializer->init($fallbackConfigurable, 'USE_APP_CONTAINER', false);
 			$initializer->init($fallbackConfigurable, 'MOUNT_REPOSITORY', true);
 			$initializer->init($fallbackConfigurable, 'ADD_REDIS', false);
-			$initializer->init($fallbackConfigurable, 'stack', 'Project', $projectConfigurable);
 
 		} else {
 
@@ -105,10 +104,15 @@ class WebserverBlueprint implements Blueprint {
 	 * @param Configurable $configurable
 	 * @param string $environment
 	 * @param string $imageName
+	 * @param string $version
 	 * @return Infrastructure
 	 */
-	public function build(Configurable $configurable, string $environment, string $imageName = null) : Infrastructure {
+	public function build(Configurable $configurable, string $environment, string $imageName = null, string $version = null) : Infrastructure {
 		$infrastructure = new Infrastructure();
+
+		$versionSuffix = '-'.$version;
+		if($version === null)
+			$versionSuffix = '';
 
 		$projectConfigurable = new PrefixConfigurableDecorator($configurable, "project.");
 		$environmentConfigurable = new PrefixConfigurableDecorator($configurable, "project.$environment.");
@@ -133,6 +137,13 @@ class WebserverBlueprint implements Blueprint {
 			$serverService->addSidekick($appService);
 			$infrastructure->addService($appService);
 		}
+
+		/**
+		 * Add Version suffix to the main service and all its sidekicks
+		 */
+		$serverService->setName( $serverService->getName().$versionSuffix );
+		foreach($serverService->getSidekicks() as $sidekick)
+			$sidekick->setName( $sidekick->getName().$versionSuffix );
 
 		$infrastructure->addService($serverService);
 
