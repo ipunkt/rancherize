@@ -5,6 +5,7 @@ use Rancherize\Commands\Traits\DockerTrait;
 use Rancherize\Commands\Traits\RancherTrait;
 use Rancherize\Configuration\PrefixConfigurableDecorator;
 use Rancherize\Configuration\Services\ConfigurationFallback;
+use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\Docker\DockerAccessService;
 use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
@@ -26,6 +27,7 @@ class PushCommand extends Command   {
 	use LoadsConfigurationTrait;
 	use LoadsBlueprintTrait;
 	use DockerTrait;
+	use EnvironmentConfigurationTrait;
 
 	protected function configure() {
 		$this->setName('push')
@@ -41,10 +43,7 @@ class PushCommand extends Command   {
 		$version = $input->getArgument('version');
 
 		$configuration = $this->loadConfiguration();
-
-		$projectConfiguration = new PrefixConfigurableDecorator($configuration, 'project.');
-		$environmentConfiguration = new PrefixConfigurableDecorator($configuration, "project.$environment");
-		$config = new ConfigurationFallback($environmentConfiguration, $projectConfiguration);
+		$config = $this->environmentConfig($configuration, $environment);
 
 		$rancherConfiguration = new RancherAccessService($configuration);
 		$account = $rancherConfiguration->getAccount( $config->get('account') );

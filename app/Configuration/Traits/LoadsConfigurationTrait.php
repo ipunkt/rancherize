@@ -21,7 +21,6 @@ trait LoadsConfigurationTrait {
 		$configWrapper->loadGlobalConfig($config);
 		$configWrapper->loadProjectConfig($config);
 
-
 		return $config;
 	}
 }

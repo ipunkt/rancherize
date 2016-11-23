@@ -1,5 +1,8 @@
 <?php namespace Rancherize\Commands;
 use Rancherize\Commands\Traits\BuildsTrait;
+use Rancherize\Commands\Traits\DockerTrait;
+use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
+use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,6 +15,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 class StartCommand extends Command   {
 
 	use BuildsTrait;
+	use DockerTrait;
+	use LoadsConfigurationTrait;
+	use EnvironmentConfigurationTrait;
 
 	protected function configure() {
 		$this->setName('start')
@@ -24,9 +30,19 @@ class StartCommand extends Command   {
 
 		$environment = $input->getArgument('environment');
 
+		$configuration = $this->loadConfiguration();
+		$config = $this->environmentConfig($configuration, $environment);
+
 		$this->getBuildService()->build($environment, $input);
 
-		passthru('docker-compose -f ./.rancherize/docker-compose.yml up -d');
+		$this->getDocker()
+			->setOutput($output)
+			->setProcessHelper($this->getHelper('process'));
+
+
+
+		$this->getDocker()->start('./.rancherize', $config->get('NAME') );
+
 
 		return 0;
 	}

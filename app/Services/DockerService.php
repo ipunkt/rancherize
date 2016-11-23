@@ -2,6 +2,7 @@
 use Rancherize\Docker\Exceptions\BuildFailedException;
 use Rancherize\Docker\Exceptions\LoginFailedException;
 use Rancherize\Docker\Exceptions\PushFailedException;
+use Rancherize\Docker\Exceptions\StartFailedException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\ProcessBuilder;
 
@@ -71,6 +72,23 @@ class DockerService {
 		$this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
 		if($process->getExitCode() !== 0)
 			throw new PushFailedException($imageName, 20);
+	}
+
+	/**
+	 *
+	 */
+	public function start($directory, $projectName) {
+
+		$this->requireProcess();
+
+		$process = ProcessBuilder::create([
+			'docker-compose', '-p', $projectName, '-f', $directory.'/docker-compose.yml', 'up', '-d'
+		])
+			->setTimeout(null)->getProcess();
+
+		$this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+		if($process->getExitCode() !== 0)
+			throw new StartFailedException($projectName);
 	}
 
 }
