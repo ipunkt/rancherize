@@ -14,6 +14,11 @@ class InfrastructureWriter {
 	private $path;
 
 	/**
+	 * @var bool
+	 */
+	protected $skipClear = false;
+
+	/**
 	 * InfrastructureWriter constructor.
 	 * @param string $path
 	 */
@@ -31,10 +36,21 @@ class InfrastructureWriter {
 		$dockerfileWriter->write($infrastructure->getDockerfile(), $fileWriter);
 
 		$serviceWriter = new ServiceWriter($this->path);
-		$serviceWriter->clear($fileWriter);
+
+		if( !$this->skipClear )
+			$serviceWriter->clear($fileWriter);
 
 		foreach($infrastructure->getServices() as $service)
 			$serviceWriter->write($service, $fileWriter);
 
+	}
+
+	/**
+	 * @param boolean $skipClear
+	 * @return InfrastructureWriter
+	 */
+	public function setSkipClear(bool $skipClear): InfrastructureWriter {
+		$this->skipClear = $skipClear;
+		return $this;
 	}
 }

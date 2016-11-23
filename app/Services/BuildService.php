@@ -19,8 +19,9 @@ class BuildService {
 	/**
 	 * @param string $environment
 	 * @param InputInterface $input
+	 * @param bool $skipClear
 	 */
-	public function build(string $environment, InputInterface $input) {
+	public function build(string $environment, InputInterface $input, $skipClear = false) {
 
 		$configuration = $this->loadConfiguration();
 		$blueprintName = $configuration->get('project.blueprint');
@@ -30,7 +31,16 @@ class BuildService {
 		$infrastructure = $blueprint->build($configuration, $environment);
 
 		$infrastructureWriter = new InfrastructureWriter('./.rancherize/');
+		$infrastructureWriter->setSkipClear($skipClear);
 		$infrastructureWriter->write($infrastructure, new FileWriter());
 
+	}
+
+	/**
+	 * @param $composerConfig
+	 */
+	public function createDockerCompose($composerConfig) {
+		$fileWriter = new FileWriter();
+		$fileWriter->put('./.rancherize/docker-compose.yml', $composerConfig);
 	}
 }

@@ -53,6 +53,14 @@ $container['build-service'] = function($c) {
 	return new \Rancherize\Services\BuildService();
 };
 
+$container['api-service'] = function($c) {
+	return new \Rancherize\RancherAccess\ApiService\CurlApiService();
+};
+
+$container['rancher-service'] = function($c) {
+	return new \Rancherize\RancherAccess\RancherService( $c['api-service'] );
+};
+
 if( ! function_exists('container') ) {
 
 	/**

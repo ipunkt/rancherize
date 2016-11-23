@@ -82,9 +82,16 @@ class ServiceWriter {
 		];
 		$content['restart'] = $restartValues[ $service->getRestart() ];
 
-		$yamlContent = Yaml::dump([$service->getName() => $content], 100, 2);
+		$dockerYaml = Yaml::dump([$service->getName() => $content], 100, 2);
 
-		$fileWriter->append($this->path.'docker-compose.yml', $yamlContent);
+		$fileWriter->append($this->path.'docker-compose.yml', $dockerYaml);
+
+		$rancherContent = [
+			'scale' => $service->getScale()
+		];
+		$rancherYaml = Yaml::dump([$service->getName() => $rancherContent], 100, 2);
+
+		$fileWriter->append($this->path.'rancher-compose.yml', $rancherYaml);
 	}
 
 	protected function addNonEmpty($name, $value, &$content) {

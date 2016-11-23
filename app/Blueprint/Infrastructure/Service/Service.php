@@ -11,6 +11,11 @@ class Service {
 	protected $name = '';
 
 	/**
+	 * @var int
+	 */
+	protected $scale = 1;
+
+	/**
 	 * @var string
 	 */
 	protected $image = '';
@@ -230,6 +235,20 @@ class Service {
 		}
 
 		$this->externalLinks[$name] = $externalLink;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getScale(): int {
+		return $this->scale;
+	}
+
+	/**
+	 * @param int $scale
+	 */
+	public function setScale(int $scale) {
+		$this->scale = $scale;
 	}
 
 

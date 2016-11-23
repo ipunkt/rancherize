@@ -48,6 +48,7 @@ class WebserverBlueprint implements Blueprint {
 			$initializer->init($fallbackConfigurable, 'USE_APP_CONTAINER', false);
 			$initializer->init($fallbackConfigurable, 'MOUNT_REPOSITORY', true);
 			$initializer->init($fallbackConfigurable, 'ADD_REDIS', false);
+			$initializer->init($fallbackConfigurable, 'stack', 'Project', $projectConfigurable);
 
 		} else {
 
@@ -56,6 +57,7 @@ class WebserverBlueprint implements Blueprint {
 			]);
 		}
 
+		$initializer->init($fallbackConfigurable, 'stack', 'Project', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'NAME', 'Project', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'BASE_IMAGE', 'busybox', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'environment', ["EXAMPLE" => 'value']);
