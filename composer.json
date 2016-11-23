@@ -29,6 +29,9 @@
         "mockery/mockery": "^0.9.6"
     },
     "post-install-cmd": [
-        "php vendor/bin/rancherize blueprint:add 'Rancherize\\Blueprint\\Webserver\\WebserverBlueprint'"
+        "php vendor/bin/rancherize blueprint:add webserver 'Rancherize\\Blueprint\\Webserver\\WebserverBlueprint'"
+    ],
+    "post-update-cmd": [
+      "php vendor/bin/rancherize blueprint:add webserver 'Rancherize\\Blueprint\\Webserver\\WebserverBlueprint'"
     ]
 }
