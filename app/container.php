@@ -53,6 +53,10 @@ $container['build-service'] = function($c) {
 	return new \Rancherize\Services\BuildService();
 };
 
+$container['docker-service'] = function($c) {
+	return new \Rancherize\Services\DockerService();
+};
+
 $container['api-service'] = function($c) {
 	return new \Rancherize\RancherAccess\ApiService\CurlApiService();
 };

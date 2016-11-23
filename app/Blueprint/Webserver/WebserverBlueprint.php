@@ -4,6 +4,7 @@ use Rancherize\Blueprint\Flags\HasFlagsTrait;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
+use Rancherize\Blueprint\Infrastructure\Service\Services\AppService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\RedisService;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Configuration\Configurable;
@@ -57,6 +58,8 @@ class WebserverBlueprint implements Blueprint {
 			]);
 		}
 
+		$initializer->init($fallbackConfigurable, 'repository', 'repo/name', $projectConfigurable);
+
 		$initializer->init($fallbackConfigurable, 'stack', 'Project', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'NAME', 'Project', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'BASE_IMAGE', 'busybox', $projectConfigurable);
@@ -101,9 +104,10 @@ class WebserverBlueprint implements Blueprint {
 	/**
 	 * @param Configurable $configurable
 	 * @param string $environment
-	 * @return mixed
+	 * @param string $imageName
+	 * @return Infrastructure
 	 */
-	public function build(Configurable $configurable, string $environment) {
+	public function build(Configurable $configurable, string $environment, string $imageName = null) : Infrastructure {
 		$infrastructure = new Infrastructure();
 
 		$projectConfigurable = new PrefixConfigurableDecorator($configurable, "project.");
@@ -122,6 +126,13 @@ class WebserverBlueprint implements Blueprint {
 			$infrastructure->addService($redisService);
 		}
 
+		if($imageName !== null) {
+			$appService = new AppService($imageName);
+			$appService->setName($config->get('NAME').'-App');
+
+			$serverService->addSidekick($appService);
+			$infrastructure->addService($appService);
+		}
 
 		$infrastructure->addService($serverService);
 

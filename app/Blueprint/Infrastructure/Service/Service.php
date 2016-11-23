@@ -40,9 +40,25 @@ class Service {
 	 */
 	protected $keepStdin = false;
 
+	/**
+	 * @var Service[]
+	 */
+	protected $sidekicks = [];
+
+	/**
+	 * @var string[]
+	 */
+	protected $labels = [];
+
 	const RESTART_UNLESS_STOPPED = 0;
 	const RESTART_NEVER = 1;
-	const RESTART_AWAYS = 1;
+	const RESTART_AWAYS = 2;
+	const RESTART_START_ONCE = 3;
+
+	/**
+	 * @var string
+	 */
+	protected $command = '';
 
 	/**
 	 * @var int
@@ -249,6 +265,49 @@ class Service {
 	 */
 	public function setScale(int $scale) {
 		$this->scale = $scale;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getCommand(): string {
+		return $this->command;
+	}
+
+	/**
+	 * @param string $command
+	 */
+	public function setCommand(string $command) {
+		$this->command = $command;
+	}
+
+	/**
+	 * @return \string[]
+	 */
+	public function getLabels(): array {
+		return $this->labels;
+	}
+
+	/**
+	 * @param string $name
+	 * @param string $label
+	 */
+	public function addLabel(string $name, string $label) {
+		$this->labels[$name] = $label;
+	}
+
+	/**
+	 * @return Service[]
+	 */
+	public function getSidekicks(): array {
+		return $this->sidekicks;
+	}
+
+	/**
+	 * @param Service $sidekicks
+	 */
+	public function addSidekick(Service $sidekicks) {
+		$this->sidekicks[] = $sidekicks;
 	}
 
 

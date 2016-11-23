@@ -1,6 +1,7 @@
 <?php namespace Rancherize\Commands;
 use Rancherize\Blueprint\Traits\LoadsBlueprintTrait;
 use Rancherize\Commands\Traits\BuildsTrait;
+use Rancherize\Commands\Traits\DockerTrait;
 use Rancherize\Commands\Traits\RancherTrait;
 use Rancherize\Configuration\PrefixConfigurableDecorator;
 use Rancherize\Configuration\Services\ConfigurationFallback;
@@ -22,6 +23,7 @@ class PushCommand extends Command   {
 	use RancherTrait;
 	use LoadsConfigurationTrait;
 	use LoadsBlueprintTrait;
+	use DockerTrait;
 
 	protected function configure() {
 		$this->setName('push')
@@ -48,14 +50,27 @@ class PushCommand extends Command   {
 
 		$stackName = $config->get('stack');
 		try {
-			$composerConfig = $rancher->retrieveConfig($stackName);
+			list($composerConfig, $rancherConfig) = $rancher->retrieveConfig($stackName);
+
 			$this->getBuildService()->createDockerCompose($composerConfig);
+			$this->getBuildService()->createRancherCompose($rancherConfig);
 		} catch(StackNotFoundException $e) {
 			$output->writeln("Stack not found, creating", OutputInterface::VERBOSITY_NORMAL);
 			$rancher->createStack($stackName);
 		}
 
-		$this->getBuildService()->build($environment, $input, true);
+		$name = $config->get('NAME');
+		$repository = $config->get('repository');
+		$repositoryPrefix = $config->get('repository-prefix', '');
+
+		$image = $repository.':'.$repositoryPrefix;
+
+		$this->getBuildService()
+			->setImage($image)
+			->build($environment, $input, true);
+
+		$this->getDocker()->build($image, './.rancherize/Dockerfile');
+		$this->getDocker()->push($image);
 
 		//passthru('docker-compose -f ./.rancherize/docker-compose.yml up -d');
 

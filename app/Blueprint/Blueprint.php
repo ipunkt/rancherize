@@ -36,7 +36,8 @@ interface Blueprint {
 	/**
 	 * @param Configurable $configurable
 	 * @param string $environment
+	 * @param string $imageName
 	 * @return Infrastructure
 	 */
-	function build(Configurable $configurable, string $environment);
+	function build(Configurable $configurable, string $environment, string $imageName = null) : Infrastructure;
 }

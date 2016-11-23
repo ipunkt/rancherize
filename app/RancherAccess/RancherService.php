@@ -39,7 +39,7 @@ class RancherService {
 	 * @param string $stackName
 	 * @return string
 	 */
-	public function retrieveConfig(string $stackName) : string {
+	public function retrieveConfig(string $stackName) : array {
 		
 		$stackId = $this->getStackIdByName($stackName);
 		
@@ -60,12 +60,15 @@ class RancherService {
 		
 		$decodedData = json_decode($data, true);
 		$dockerCompose = $decodedData['dockerComposeConfig'];
+		$rancherCompose = $decodedData['rancherComposeConfig'];
 		
 		// Empty files are not sent empty so we force them to be
 		if(substr($dockerCompose, 0, 2) === '{}')
 			$dockerCompose = '';
+		if(substr($rancherCompose, 0, 2) === '{}')
+			$rancherCompose = '';
 		
-		return $dockerCompose;
+		return [$dockerCompose, $rancherCompose];
 	}
 
 	/**

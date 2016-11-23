@@ -53,6 +53,11 @@ class ServiceWriter {
 			$volumesFrom[] = "$name:$value";
 		$this->addNonEmpty('volumes_from', $volumesFrom, $content);
 
+		$labels = [];
+		foreach($service->getLabels() as $name => $value)
+			$labels[$name] = $value;
+		$this->addNonEmpty('labels', $labels, $content);
+
 		$links = [];
 		foreach($service->getLinks() as $name => $linkedService) {
 			$serviceName = $linkedService->getName();
@@ -63,6 +68,22 @@ class ServiceWriter {
 
 		}
 		$this->addNonEmpty('links', $links, $content);
+
+		$labels = [];
+		foreach($service->getLinks() as $name => $value)
+			$labels[$name] = $value;
+
+		if( !empty($service->getSidekicks()) ) {
+
+			$sidekickNames = [];
+			foreach($service->getSidekicks() as $sidekickService)
+				$sidekickNames[] = $sidekickService->getName();
+
+			$labels['io.rancher.sidekicks'] = implode(',', $sidekickNames);
+
+		}
+
+		$this->addNonEmpty('labels', $labels, $content);
 
 		$externalLinks = [];
 		foreach($service->getExternalLinks() as $name => $serviceName) {
@@ -78,9 +99,11 @@ class ServiceWriter {
 		$restartValues = [
 			Service::RESTART_UNLESS_STOPPED => 'unless-stopped',
 			Service::RESTART_AWAYS => 'always',
-			Service::RESTART_NEVER => 'never',
+			Service::RESTART_NEVER => 'no',
+			Service::RESTART_START_ONCE => 'no',
 		];
 		$content['restart'] = $restartValues[ $service->getRestart() ];
+
 
 		$dockerYaml = Yaml::dump([$service->getName() => $content], 100, 2);
 
@@ -101,5 +124,9 @@ class ServiceWriter {
 
 	public function clear(FileWriter $fileWriter) {
 		$fileWriter->put($this->path.'docker-compose.yml', '');
+		$fileWriter->put($this->path.'rancher-compose.yml', '');
+	}
+
+	private function buildStringArray($getLinks) {
 	}
 }

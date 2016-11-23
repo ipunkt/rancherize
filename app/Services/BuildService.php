@@ -17,6 +17,11 @@ class BuildService {
 	use LoadsBlueprintTrait;
 
 	/**
+	 * @var string
+	 */
+	private $image;
+
+	/**
 	 * @param string $environment
 	 * @param InputInterface $input
 	 * @param bool $skipClear
@@ -28,7 +33,7 @@ class BuildService {
 		$blueprint = $this->loadBlueprint($input, $blueprintName);
 
 		$blueprint->validate($configuration, $environment);
-		$infrastructure = $blueprint->build($configuration, $environment);
+		$infrastructure = $blueprint->build($configuration, $environment, $this->image);
 
 		$infrastructureWriter = new InfrastructureWriter('./.rancherize/');
 		$infrastructureWriter->setSkipClear($skipClear);
@@ -42,5 +47,22 @@ class BuildService {
 	public function createDockerCompose($composerConfig) {
 		$fileWriter = new FileWriter();
 		$fileWriter->put('./.rancherize/docker-compose.yml', $composerConfig);
+	}
+
+	/**
+	 * @param $rancherConfig
+	 */
+	public function createRancherCompose($rancherConfig) {
+		$fileWriter = new FileWriter();
+		$fileWriter->put('./.rancherize/rancher-compose.yml', $rancherConfig);
+	}
+
+	/**
+	 * @param string $image
+	 * @return $this
+	 */
+	public function setImage(string $image) {
+		$this->image = $image;
+		return $this;
 	}
 }
