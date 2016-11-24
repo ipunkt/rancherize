@@ -26,13 +26,19 @@ class BuildService {
 	 * @var ValidateService
 	 */
 	private $validateService;
+	/**
+	 * @var InfrastructureWriter
+	 */
+	private $infrastructureWriter;
 
 	/**
 	 * BuildService constructor.
 	 * @param ValidateService $validateService
+	 * @param InfrastructureWriter $infrastructureWriter
 	 */
-	public function __construct(ValidateService $validateService) {
+	public function __construct(ValidateService $validateService, InfrastructureWriter $infrastructureWriter) {
 		$this->validateService = $validateService;
+		$this->infrastructureWriter = $infrastructureWriter;
 	}
 
 	/**
@@ -51,7 +57,8 @@ class BuildService {
 		$this->validateService->validate($blueprint, $configuration, $environment);
 		$infrastructure = $blueprint->build($configuration, $environment, $this->version);
 
-		$infrastructureWriter = new InfrastructureWriter($directory);
+		$infrastructureWriter = $this->infrastructureWriter;
+		$infrastructureWriter->setPath($directory);
 		$infrastructureWriter->setSkipClear($skipClear);
 		$infrastructureWriter->write($infrastructure, new FileWriter());
 

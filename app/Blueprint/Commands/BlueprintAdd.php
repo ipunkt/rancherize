@@ -9,9 +9,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class StartCommand
  * @package Rancherize\Commands
+ *
+ * Add the given blueprint name and classpath to the known blueprints
  */
 class BlueprintAdd extends Command   {
 
+	/**
+	 *
+	 */
 	protected function configure() {
 		$this->setName('blueprint:add')
 			->setDescription('Add a known blueprint')

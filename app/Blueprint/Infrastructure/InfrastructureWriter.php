@@ -6,6 +6,8 @@ use Rancherize\File\FileWriter;
 /**
  * Class InfrastructureWriter
  * @package Rancherize\Blueprint\Infrastructure
+ *
+ * Use
  */
 class InfrastructureWriter {
 	/**
@@ -17,13 +19,23 @@ class InfrastructureWriter {
 	 * @var bool
 	 */
 	protected $skipClear = false;
+	/**
+	 * @var DockerfileWriter
+	 */
+	private $dockerfileWriter;
+	/**
+	 * @var ServiceWriter
+	 */
+	private $serviceWriter;
 
 	/**
 	 * InfrastructureWriter constructor.
-	 * @param string $path
+	 * @param DockerfileWriter $dockerfileWriter
+	 * @param ServiceWriter $serviceWriter
 	 */
-	public function __construct(string $path) {
-		$this->path = $path;
+	public function __construct(DockerfileWriter $dockerfileWriter, ServiceWriter $serviceWriter) {
+		$this->dockerfileWriter = $dockerfileWriter;
+		$this->serviceWriter = $serviceWriter;
 	}
 
 	/**
@@ -33,9 +45,12 @@ class InfrastructureWriter {
 	public function write(Infrastructure $infrastructure, FileWriter $fileWriter) {
 
 		$dockerfileWriter = new DockerfileWriter($this->path);
+		$dockerfileWriter = $this->dockerfileWriter;
+		$dockerfileWriter->setPath($this->path);
 		$dockerfileWriter->write($infrastructure->getDockerfile(), $fileWriter);
 
-		$serviceWriter = new ServiceWriter($this->path);
+		$serviceWriter = $this->serviceWriter;
+		$serviceWriter->setPath($this->path);
 
 		if( !$this->skipClear )
 			$serviceWriter->clear($fileWriter);
@@ -51,6 +66,15 @@ class InfrastructureWriter {
 	 */
 	public function setSkipClear(bool $skipClear): InfrastructureWriter {
 		$this->skipClear = $skipClear;
+		return $this;
+	}
+
+	/**
+	 * @param string $path
+	 * @return $this
+	 */
+	public function setPath(string $path) {
+		$this->path = $path;
 		return $this;
 	}
 }

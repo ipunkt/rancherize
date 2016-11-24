@@ -12,14 +12,6 @@ class DockerfileWriter {
 	private $path;
 
 	/**
-	 * DockerfileWriter constructor.
-	 * @param $path
-	 */
-	public function __construct(string $path) {
-		$this->path = $path;
-	}
-
-	/**
 	 * @param Dockerfile $dockerfile
 	 * @param FileWriter $writer
 	 */
@@ -47,5 +39,14 @@ class DockerfileWriter {
 			$lines[] = "ENTRYPOINT ". $entrypoint;
 
 		$writer->put($this->path.'Dockerfile', implode("\n", $lines));
+	}
+
+	/**
+	 * @param string $path
+	 * @return DockerfileWriter
+	 */
+	public function setPath(string $path): DockerfileWriter {
+		$this->path = $path;
+		return $this;
 	}
 }

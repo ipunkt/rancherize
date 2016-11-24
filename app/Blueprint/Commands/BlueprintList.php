@@ -8,6 +8,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class BlueprintList
  * @package Rancherize\Commands
+ *
+ * List all known blueprints
  */
 class BlueprintList extends Command {
 
@@ -16,7 +18,7 @@ class BlueprintList extends Command {
 	 */
 	protected function configure() {
 		$this->setName('blueprint:list')
-			->setDescription('List all known Blueprints');
+			->setDescription('List all known blueprints');
 		;
 	}
 

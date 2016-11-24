@@ -6,6 +6,8 @@ use Rancherize\Configuration\Configurable;
 /**
  * Class ConfigurationBlueprintFactory
  * @package Rancherize\Blueprint\Factory
+ *
+ * This blueprint factory uses the rancherize.json to store the blueprints
  */
 class ConfigurationBlueprintFactory implements BlueprintFactory  {
 	/**

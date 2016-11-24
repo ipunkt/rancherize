@@ -4,6 +4,8 @@ use Rancherize\Exceptions\Exception;
 /**
  * Class BlueprintNotFoundException
  * @package Rancherize\Blueprint\Exceptions
+ *
+ * Indicates that the requested blueprint is not known
  */
 class BlueprintNotFoundException extends Exception  {
 	/**

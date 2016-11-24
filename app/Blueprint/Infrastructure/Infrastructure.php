@@ -5,6 +5,9 @@ use Rancherize\Blueprint\Infrastructure\Service\Service;
 /**
  * Class Infrastructure
  * @package Rancherize\Blueprint\Infrastructure
+ *
+ * An infrastructure built by a blueprint.
+ * Consist of a single Dockerfile and multiple Services.
  */
 class Infrastructure {
 

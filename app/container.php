@@ -36,7 +36,6 @@ $container['project-config-service'] = function($c) {
 	);
 };
 
-
 $container['blueprint-factory'] = function($c) {
 	return new \Rancherize\Blueprint\Factory\ConfigurationBlueprintFactory($c['configuration']);
 };
@@ -57,8 +56,20 @@ $container['validate-service'] = function($c) {
 		return new \Rancherize\Services\ValidateService();
 };
 
+$container['dockerfile-writer'] = function($c) {
+	return new \Rancherize\Blueprint\Infrastructure\Dockerfile\DockerfileWriter();
+};
+
+$container['service-writer'] = function($c) {
+	return new \Rancherize\Blueprint\Infrastructure\Service\ServiceWriter();
+};
+
+$container['infrastructure-writer'] = function($c) {
+	return new \Rancherize\Blueprint\Infrastructure\InfrastructureWriter($c['dockerfile-writer'], $c['service-writer']);
+};
+
 $container['build-service'] = function($c) {
-	return new \Rancherize\Services\BuildService($c['validate-service']);
+	return new \Rancherize\Services\BuildService($c['validate-service'], $c['infrastructure-writer']);
 };
 
 $container['docker-service'] = function($c) {

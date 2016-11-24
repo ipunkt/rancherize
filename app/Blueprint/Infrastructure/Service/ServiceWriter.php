@@ -14,14 +14,6 @@ class ServiceWriter {
 	private $path;
 
 	/**
-	 * DockerfileWriter constructor.
-	 * @param $path
-	 */
-	public function __construct(string $path) {
-		$this->path = $path;
-	}
-
-	/**
 	 * @param Service $service
 	 * @param FileWriter $fileWriter
 	 */
@@ -129,6 +121,12 @@ class ServiceWriter {
 		$fileWriter->put($this->path.'rancher-compose.yml', '');
 	}
 
-	private function buildStringArray($getLinks) {
+	/**
+	 * @param string $path
+	 * @return ServiceWriter
+	 */
+	public function setPath(string $path): ServiceWriter {
+		$this->path = $path;
+		return $this;
 	}
 }

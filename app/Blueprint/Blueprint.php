@@ -9,16 +9,24 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Interface Blueprint
  * @package Rancherize\Blueprint
+ *
+ * A Blueprint describes a use case for a docker app
+ *
  */
 interface Blueprint {
 
 	/**
+	 * Pass creation flags from the command.
+	 * Currently only sets the 'dev' flag
+	 *
 	 * @param string $flag
 	 * @param $value
 	 */
 	function setFlag(string $flag, $value);
 
 	/**
+	 * Fill the configurable with all possible options with explanatory default options set
+	 *
 	 * @param Configurable $configurable
 	 * @param string $environment
 	 * @param InputInterface $input
@@ -28,6 +36,9 @@ interface Blueprint {
 	function init(Configurable $configurable, string $environment, InputInterface $input, OutputInterface $output);
 
 	/**
+	 * Ensure that the given environment has at least the minimal configuration options set to start and deploy this
+	 * blueprint
+	 *
 	 * @param Configuration $configurable
 	 * @param string $environment
 	 * @throws ValidationFailedException
