@@ -4,6 +4,8 @@ use Rancherize\Configuration\Configuration;
 /**
  * Interface Writer
  * @package Rancherize\Configuration\Writer
+ *
+ * Writes configuration files to the filesystem
  */
 interface Writer {
 	/**

@@ -3,6 +3,8 @@
 /**
  * Interface Configurable
  * @package Rancherize\Configuration
+ *
+ * Extends Configuration by the option to set values
  */
 interface Configurable extends Configuration {
 	/**

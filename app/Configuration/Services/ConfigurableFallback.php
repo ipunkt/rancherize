@@ -4,6 +4,9 @@ use Rancherize\Configuration\Configurable;
 /**
  * Class ConfigurableFallback
  * @package Rancherize\Configuration\Services
+ *
+ * Extends the ConfigurationFallback to be usable with set.
+ * It sets the keys on the primary configuration
  */
 class ConfigurableFallback extends ConfigurationFallback implements Configurable {
 

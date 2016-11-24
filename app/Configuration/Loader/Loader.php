@@ -4,6 +4,8 @@ use Rancherize\Configuration\Configurable;
 /**
  * Interface Loader
  * @package Rancherize\Configuration\Loader
+ *
+ * Load a configuration from file
  */
 interface Loader {
 

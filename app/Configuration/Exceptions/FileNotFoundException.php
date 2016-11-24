@@ -4,6 +4,8 @@ use Rancherize\Exceptions\Exception;
 /**
  * Class FileNotFoundException
  * @package Rancherize\Configuration\Exceptions
+ *
+ * Thrown if a  file was requested that is not present in the filesystem
  */
 class FileNotFoundException extends Exception  {
 	/**

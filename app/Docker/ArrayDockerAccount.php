@@ -3,6 +3,8 @@
 /**
  * Class ArrayDockerAccount
  * @package Rancherize\Docker
+ *
+ * Provides a docker account from an array using the 'user' and 'password' keys
  */
 class ArrayDockerAccount implements DockerAccount {
 	/**

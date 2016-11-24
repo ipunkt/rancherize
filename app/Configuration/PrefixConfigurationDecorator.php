@@ -3,6 +3,8 @@
 /**
  * Class PrefixConfigurableDecorator
  * @package Rancherize\Configuration
+ *
+ * This decorator prepends all requests to the Configration with a given prefix
  */
 class PrefixConfigurationDecorator implements Configuration {
 	/**

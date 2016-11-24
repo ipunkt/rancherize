@@ -3,8 +3,10 @@
 /**
  * Class ArrayConfiguration
  * @package Rancherize\Configuration
+ *
+ * Implements Configurable using an array
  */
-class ArrayConfiguration implements Configuration, Configurable  {
+class ArrayConfiguration implements Configurable  {
 
 	/**
 	 * @var mixed[]

@@ -4,6 +4,9 @@ use Rancherize\Configuration\Configuration;
 /**
  * Class ConfigurationFallback
  * @package Rancherize\Configuration\Services
+ *
+ * This is a Configuration Decorator which returns values from $configuration unless it is not found there, then
+ * a value from $fallback is returned.
  */
 class ConfigurationFallback implements Configuration {
 	/**

@@ -6,6 +6,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class ConfigurationInitializer
  * @package Rancherize\Configuration\Services
+ *
+ * Helper for
  */
 class ConfigurationInitializer {
 	/**
@@ -22,6 +24,11 @@ class ConfigurationInitializer {
 	}
 
 	/**
+	 * Create $key with value $value if $key is not already present.
+	 * If $set is present then the variable will be set there instead of the configuration
+	 *
+	 * Also outputs information based on the given verbosity level
+	 *
 	 * @param Configurable $configurable
 	 * @param string $key
 	 * @param $value
@@ -32,13 +39,11 @@ class ConfigurationInitializer {
 			$set = $configurable;
 
 		if( $configurable->has($key) ) {
-			if ( $this->output->isVerbose() )
-				$this->output->writeln( "$key already exists, not generated." );
+			$this->output->writeln( "$key already exists, no default value was set for this variable.", OutputInterface::VERBOSITY_VERBOSE);
 			return;
 		}
 
-		if ( !$this->output->isQuiet() )
-			$this->output->writeln( "$key not found, setting." );
+		$this->output->writeln( "$key not found. A default value was set for this variable.", OutputInterface::VERBOSITY_NORMAL );
 
 		$set->set($key, $value);
 	}

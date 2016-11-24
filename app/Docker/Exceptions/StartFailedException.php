@@ -4,6 +4,8 @@ use Rancherize\Exceptions\Exception;
 /**
  * Class StartFailedException
  * @package Rancherize\Docker\Exceptions
+ *
+ * This exception is thrown when the start command was not succesful
  */
 class StartFailedException extends Exception  {
 

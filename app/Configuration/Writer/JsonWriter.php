@@ -6,6 +6,8 @@ use Rancherize\File\FileWriter;
 /**
  * Class JsonWriter
  * @package Rancherize\Configuration\Writer
+ *
+ * Writes configurations to the filesystem as json files
  */
 class JsonWriter implements Writer {
 	/**

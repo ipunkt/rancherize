@@ -4,6 +4,8 @@ use Rancherize\Exceptions\Exception;
 /**
  * Class AccountNotFoundException
  * @package Rancherize\Docker\Exceptions
+ *
+ * Thrown when a docker account is requested that is not present in the configuration
  */
 class AccountNotFoundException extends Exception  {
 	/**

@@ -3,6 +3,8 @@
 /**
  * Class PushFailedException
  * @package Rancherize\Docker\Exceptions
+ *
+ * This exception is thrown if a docker push operation was not succesful
  */
 class PushFailedException extends DockerException  {
 	/**

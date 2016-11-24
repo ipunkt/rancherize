@@ -3,6 +3,8 @@
 /**
  * Class BuildFailedException
  * @package Rancherize\Docker\Exceptions
+ *
+ * Thrown when the docker build command for an image was not succesful
  */
 class BuildFailedException extends DockerException {
 

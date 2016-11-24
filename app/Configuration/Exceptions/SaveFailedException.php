@@ -4,6 +4,8 @@ use Rancherize\Exceptions\Exception;
 /**
  * Class SaveFailedException
  * @package Rancherize\Configuration\Exceptions
+ *
+ * Thrown by the FileWriter if the write operation to the disk was not successful
  */
 class SaveFailedException extends Exception  {
 	/**

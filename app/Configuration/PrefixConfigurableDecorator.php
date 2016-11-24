@@ -3,6 +3,8 @@
 /**
  * Class PrefixConfigurableDecorator
  * @package Rancherize\Configuration
+ *
+ * Entends the PrefixConfigrationDecorator to be appliable to Configrables
  */
 class PrefixConfigurableDecorator extends PrefixConfigurationDecorator implements Configurable {
 	/**

@@ -9,6 +9,8 @@ use Rancherize\Configuration\Writer\Writer;
 /**
  * Class GlobalConfiguration
  * @package Rancherize\Configuration\Services
+ *
+ * Loads ${HOME}/.rancherize into global.* of the given configuration
  */
 class GlobalConfiguration {
 	/**

@@ -5,6 +5,8 @@ use Rancherize\Docker\Exceptions\AccountNotFoundException;
 /**
  * Class DockerAccessService
  * @package Rancherize\Docker
+ *
+ * Reads the DockerAccounts from the configuration
  */
 class DockerAccessService {
 

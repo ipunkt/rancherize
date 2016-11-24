@@ -9,6 +9,8 @@ use Rancherize\Configuration\Writer\Writer;
 /**
  * Class ProjectConfiguration
  * @package Rancherize\Configuration\Services
+ *
+ * Loads and saves the rancherize.json from the current directory into project.* of the configuration
  */
 class ProjectConfiguration {
 
@@ -36,6 +38,8 @@ class ProjectConfiguration {
 	}
 
 	/**
+	 * Load the rancherize.json into project.* of the configuration
+	 *
 	 * @param Configurable $configuration
 	 * @return Configurable|Configuration
 	 */
@@ -58,6 +62,8 @@ class ProjectConfiguration {
 	}
 
 	/**
+	 * Save the project part of the configuration
+	 *
 	 * @param Configuration $configuration
 	 */
 	public function save(Configuration $configuration) {

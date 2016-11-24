@@ -4,6 +4,9 @@ use Rancherize\Exceptions\Exception;
 /**
  * Class InvalidFormatException
  * @package Rancherize\Configuration\Exceptions
+ *
+ * This is thrown if a configuration file could not be decoded using the expected format. Usualy means there is an
+ * error in the json
  */
 class InvalidFormatException extends Exception  {
 	/**
