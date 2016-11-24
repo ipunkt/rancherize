@@ -1,6 +1,7 @@
 <?php namespace Rancherize\RancherAccess;
 use Rancherize\RancherAccess\ApiService\ApiService;
 use Rancherize\RancherAccess\Exceptions\MultipleActiveServicesException;
+use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
 use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
 use Rancherize\Services\ProcessTrait;
 use Symfony\Component\Console\Helper\ProcessHelper;
@@ -212,6 +213,9 @@ class RancherService {
 		$dockerData = Yaml::parse($dockerConfig);
 		$rancherData = Yaml::parse($rancherConfig);
 
+		if( !is_array($dockerData) || !is_array($rancherData) )
+			throw new NoActiveServiceException($name);
+
 		$sidekicks = [];
 		foreach($dockerData as $serviceName => $data) {
 
@@ -252,6 +256,9 @@ class RancherService {
 
 		if( 1 < count($matchingServices) )
 			throw new MultipleActiveServicesException($name, $matchingServices);
+
+		if( empty($matchingServices))
+			throw new NoActiveServiceException($name);
 
 		return reset($matchingServices);
 
