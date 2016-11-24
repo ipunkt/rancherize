@@ -1,4 +1,5 @@
 <?php namespace Rancherize\Commands;
+
 use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Commands\Traits\IoTrait;
@@ -28,8 +29,7 @@ class InitCommand extends Command {
 			->setDescription('Initialize all given arguments')
 			->addArgument('blueprint', InputArgument::REQUIRED)
 			->addArgument('environments', InputArgument::IS_ARRAY)
-			->addOption('dev', null, InputOption::VALUE_NONE, false)
-		;
+			->addOption('dev', null, InputOption::VALUE_NONE, false);
 		parent::configure();
 	}
 
@@ -38,8 +38,8 @@ class InitCommand extends Command {
 		$blueprintName = $input->getArgument('blueprint');
 		$environments = $input->getArgument('environments');
 
-		if( empty($environments) )
-			$output->writeln( $this->getHelper('formatter')->formatSection('Error', 'At least one environment mus be given for init to run') );
+		if (empty($environments))
+			$output->writeln($this->getHelper('formatter')->formatSection('Error', 'At least one environment mus be given for init to run'));
 
 		$this->setIo($input, $output);
 
@@ -52,15 +52,15 @@ class InitCommand extends Command {
 		$rancherAccessService = new RancherAccessService($configuration);
 
 		$accounts = $rancherAccessService->availableAccounts();
-		if( !$configuration->has('project.account') )
-			$configuration->set('project.account', reset($accounts) );
+		if (!$configuration->has('project.rancher.account'))
+			$configuration->set('project.rancher.account', reset($accounts));
 
 		$dockerAccessService = new DockerAccessService($configuration);
 		$dockerAccounts = $dockerAccessService->availableAccounts();
-		if( !$configuration->has('project.docker-account') )
-			$configuration->set('project.docker-account', reset( $dockerAccounts ) );
+		if (!$configuration->has('project.docker.account'))
+			$configuration->set('project.docker.account', reset($dockerAccounts));
 
-		foreach($environments as $environment) {
+		foreach ($environments as $environment) {
 
 			$this->initEnvironment($blueprint, $configuration, $environment);
 
@@ -79,8 +79,8 @@ class InitCommand extends Command {
 	 */
 	private function initEnvironment(Blueprint $blueprint, Configurable $configuration, string $environmentName) {
 
-		if( !$this->getOutput()->isQuiet() )
-			$this->getOutput()->writeln( [
+		if (!$this->getOutput()->isQuiet())
+			$this->getOutput()->writeln([
 				"",
 				"Initializing environment $environmentName",
 				"=========================================",
@@ -99,7 +99,6 @@ class InitCommand extends Command {
 		$configWrapper = container('config-wrapper');
 		$configWrapper->saveProjectConfig($configuration);
 	}
-
 
 
 }

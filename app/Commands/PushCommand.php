@@ -52,7 +52,7 @@ class PushCommand extends Command   {
 		$config = $this->environmentConfig($configuration, $environment);
 
 		$rancherConfiguration = new RancherAccessService($configuration);
-		$account = $rancherConfiguration->getAccount( $config->get('account') );
+		$account = $rancherConfiguration->getAccount( $config->get('rancher.account') );
 
 		$rancher = $this->getRancher();
 		$rancher->setAccount($account)
@@ -86,7 +86,7 @@ class PushCommand extends Command   {
 
 		$this->buildImage($dockerService, $configuration, $config, $image);
 
-		$name = $config->get('NAME');
+		$name = $config->get('project-name');
 		$versionizedName = $name.'-'.$version;
 		try {
 			$activeStack = $this->getRancher()->getActiveService($stackName, $name);
@@ -119,7 +119,7 @@ class PushCommand extends Command   {
 		$dockerService->build($image, './.rancherize/Dockerfile');
 
 		$dockerConfiguration = new DockerAccessService($configuration);
-		$dockerAccount = $dockerConfiguration->getAccount( $config->get('docker-account') );
+		$dockerAccount = $dockerConfiguration->getAccount( $config->get('docker.account') );
 
 
 		$dockerService->login($dockerAccount->getUsername(), $dockerAccount->getPassword());

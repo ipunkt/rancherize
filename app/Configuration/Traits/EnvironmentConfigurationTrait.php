@@ -10,7 +10,7 @@ use Rancherize\Configuration\Services\ConfigurationFallback;
 Trait EnvironmentConfigurationTrait {
 
 	protected function environmentConfig(Configuration $configuration, $environment) {
-		$projectConfiguration = new PrefixConfigurationDecorator($configuration, 'project.');
+		$projectConfiguration = new PrefixConfigurationDecorator($configuration, 'project.default.');
 		$environmentConfiguration = new PrefixConfigurationDecorator($configuration, "project.environments.$environment.");
 		$config = new ConfigurationFallback($environmentConfiguration, $projectConfiguration);
 

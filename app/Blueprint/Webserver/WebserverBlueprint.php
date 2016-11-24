@@ -34,35 +34,37 @@ class WebserverBlueprint implements Blueprint {
 	public function init(Configurable $configurable, string $environment, InputInterface $input, OutputInterface $output) {
 
 		$environmentConfigurable = new PrefixConfigurableDecorator($configurable, "project.environments.$environment.");
-		$projectConfigurable = new PrefixConfigurableDecorator($configurable, "project.");
+		$projectConfigurable = new PrefixConfigurableDecorator($configurable, "project.default.");
 		$fallbackConfigurable = new ConfigurableFallback($environmentConfigurable, $projectConfigurable);
 
 		$initializer = new ConfigurationInitializer($output);
 
 		if( $this->getFlag('dev', false) ) {
-			$initializer->init($fallbackConfigurable, 'IMAGE', 'ipunktbs/nginx-debug');
+			$initializer->init($fallbackConfigurable, 'docker-image', 'ipunktbs/nginx-debug');
 
 			$minPort = $configurable->get('global.min-port', 9000);
 			$maxPort = $configurable->get('global.max-port', 20000);
 			$port = mt_rand($minPort, $maxPort);
 
-			$initializer->init($fallbackConfigurable, 'EXPOSED_PORT', $port);
-			$initializer->init($fallbackConfigurable, 'USE_APP_CONTAINER', false);
-			$initializer->init($fallbackConfigurable, 'MOUNT_REPOSITORY', true);
-			$initializer->init($fallbackConfigurable, 'ADD_REDIS', false);
+			$initializer->init($fallbackConfigurable, 'expose-port', $port);
+			$initializer->init($fallbackConfigurable, 'use-app-container', false);
+			$initializer->init($fallbackConfigurable, 'mount-repository', true);
+			$initializer->init($fallbackConfigurable, 'add-redis', false);
 
 		} else {
 
 			$initializer->init($fallbackConfigurable, 'external_links', [
 				'Frontend/mysql-tunnel',
 			]);
+			$initializer->init($fallbackConfigurable, 'rancher-stack', 'Project');
 		}
 
-		$initializer->init($fallbackConfigurable, 'repository', 'repo/name', $projectConfigurable);
+		$initializer->init($fallbackConfigurable, 'docker-repository', 'repo/name', $projectConfigurable);
+		$initializer->init($fallbackConfigurable, 'docker-image-name-prefix', '', $projectConfigurable);
+		$initializer->init($fallbackConfigurable, 'nginx-config', '', $projectConfigurable);
 
-		$initializer->init($fallbackConfigurable, 'stack', 'Project', $projectConfigurable);
-		$initializer->init($fallbackConfigurable, 'NAME', 'Project', $projectConfigurable);
-		$initializer->init($fallbackConfigurable, 'BASE_IMAGE', 'busybox', $projectConfigurable);
+		$initializer->init($fallbackConfigurable, 'project-name', 'Project', $projectConfigurable);
+		$initializer->init($fallbackConfigurable, 'docker-base-image', 'busybox', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'environment', ["EXAMPLE" => 'value']);
 
 
@@ -76,13 +78,13 @@ class WebserverBlueprint implements Blueprint {
 	 */
 	public function validate(Configuration $configurable, string $environment) {
 
-		$projectConfigurable = new PrefixConfigurationDecorator($configurable, "project.");
+		$projectConfigurable = new PrefixConfigurationDecorator($configurable, "project.default.");
 		$environmentConfigurable = new PrefixConfigurationDecorator($configurable, "project.environments.$environment.");
 		$config = new ConfigurationFallback($environmentConfigurable, $projectConfigurable);
 
 		$required = [
-			'BASE_IMAGE',
-			'NAME',
+			'docker-base-image',
+			'project-name',
 		];
 
 		$errors = [
@@ -114,7 +116,7 @@ class WebserverBlueprint implements Blueprint {
 		if($version === null)
 			$versionSuffix = '';
 
-		$projectConfigurable = new PrefixConfigurationDecorator($configuration, "project.");
+		$projectConfigurable = new PrefixConfigurationDecorator($configuration, "project.default.");
 		$environmentConfigurable = new PrefixConfigurationDecorator($configuration, "project.environments.$environment.");
 		$config = new ConfigurationFallback($environmentConfigurable, $projectConfigurable);
 
@@ -122,7 +124,7 @@ class WebserverBlueprint implements Blueprint {
 		$infrastructure->setDockerfile($dockerfile);
 
 		$serverService = $this->makeServerService($config);
-		if( $config->get('ADD_REDIS', false) ) {
+		if( $config->get('add-redis', false) ) {
 			$redisService = new RedisService();
 			$serverService->addLink($redisService, 'redis');
 			$serverService->setEnvironmentVariable('REDIS_HOST', 'redis');
@@ -130,11 +132,11 @@ class WebserverBlueprint implements Blueprint {
 			$infrastructure->addService($redisService);
 		}
 
-		if( $config->get('USE_APP_CONTAINER', true) ) {
+		if( $config->get('use-app-container', true) ) {
 
 			$imageName = $config->get('repository').':'.$config->get('repository-prefix').$version;
 			$appService = new AppService( $imageName );
-			$appService->setName($config->get('NAME').'-App');
+			$appService->setName($config->get('project-name').'-App');
 
 			$serverService->addSidekick($appService);
 			$serverService->addVolumeFrom($appService);
@@ -160,12 +162,12 @@ class WebserverBlueprint implements Blueprint {
 	protected function makeDockerfile(Configuration $config):Dockerfile {
 		$dockerfile = new Dockerfile();
 
-		$dockerfile->setFrom($config->get('BASE_IMAGE'));
+		$dockerfile->setFrom($config->get('docker-base-image'));
 
 		$dockerfile->addVolume('/var/www/app');
 		$dockerfile->copy('.', '/var/www/app');
 
-		$nginxConfig = $config->get('NGINX_CONFIG');
+		$nginxConfig = $config->get('nginx-config');
 		if (!empty($nginxConfig)) {
 			$dockerfile->addVolume('/etc/nginx/conf.template.d');
 			$dockerfile->copy($nginxConfig, '/etc/nginx/conf.template.d/');
@@ -183,13 +185,13 @@ class WebserverBlueprint implements Blueprint {
 	 */
 	protected function makeServerService(Configuration $config) : Service {
 		$serverService = new Service();
-		$serverService->setName($config->get('NAME'));
-		$serverService->setImage($config->get('IMAGE', 'ipunktbs/nginx:1.9.7-7-1.2.0'));
+		$serverService->setName($config->get('project-name'));
+		$serverService->setImage($config->get('docker-image', 'ipunktbs/nginx:1.9.7-7-1.2.0'));
 
-		if ($config->has('EXPOSED_PORT'))
-			$serverService->expose(80, $config->get('EXPOSED_PORT'));
+		if ($config->has('expose-port'))
+			$serverService->expose(80, $config->get('expose-port'));
 
-		if ($config->get('MOUNT_REPOSITORY', false))
+		if ($config->get('mount-repository', false))
 			$serverService->addVolume(getcwd(), '/var/www/app');
 
 		if ($config->has('environment')) {

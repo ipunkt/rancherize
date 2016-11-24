@@ -44,7 +44,7 @@ class StartCommand extends Command   {
 
 
 
-		$this->getDocker()->start('./.rancherize', $config->get('NAME') );
+		$this->getDocker()->start('./.rancherize', $config->get('project-name') );
 
 
 		return 0;
