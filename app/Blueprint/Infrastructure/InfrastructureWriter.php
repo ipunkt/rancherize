@@ -44,7 +44,6 @@ class InfrastructureWriter {
 	 */
 	public function write(Infrastructure $infrastructure, FileWriter $fileWriter) {
 
-		$dockerfileWriter = new DockerfileWriter($this->path);
 		$dockerfileWriter = $this->dockerfileWriter;
 		$dockerfileWriter->setPath($this->path);
 		$dockerfileWriter->write($infrastructure->getDockerfile(), $fileWriter);

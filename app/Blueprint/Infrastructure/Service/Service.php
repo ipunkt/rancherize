@@ -3,6 +3,8 @@
 /**
  * Class Service
  * @package Rancherize\Blueprint\Infrastructure
+ *
+ * Data object representing a service to be written to disk later
  */
 class Service {
 	/**

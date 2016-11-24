@@ -3,6 +3,8 @@
 /**
  * Class Dockerfile
  * @package Rancherize\Blueprint\Infrastructure
+ *
+ * Data object representing a dockerfile to be written to disk later
  */
 class Dockerfile {
 

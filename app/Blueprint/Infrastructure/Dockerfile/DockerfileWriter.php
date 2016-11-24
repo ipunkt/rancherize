@@ -4,6 +4,8 @@ use Rancherize\File\FileWriter;
 /**
  * Class DockerfileWriter
  * @package Rancherize\Blueprint\Infrastructure\Dockerfile
+ *
+ * Write a dockefile to disk
  */
 class DockerfileWriter {
 	/**

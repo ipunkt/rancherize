@@ -5,6 +5,8 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Class ServiceWriter
  * @package Rancherize\Blueprint\Infrastructure\Service
+ *
+ * Add services to docker-compose.yml files
  */
 class ServiceWriter {
 
@@ -16,6 +18,8 @@ class ServiceWriter {
 	/**
 	 * @param Service $service
 	 * @param FileWriter $fileWriter
+	 *
+	 * Append the given service to the path/docker-compose.yml and path/rancher-compose.yml
 	 */
 	public function write(Service $service, FileWriter $fileWriter) {
 		$content = [];
@@ -111,17 +115,32 @@ class ServiceWriter {
 		$fileWriter->append($this->path.'rancher-compose.yml', $rancherYaml);
 	}
 
+	/**
+	 * Only add the given option if the value is not empty
+	 *
+	 * @param $name
+	 * @param $value
+	 * @param $content
+	 */
 	protected function addNonEmpty($name, $value, &$content) {
 		if( !empty($value) )
 			$content[$name] = $value;
 	}
 
+	/**
+	 * Clear the written files.
+	 * Necessary because the write function appends to them so if fresh files are expected they have to be cleared first
+	 *
+	 * @param FileWriter $fileWriter
+	 */
 	public function clear(FileWriter $fileWriter) {
 		$fileWriter->put($this->path.'docker-compose.yml', '');
 		$fileWriter->put($this->path.'rancher-compose.yml', '');
 	}
 
 	/**
+	 * Set a path to prefix before the *-compose files
+	 *
 	 * @param string $path
 	 * @return ServiceWriter
 	 */
