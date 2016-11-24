@@ -8,7 +8,6 @@ use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
@@ -27,8 +26,7 @@ class EnvironmentSetCommand extends Command {
 		$this->setName('environment:set')
 			->setDescription('Add a given environment value to all app environments')
 			->addArgument('name', InputArgument::REQUIRED)
-			->addArgument('value', InputArgument::OPTIONAL)
-			->addOption('global', 'g', InputOption::VALUE_NONE)
+			->addArgument('value', InputArgument::OPTIONAL);
 		;
 		parent::configure();
 	}
@@ -46,14 +44,13 @@ class EnvironmentSetCommand extends Command {
 
 		$this->setVariable($input, $output, $configuration);
 
-		$environments = $this->getEnvironmentService()->allAvailable($configuration);
-
-
 		/**
 		 * @var ConfigWrapper $configWrapper
 		 */
 		$configWrapper = container('config-wrapper');
 		$configWrapper->saveProjectConfig($configuration);
+
+		return 0;
 	}
 
 	/**
@@ -65,28 +62,19 @@ class EnvironmentSetCommand extends Command {
 
 		$name = $input->getArgument('name');
 
-		if ( $input->getOption('global') ) {
-
-			$question = new Question('Please enter the value for the global environment variable ' . $name);
-			$value = $this->getHelper('question')->ask($input, $output, $question);
-
-			$configuration->set("project.$name", $value);
-
-			return;
-		}
-
 		$environments = $this->getEnvironmentService()->allAvailable($configuration);
 		foreach($environments as $environment) {
 
 			$environmentConfig = $this->environmentConfig($configuration, $environment);
 
 			$output->writeln( $output->getFormatter()->format("<info>$environment</info>") );
-			$currentValue = $environmentConfig->get($name);
+
+			$currentValue = $environmentConfig->get("environment.$name");
 			$question = new Question("Please enter the value for the Environment Variable $environment.$name ($currentValue): ", $currentValue);
 			$value = $this->getHelper('question')->ask($input, $output, $question);
 
 			$output->writeln( $output->getFormatter()->format("Setting <info>project.environments.$environment.$name</info> to <info>$value</info>"), OutputInterface::VERBOSITY_VERBOSE );
-			$configuration->set("project.environments.$environment.$name", $value);
+			$configuration->set("project.environments.$environment.environment.$name", $value);
 		}
 
 	}
