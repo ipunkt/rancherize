@@ -110,7 +110,7 @@ class PushCommand extends Command   {
 	 */
 	protected function buildImage(DockerService $dockerService, Configuration $configuration, Configuration $config, $image) {
 
-		if ( $this->getInput()->hasOption('image-exists')) {
+		if ( $this->getInput()->getOption('image-exists') ) {
 			$this->getOutput()->writeln("Option image-exists was set, skipping build.", OutputInterface::VERBOSITY_VERBOSE);
 
 			return;

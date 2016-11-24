@@ -35,12 +35,7 @@ class ValidateCommand extends Command   {
 
 		if( empty($environments) ) {
 
-			foreach($configuration->get('project') as $name => $value ) {
-				if( !is_array($value) )
-					continue;
-
-				$environments[] = $name;
-			}
+			$environments = $this->getEnvironmentService()->allAvailable($configuration);
 
 		}
 

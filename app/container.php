@@ -49,6 +49,10 @@ $container['config-wrapper'] = function($c) {
 	);
 };
 
+$container['environment-service'] = function($c) {
+	return new \Rancherize\Services\EnvironmentService();
+};
+
 $container['validate-service'] = function($c) {
 		return new \Rancherize\Services\ValidateService();
 };
