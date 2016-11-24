@@ -13,6 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class StartCommand
  * @package Rancherize\Commands
+ *
+ * Ensure that the given environments have the minimum configuration options present to be started / pushed
  */
 class ValidateCommand extends Command   {
 

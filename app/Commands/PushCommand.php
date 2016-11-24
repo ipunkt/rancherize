@@ -21,6 +21,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class StartCommand
  * @package Rancherize\Commands
+ *
+ * Push the given environment to rancher. This will trigger the blueprint to build the infrastructure and deploy or
+ * upgrade it in the given stack in rancher
  */
 class PushCommand extends Command   {
 

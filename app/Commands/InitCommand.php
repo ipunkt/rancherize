@@ -17,6 +17,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class InitCommand
  * @package Rancherize\Commands
+ *
+ * Create the given environments in the configuration with explanatory default options
  */
 class InitCommand extends Command {
 

@@ -12,6 +12,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class StartCommand
  * @package Rancherize\Commands
+ *
+ * Stop the given environment
+ * This triggers the blueprint to build the infrastructure and uses docker to stop it
  */
 class StopCommand extends Command   {
 

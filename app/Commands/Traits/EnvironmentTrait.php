@@ -4,6 +4,8 @@ use Rancherize\Services\EnvironmentService;
 /**
  * Class EnvironmentTrait
  * @package Rancherize\Commands\Traits
+ *
+ * Typehinted access to the EnvironmentService in the container
  */
 trait EnvironmentTrait {
 

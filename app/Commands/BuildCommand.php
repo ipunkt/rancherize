@@ -11,6 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class StartCommand
  * @package Rancherize\Commands
+ *
+ * This command builds deployment files as if they were used in the start or push command.
+ * Can be used to inspect the files for correctness before starting or pushing
  */
 class BuildCommand extends Command   {
 

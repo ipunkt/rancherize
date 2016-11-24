@@ -6,6 +6,12 @@ namespace Rancherize\Commands\Traits;
 
 use Rancherize\Services\DockerService;
 
+/**
+ * Class DockerTrait
+ * @package Rancherize\Commands\Traits
+ *
+ * Typehinted access to the DockerService in the container
+ */
 trait DockerTrait {
 
 	/**

@@ -12,6 +12,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class StartCommand
  * @package Rancherize\Commands
+ *
+ * Start the given infrastructure on the local machine
+ * Triggers the blueprint to build the environment and then starts it in docker
  */
 class StartCommand extends Command   {
 

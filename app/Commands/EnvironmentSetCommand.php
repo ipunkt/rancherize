@@ -14,6 +14,8 @@ use Symfony\Component\Console\Question\Question;
 /**
  * Class EnvironmentAddCommand
  * @package Rancherize\Commands
+ *
+ * Set the value for the environment variable with the given name in all known environments
  */
 class EnvironmentSetCommand extends Command {
 
@@ -26,7 +28,6 @@ class EnvironmentSetCommand extends Command {
 		$this->setName('environment:set')
 			->setDescription('Add a given environment value to all app environments')
 			->addArgument('name', InputArgument::REQUIRED)
-			->addArgument('value', InputArgument::OPTIONAL);
 		;
 		parent::configure();
 	}

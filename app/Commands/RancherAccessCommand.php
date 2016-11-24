@@ -14,6 +14,8 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 /**
  * Class RancherAccessCommand
  * @package Rancherize\Commands
+ *
+ * Edit the global configuration file. If it does not exist yet a default configuration is created instead.
  */
 class RancherAccessCommand extends Command {
 

@@ -20,6 +20,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class WebserverBlueprint
  * @package Rancherize\Blueprint\Webserver
+ *
+ * This blueprint builds docker and rancher configuration for ipunktbs/nginx and ipunktbs/nginx-debug
  */
 class WebserverBlueprint implements Blueprint {
 

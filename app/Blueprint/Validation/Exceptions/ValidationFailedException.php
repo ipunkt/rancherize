@@ -4,6 +4,8 @@ use Rancherize\Exceptions\Exception;
 /**
  * Class ValidationFailedException
  * @package Rancherize\Blueprint\Validation\Exceptions
+ *
+ * Indicates that validation was not passed and delivers all error messages from getFailtures
  */
 class ValidationFailedException extends Exception  {
 	/**
@@ -23,7 +25,9 @@ class ValidationFailedException extends Exception  {
 	}
 
 	/**
-	 * @return array
+	 * Return all error messages in the form "field" => "error message"
+	 *
+	 * @return string[]
 	 */
 	public function getFailures(): array {
 		return $this->failures;
