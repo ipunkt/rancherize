@@ -1,6 +1,8 @@
 <?php namespace Rancherize\Services;
+use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Infrastructure\InfrastructureWriter;
-use Rancherize\Blueprint\Traits\LoadsBlueprintTrait;
+use Rancherize\Blueprint\Traits\BlueprintTrait;
+use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\File\FileWriter;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,7 +16,7 @@ use Symfony\Component\Console\Input\InputInterface;
 class BuildService {
 
 	use LoadsConfigurationTrait;
-	use LoadsBlueprintTrait;
+	use BlueprintTrait;
 
 	/**
 	 * @var string
@@ -22,15 +24,13 @@ class BuildService {
 	protected $version;
 
 	/**
+	 * @param Blueprint $blueprint
+	 * @param Configuration $configuration
 	 * @param string $environment
-	 * @param InputInterface $input
 	 * @param bool $skipClear
+	 * @internal param InputInterface $input
 	 */
-	public function build(string $environment, InputInterface $input, $skipClear = false) {
-
-		$configuration = $this->loadConfiguration();
-		$blueprintName = $configuration->get('project.blueprint');
-		$blueprint = $this->loadBlueprint($input, $blueprintName);
+	public function build(Blueprint $blueprint, Configuration $configuration, string $environment, $skipClear = false) {
 
 		$blueprint->validate($configuration, $environment);
 		$infrastructure = $blueprint->build($configuration, $environment, $this->version);

@@ -10,6 +10,7 @@ use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\PrefixConfigurableDecorator;
+use Rancherize\Configuration\PrefixConfigurationDecorator;
 use Rancherize\Configuration\Services\ConfigurableFallback;
 use Rancherize\Configuration\Services\ConfigurationFallback;
 use Rancherize\Configuration\Services\ConfigurationInitializer;
@@ -69,14 +70,14 @@ class WebserverBlueprint implements Blueprint {
 
 
 	/**
-	 * @param Configurable $configurable
+	 * @param Configuration $configurable
 	 * @param string $environment
 	 * @throws ValidationFailedException
 	 */
-	public function validate(Configurable $configurable, string $environment) {
+	public function validate(Configuration $configurable, string $environment) {
 
-		$projectConfigurable = new PrefixConfigurableDecorator($configurable, "project.");
-		$environmentConfigurable = new PrefixConfigurableDecorator($configurable, "project.$environment.");
+		$projectConfigurable = new PrefixConfigurationDecorator($configurable, "project.");
+		$environmentConfigurable = new PrefixConfigurationDecorator($configurable, "project.$environment.");
 		$config = new ConfigurationFallback($environmentConfigurable, $projectConfigurable);
 
 		$required = [
@@ -101,20 +102,20 @@ class WebserverBlueprint implements Blueprint {
 	}
 
 	/**
-	 * @param Configurable $configurable
+	 * @param Configurable $configuration
 	 * @param string $environment
 	 * @param string $version
 	 * @return Infrastructure
 	 */
-	public function build(Configurable $configurable, string $environment, string $version = null) : Infrastructure {
+	public function build(Configuration $configuration, string $environment, string $version = null) : Infrastructure {
 		$infrastructure = new Infrastructure();
 
 		$versionSuffix = '-'.$version;
 		if($version === null)
 			$versionSuffix = '';
 
-		$projectConfigurable = new PrefixConfigurableDecorator($configurable, "project.");
-		$environmentConfigurable = new PrefixConfigurableDecorator($configurable, "project.$environment.");
+		$projectConfigurable = new PrefixConfigurationDecorator($configuration, "project.");
+		$environmentConfigurable = new PrefixConfigurationDecorator($configuration, "project.$environment.");
 		$config = new ConfigurationFallback($environmentConfigurable, $projectConfigurable);
 
 		$dockerfile = $this->makeDockerfile($config);

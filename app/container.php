@@ -65,6 +65,10 @@ $container['rancher-service'] = function($c) {
 	return new \Rancherize\RancherAccess\RancherService( $c['api-service'] );
 };
 
+$container['blueprint-service'] = function($c) {
+	return new \Rancherize\Services\BlueprintService($c['blueprint-factory']);
+};
+
 if( ! function_exists('container') ) {
 
 	/**

@@ -1,10 +1,8 @@
 <?php namespace Rancherize\Commands;
-use Rancherize\Blueprint\Traits\LoadsBlueprintTrait;
+use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Commands\Traits\BuildsTrait;
 use Rancherize\Commands\Traits\DockerTrait;
 use Rancherize\Commands\Traits\RancherTrait;
-use Rancherize\Configuration\PrefixConfigurableDecorator;
-use Rancherize\Configuration\Services\ConfigurationFallback;
 use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\Docker\DockerAccessService;
@@ -25,7 +23,6 @@ class PushCommand extends Command   {
 	use BuildsTrait;
 	use RancherTrait;
 	use LoadsConfigurationTrait;
-	use LoadsBlueprintTrait;
 	use DockerTrait;
 	use EnvironmentConfigurationTrait;
 
@@ -94,8 +91,6 @@ class PushCommand extends Command   {
 			$this->getRancher()->start('./.rancherize', $stackName);
 		}
 
-
-		//passthru('docker-compose -f ./.rancherize/docker-compose.yml up -d');
 
 		return 0;
 	}

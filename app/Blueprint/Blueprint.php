@@ -2,6 +2,7 @@
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Configuration\Configurable;
+use Rancherize\Configuration\Configuration;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -27,17 +28,17 @@ interface Blueprint {
 	function init(Configurable $configurable, string $environment, InputInterface $input, OutputInterface $output);
 
 	/**
-	 * @param Configurable $configurable
+	 * @param Configuration $configurable
 	 * @param string $environment
 	 * @throws ValidationFailedException
 	 */
-	function validate(Configurable $configurable, string $environment);
+	function validate(Configuration $configurable, string $environment);
 
 	/**
-	 * @param Configurable $configurable
+	 * @param Configuration $configuration
 	 * @param string $environment
 	 * @param string $version
 	 * @return Infrastructure
 	 */
-	function build(Configurable $configurable, string $environment, string $version = null) : Infrastructure;
+	function build(Configuration $configuration, string $environment, string $version = null) : Infrastructure;
 }

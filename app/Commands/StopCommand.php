@@ -1,9 +1,5 @@
 <?php namespace Rancherize\Commands;
-use Rancherize\Blueprint\Infrastructure\InfrastructureWriter;
-use Rancherize\Blueprint\Traits\LoadsBlueprintTrait;
 use Rancherize\Commands\Traits\BuildsTrait;
-use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
-use Rancherize\File\FileWriter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

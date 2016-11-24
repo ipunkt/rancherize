@@ -1,6 +1,6 @@
 <?php namespace Rancherize\Commands;
 use Rancherize\Blueprint\Blueprint;
-use Rancherize\Blueprint\Traits\LoadsBlueprintTrait;
+use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Services\ConfigWrapper;
@@ -21,7 +21,7 @@ class InitCommand extends Command {
 
 	use IoTrait;
 	use LoadsConfigurationTrait;
-	use LoadsBlueprintTrait;
+	use BlueprintTrait;
 
 	protected function configure() {
 		$this->setName('init')
@@ -46,7 +46,7 @@ class InitCommand extends Command {
 		$configuration = $this->loadConfiguration();
 
 
-		$blueprint = $this->loadBlueprint($input, $blueprintName);
+		$blueprint = $this->getBlueprintService()->load($blueprintName, $input->getOptions());
 
 		$configuration->set('project.blueprint', $blueprintName);
 		$rancherAccessService = new RancherAccessService($configuration);
