@@ -47,7 +47,11 @@ class BuildService {
 		$this->validateService->validate($blueprint, $configuration, $environment);
 		$infrastructure = $blueprint->build($configuration, $environment, $this->version);
 
-		$infrastructureWriter = new InfrastructureWriter('./.rancherize/');
+		$directory = './.rancherize/';
+		if( file_exists($directory) )
+			mkdir($directory);
+
+		$infrastructureWriter = new InfrastructureWriter($directory);
 		$infrastructureWriter->setSkipClear($skipClear);
 		$infrastructureWriter->write($infrastructure, new FileWriter());
 
