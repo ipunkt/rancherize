@@ -28,12 +28,4 @@
         "phpunit/phpunit": "^5.6",
         "mockery/mockery": "^0.9.6"
     },
-	 "scripts": {
-		 "post-install-cmd": [
-			  "php vendor/bin/rancherize blueprint:add webserver 'Rancherize\\Blueprint\\Webserver\\WebserverBlueprint'"
-		 ],
-		 "post-update-cmd": [
-			"php vendor/bin/rancherize blueprint:add webserver 'Rancherize\\Blueprint\\Webserver\\WebserverBlueprint'"
-		 ]
-	 }
 }

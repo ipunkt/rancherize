@@ -19,6 +19,7 @@ class ConfigurationBlueprintFactory implements BlueprintFactory  {
 	 */
 	public function __construct(Configurable $configuration) {
 		$this->configuration = $configuration;
+		$this->add('webserver', 'Rancherize\Blueprint\Webserver\WebserverBlueprint');
 	}
 
 	/**
