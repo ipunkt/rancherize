@@ -45,7 +45,7 @@ class BuildService {
 	public function build(Blueprint $blueprint, Configuration $configuration, string $environment, $skipClear = false) {
 
 		$directory = './.rancherize/';
-		if( file_exists($directory) )
+		if( !file_exists($directory) )
 			mkdir($directory);
 
 		$this->validateService->validate($blueprint, $configuration, $environment);
