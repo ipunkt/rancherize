@@ -83,7 +83,7 @@ class GlobalConfiguration {
 			'key' => 'key',
 			'secret' => 'secret',
 		]);
-		$configuration->set('global.repository.default', [
+		$configuration->set('global.docker.default', [
 			'username' => 'user',
 			'password' => 'password',
 		]);
