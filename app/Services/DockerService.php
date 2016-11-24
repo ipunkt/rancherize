@@ -91,4 +91,21 @@ class DockerService {
 			throw new StartFailedException($projectName);
 	}
 
+	/**
+	 *
+	 */
+	public function stop($directory, $projectName) {
+
+		$this->requireProcess();
+
+		$process = ProcessBuilder::create([
+			'docker-compose', '-p', $projectName, '-f', $directory.'/docker-compose.yml', 'stop'
+		])
+			->setTimeout(null)->getProcess();
+
+		$this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+		if($process->getExitCode() !== 0)
+			throw new StartFailedException($projectName);
+	}
+
 }

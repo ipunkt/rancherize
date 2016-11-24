@@ -1,5 +1,9 @@
 <?php namespace Rancherize\Commands;
+use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Commands\Traits\BuildsTrait;
+use Rancherize\Commands\Traits\DockerTrait;
+use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
+use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,6 +16,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 class StopCommand extends Command   {
 
 	use BuildsTrait;
+	use BlueprintTrait;
+	use LoadsConfigurationTrait;
+	use DockerTrait;
+	use EnvironmentConfigurationTrait;
 
 	protected function configure() {
 		$this->setName('stop')
@@ -24,9 +32,17 @@ class StopCommand extends Command   {
 
 		$environment = $input->getArgument('environment');
 
-		$this->getBuildService()->build($environment, $input);
+		$configuration = $this->loadConfiguration();
+		$config = $this->environmentConfig($configuration, $environment);
 
-		passthru('docker-compose -f ./.rancherize/docker-compose.yml stop');
+		$blueprint = $this->getBlueprintService()->byConfiguration($configuration, $input->getArguments());
+		$this->getBuildService()->build($blueprint, $configuration, $environment);
+
+		$this->getDocker()
+			->setOutput($output)
+			->setProcessHelper($this->getHelper('process'));
+
+		$this->getDocker()->stop('./.rancherize/', $config->get('NAME'));
 
 		return 0;
 	}
