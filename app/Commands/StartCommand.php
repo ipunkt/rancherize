@@ -1,4 +1,5 @@
 <?php namespace Rancherize\Commands;
+use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Commands\Traits\BuildsTrait;
 use Rancherize\Commands\Traits\DockerTrait;
 use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
@@ -18,6 +19,7 @@ class StartCommand extends Command   {
 	use DockerTrait;
 	use LoadsConfigurationTrait;
 	use EnvironmentConfigurationTrait;
+	use BlueprintTrait;
 
 	protected function configure() {
 		$this->setName('start')
@@ -33,7 +35,8 @@ class StartCommand extends Command   {
 		$configuration = $this->loadConfiguration();
 		$config = $this->environmentConfig($configuration, $environment);
 
-		$this->getBuildService()->build($environment, $input);
+		$blueprint = $this->getBlueprintService()->byConfiguration($configuration, $input->getArguments());
+		$this->getBuildService()->build($blueprint, $configuration, $environment);
 
 		$this->getDocker()
 			->setOutput($output)

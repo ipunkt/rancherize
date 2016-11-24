@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Services;
 use Rancherize\Blueprint\Factory\BlueprintFactory;
+use Rancherize\Configuration\Configuration;
 
 /**
  * Class BlueprintService
@@ -20,8 +21,20 @@ class BlueprintService {
 	}
 
 	/**
+	 * @param Configuration $configuration
+	 * @param array $flags
+	 */
+	public function byConfiguration(Configuration $configuration, array $flags) {
+		$blueprintName = $configuration->get('project.blueprint');
+
+		return $this->load($blueprintName, $flags);
+	}
+
+	/**
 	 * @param string $blueprintName
-	 * @param array $options
+	 * @param array $flags
+	 * @return \Rancherize\Blueprint\Blueprint
+	 * @internal param array $options
 	 */
 	public function load(string $blueprintName, array $flags) {
 		$blueprint = $this->blueprintFactory->get($blueprintName);

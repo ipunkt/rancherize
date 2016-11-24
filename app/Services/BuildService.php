@@ -22,6 +22,18 @@ class BuildService {
 	 * @var string
 	 */
 	protected $version;
+	/**
+	 * @var ValidateService
+	 */
+	private $validateService;
+
+	/**
+	 * BuildService constructor.
+	 * @param ValidateService $validateService
+	 */
+	public function __construct(ValidateService $validateService) {
+		$this->validateService = $validateService;
+	}
 
 	/**
 	 * @param Blueprint $blueprint
@@ -32,7 +44,7 @@ class BuildService {
 	 */
 	public function build(Blueprint $blueprint, Configuration $configuration, string $environment, $skipClear = false) {
 
-		$blueprint->validate($configuration, $environment);
+		$this->validateService->validate($blueprint, $configuration, $environment);
 		$infrastructure = $blueprint->build($configuration, $environment, $this->version);
 
 		$infrastructureWriter = new InfrastructureWriter('./.rancherize/');

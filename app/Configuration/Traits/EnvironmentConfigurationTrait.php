@@ -11,7 +11,7 @@ Trait EnvironmentConfigurationTrait {
 
 	protected function environmentConfig(Configuration $configuration, $environment) {
 		$projectConfiguration = new PrefixConfigurationDecorator($configuration, 'project.');
-		$environmentConfiguration = new PrefixConfigurationDecorator($configuration, "project.$environment");
+		$environmentConfiguration = new PrefixConfigurationDecorator($configuration, "project.environments.$environment");
 		$config = new ConfigurationFallback($environmentConfiguration, $projectConfiguration);
 
 		return $config;

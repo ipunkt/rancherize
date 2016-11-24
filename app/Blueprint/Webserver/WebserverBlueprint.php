@@ -33,7 +33,7 @@ class WebserverBlueprint implements Blueprint {
 	 */
 	public function init(Configurable $configurable, string $environment, InputInterface $input, OutputInterface $output) {
 
-		$environmentConfigurable = new PrefixConfigurableDecorator($configurable, "project.$environment.");
+		$environmentConfigurable = new PrefixConfigurableDecorator($configurable, "project.environments.$environment.");
 		$projectConfigurable = new PrefixConfigurableDecorator($configurable, "project.");
 		$fallbackConfigurable = new ConfigurableFallback($environmentConfigurable, $projectConfigurable);
 
@@ -77,7 +77,7 @@ class WebserverBlueprint implements Blueprint {
 	public function validate(Configuration $configurable, string $environment) {
 
 		$projectConfigurable = new PrefixConfigurationDecorator($configurable, "project.");
-		$environmentConfigurable = new PrefixConfigurationDecorator($configurable, "project.$environment.");
+		$environmentConfigurable = new PrefixConfigurationDecorator($configurable, "project.environments.$environment.");
 		$config = new ConfigurationFallback($environmentConfigurable, $projectConfigurable);
 
 		$required = [
@@ -115,7 +115,7 @@ class WebserverBlueprint implements Blueprint {
 			$versionSuffix = '';
 
 		$projectConfigurable = new PrefixConfigurationDecorator($configuration, "project.");
-		$environmentConfigurable = new PrefixConfigurationDecorator($configuration, "project.$environment.");
+		$environmentConfigurable = new PrefixConfigurationDecorator($configuration, "project.environments.$environment.");
 		$config = new ConfigurationFallback($environmentConfigurable, $projectConfigurable);
 
 		$dockerfile = $this->makeDockerfile($config);

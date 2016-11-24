@@ -13,21 +13,15 @@ $dispatcher = new EventDispatcher();
 $application = new Application();
 $application->setDispatcher($dispatcher);
 
-$application->add(new \Rancherize\Commands\InitCommand());
-$application->add(new \Rancherize\Commands\StartCommand());
-$application->add(new \Rancherize\Commands\StopCommand());
-$application->add(new \Rancherize\Commands\BuildCommand());
-$application->add(new \Rancherize\Commands\PushCommand());
-$application->add(new \Rancherize\Commands\RancherAccessCommand());
-$application->add(new BlueprintAdd());
-$application->add(new BlueprintList());
 
 $dispatcher->addListener(\Symfony\Component\Console\ConsoleEvents::EXCEPTION, function(\Symfony\Component\Console\Event\ConsoleExceptionEvent $event) {
 
 	$e = $event->getException();
 	$output = $event->getOutput();
 
+
 	if ( $e instanceof ValidationFailedException ) {
+
 		$formatter = $output->getFormatter();
 
 		$headline = ' Validation failed ';
@@ -40,20 +34,21 @@ $dispatcher->addListener(\Symfony\Component\Console\ConsoleEvents::EXCEPTION, fu
 			"",
 		]);
 
-		$event->getCommand()->getHelper('formatter');
-		$table = new \Symfony\Component\Console\Helper\Table($output);
-		$table->setHeaders( ['Field', 'Problem'] );
-
-		$i = 0;
-		foreach( $e->getFailures() as $field => $message )
-			$table->setRow( $i++, [$field, $message] );
-
-		$table->render();
+		container('validation-service')->print($e, $output);
 	}
 
 });
 
 // ... register commands
+$application->add(new \Rancherize\Commands\InitCommand());
+$application->add(new \Rancherize\Commands\StartCommand());
+$application->add(new \Rancherize\Commands\StopCommand());
+$application->add(new \Rancherize\Commands\BuildCommand());
+$application->add(new \Rancherize\Commands\PushCommand());
+$application->add(new \Rancherize\Commands\ValidateCommand());
+$application->add(new \Rancherize\Commands\RancherAccessCommand());
+$application->add(new BlueprintAdd());
+$application->add(new BlueprintList());
 
 $returnCode = $application->run();
 

@@ -49,8 +49,12 @@ $container['config-wrapper'] = function($c) {
 	);
 };
 
+$container['validate-service'] = function($c) {
+		return new \Rancherize\Services\ValidateService();
+};
+
 $container['build-service'] = function($c) {
-	return new \Rancherize\Services\BuildService();
+	return new \Rancherize\Services\BuildService($c['validate-service']);
 };
 
 $container['docker-service'] = function($c) {

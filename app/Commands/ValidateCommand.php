@@ -1,5 +1,8 @@
 <?php namespace Rancherize\Commands;
+use Rancherize\Blueprint\Traits\BlueprintTrait;
+use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Commands\Traits\BuildsTrait;
+use Rancherize\Commands\Traits\ValidateTrait;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Symfony\Component\Console\Command\Command;
@@ -14,6 +17,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ValidateCommand extends Command   {
 
 	use LoadsConfigurationTrait;
+	use BlueprintTrait;
+	use ValidateTrait;
 
 	protected function configure() {
 		$this->setName('validate')
@@ -24,24 +29,40 @@ class ValidateCommand extends Command   {
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 
-		$environments = $input->getArgument('environment');
+		$environments = $input->getArgument('environments');
 
 		$configuration = $this->loadConfiguration();
 
-		if( empty($environments) )
-			$environments = array_keys( $configuration->get('project.environment') );
+		if( empty($environments) ) {
 
-		foreach($environments as $environment)
-			$this->validateEnvironment($environment, $configuration);
+			foreach($configuration->get('project') as $name => $value ) {
+				if( !is_array($value) )
+					continue;
+
+				$environments[] = $name;
+			}
+
+		}
+
+		$validateService = $this->getValidateService();
+		$blueprint = $this->getBlueprintService()->byConfiguration($configuration, []);
+
+		foreach($environments as $environment) {
+			$headline = "Validating $environment";
+			$output->writeln([
+				'',
+				$headline,
+				str_repeat('=', strlen($headline))
+			]);
+
+			try {
+				$validateService->validate($blueprint, $configuration, $environment);
+			} catch(ValidationFailedException $e) {
+				$validateService->print($e, $output);
+			}
+		}
 
 		return 0;
-	}
-
-	/**
-	 * @param string $environment
-	 * @param Configuration $configuration
-	 */
-	private function validateEnvironment($environment, $configuration) {
 	}
 
 

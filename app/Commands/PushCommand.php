@@ -25,6 +25,7 @@ class PushCommand extends Command   {
 	use LoadsConfigurationTrait;
 	use DockerTrait;
 	use EnvironmentConfigurationTrait;
+	use BlueprintTrait;
 
 	protected function configure() {
 		$this->setName('push')
@@ -66,9 +67,10 @@ class PushCommand extends Command   {
 
 		$image = $repository.':'.$repositoryPrefix.$version;
 
+		$blueprint = $this->getBlueprintService()->byConfiguration($configuration, $input->getArguments());
 		$this->getBuildService()
 			->setVersion($version)
-			->build($environment, $input, true);
+			->build($blueprint, $configuration, $environment, true);
 
 		$dockerService = $this->getDocker();
 		$dockerService->setOutput($output)
