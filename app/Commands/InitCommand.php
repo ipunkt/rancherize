@@ -52,13 +52,13 @@ class InitCommand extends Command {
 		$rancherAccessService = new RancherAccessService($configuration);
 
 		$accounts = $rancherAccessService->availableAccounts();
-		if (!$configuration->has('project.rancher.account'))
-			$configuration->set('project.rancher.account', reset($accounts));
+		if (!$configuration->has('project.default.rancher.account'))
+			$configuration->set('project.default.rancher.account', reset($accounts));
 
 		$dockerAccessService = new DockerAccessService($configuration);
 		$dockerAccounts = $dockerAccessService->availableAccounts();
-		if (!$configuration->has('project.docker.account'))
-			$configuration->set('project.docker.account', reset($dockerAccounts));
+		if (!$configuration->has('project.default.docker.account'))
+			$configuration->set('project.default.docker.account', reset($dockerAccounts));
 
 		foreach ($environments as $environment) {
 

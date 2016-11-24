@@ -48,7 +48,7 @@ class WebserverBlueprint implements Blueprint {
 
 			$initializer->init($fallbackConfigurable, 'expose-port', $port);
 			$initializer->init($fallbackConfigurable, 'use-app-container', false);
-			$initializer->init($fallbackConfigurable, 'mount-repository', true);
+			$initializer->init($fallbackConfigurable, 'mount-workdir', true);
 			$initializer->init($fallbackConfigurable, 'add-redis', false);
 
 		} else {
@@ -56,11 +56,11 @@ class WebserverBlueprint implements Blueprint {
 			$initializer->init($fallbackConfigurable, 'external_links', [
 				'Frontend/mysql-tunnel',
 			]);
-			$initializer->init($fallbackConfigurable, 'rancher-stack', 'Project');
+			$initializer->init($fallbackConfigurable, 'rancher.stack', 'Project');
 		}
 
-		$initializer->init($fallbackConfigurable, 'docker-repository', 'repo/name', $projectConfigurable);
-		$initializer->init($fallbackConfigurable, 'docker-image-name-prefix', '', $projectConfigurable);
+		$initializer->init($fallbackConfigurable, 'docker.repository', 'repo/name', $projectConfigurable);
+		$initializer->init($fallbackConfigurable, 'docker.version-prefix', '', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'nginx-config', '', $projectConfigurable);
 
 		$initializer->init($fallbackConfigurable, 'project-name', 'Project', $projectConfigurable);
@@ -134,7 +134,7 @@ class WebserverBlueprint implements Blueprint {
 
 		if( $config->get('use-app-container', true) ) {
 
-			$imageName = $config->get('repository').':'.$config->get('repository-prefix').$version;
+			$imageName = $config->get('docker.repository').':'.$config->get('docker.version-prefix').$version;
 			$appService = new AppService( $imageName );
 			$appService->setName($config->get('project-name').'-App');
 
@@ -191,7 +191,7 @@ class WebserverBlueprint implements Blueprint {
 		if ($config->has('expose-port'))
 			$serverService->expose(80, $config->get('expose-port'));
 
-		if ($config->get('mount-repository', false))
+		if ($config->get('mount-workdir', false))
 			$serverService->addVolume(getcwd(), '/var/www/app');
 
 		if ($config->has('environment')) {

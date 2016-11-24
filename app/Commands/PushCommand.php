@@ -59,7 +59,7 @@ class PushCommand extends Command   {
 			->setOutput($output)
 			->setProcessHelper( $this->getHelper('process'));
 
-		$stackName = $config->get('stack');
+		$stackName = $config->get('rancher.stack');
 		try {
 			list($composerConfig, $rancherConfig) = $rancher->retrieveConfig($stackName);
 
@@ -70,10 +70,10 @@ class PushCommand extends Command   {
 			$rancher->createStack($stackName);
 		}
 
-		$repository = $config->get('repository');
-		$repositoryPrefix = $config->get('repository-prefix', '');
+		$repository = $config->get('docker.repository');
+		$versionPrefix = $config->get('docker.version-prefix', '');
 
-		$image = $repository.':'.$repositoryPrefix.$version;
+		$image = $repository.':'.$versionPrefix.$version;
 
 		$blueprint = $this->getBlueprintService()->byConfiguration($configuration, $input->getArguments());
 		$this->getBuildService()
