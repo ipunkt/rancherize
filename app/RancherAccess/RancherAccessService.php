@@ -6,6 +6,8 @@ use Rancherize\RancherAccess\Exceptions\AccountNotFoundException;
 /**
  * Class RancherAccessService
  * @package Rancherize\Services
+ *
+ * Provides RancherAccounts from the configuration
  */
 class RancherAccessService {
 

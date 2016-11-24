@@ -4,6 +4,9 @@ use Rancherize\Exceptions\Exception;
 /**
  * Class MultipleActiveServicesException
  * @package Rancherize\RancherAccess\Exceptions
+ *
+ * This exception is thrown if RancherService::getActiveService finds more than one candidate for the currently running
+ * service
  */
 class MultipleActiveServicesException extends Exception  {
 

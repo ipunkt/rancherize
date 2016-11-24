@@ -3,6 +3,8 @@
 /**
  * Class ArrayRancherAccount
  * @package Rancherize\RancherAccess
+ *
+ * Provides RancherAccount using an array with the keys Key -> `key` and Secret -> `secret`
  */
 class ArrayRancherAccount implements RancherAccount {
 	/**

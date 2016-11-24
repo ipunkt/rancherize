@@ -4,6 +4,8 @@ use Rancherize\Exceptions\Exception;
 /**
  * Class AccountNotFoundException
  * @package Rancherize\RancherAccess\Exceptions
+ *
+ * Thrown when a rancher account is requested which is not present in the configuration
  */
 class AccountNotFoundException extends Exception {
 	/**

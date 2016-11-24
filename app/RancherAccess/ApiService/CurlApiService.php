@@ -4,6 +4,8 @@ use Rancherize\RancherAccess\Exceptions\RequestFailedException;
 /**
  * Class CurlApiService
  * @package Rancherize\RancherAccess\ApiService
+ *
+ * Uses the php curl interface to provide the ApiService
  */
 class CurlApiService implements ApiService {
 

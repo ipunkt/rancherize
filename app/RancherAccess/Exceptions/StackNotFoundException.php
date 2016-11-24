@@ -4,6 +4,8 @@ use Rancherize\Exceptions\Exception;
 /**
  * Class StackNotFoundException
  * @package Rancherize\RancherAccess\Exceptions
+ *
+ * Thrown when RancherService::getStackidByName does not find a stack with the given name
  */
 class StackNotFoundException extends Exception  {
 	/**

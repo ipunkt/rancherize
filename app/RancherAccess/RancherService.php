@@ -13,6 +13,8 @@ use ZipArchive;
 /**
  * Class RancherService
  * @package Rancherize\RancherAccess
+ *
+ * This service handles all requests to the rancher orchestration server
  */
 class RancherService {
 	/**
@@ -30,7 +32,6 @@ class RancherService {
 	/**
 	 * RancherService constructor.
 	 * @param ApiService $apiService
-	 * @param ProcessHelper $processHelper
 	 * @param RancherAccount $account
 	 */
 	public function __construct(ApiService $apiService, RancherAccount $account = null) {
@@ -39,7 +40,10 @@ class RancherService {
 	}
 
 	/**
+	 * Set the account the be used for all requests
+	 *
 	 * @param RancherAccount $account
+	 * @return $this
 	 */
 	public function setAccount(RancherAccount $account) {
 		$this->account = $account;
@@ -47,8 +51,10 @@ class RancherService {
 	}
 
 	/**
+	 * Retrieve the docker-compose.yml and rancher-compose.yml for the given stack
+	 *
 	 * @param string $stackName
-	 * @return string
+	 * @return array
 	 */
 	public function retrieveConfig(string $stackName) : array {
 
@@ -83,8 +89,12 @@ class RancherService {
 	}
 
 	/**
+	 * Translate the given Stackname into an id.
+	 * Throws StackNotFoundException if no matching stack was found
+	 *
 	 * @param $stackName
 	 * @return string
+	 * @throws StackNotFoundException
 	 */
 	private function getStackIdByName($stackName) {
 		$url = implode('/', [
@@ -107,6 +117,8 @@ class RancherService {
 	}
 
 	/**
+	 * Helper function to add the basic auth header required to access the api to the array of headers provided
+	 *
 	 * @param $headers
 	 */
 	protected function addAuthHeader(&$headers) {
@@ -117,6 +129,8 @@ class RancherService {
 	}
 
 	/**
+	 * Prompt Rnacher to create a stack with the given name using the provided dockerCompose and rancherCompose files
+	 *
 	 * @param string $stackName
 	 */
 	public function createStack(string $stackName, $dockerCompose = null, $rancherCompose = null) {
@@ -147,6 +161,8 @@ class RancherService {
 	}
 
 	/**
+	 * Start the currently built configuration inside the given rancher stack
+	 *
 	 * @param string $directory
 	 * @param string $stackName
 	 */
@@ -166,6 +182,9 @@ class RancherService {
 	}
 
 	/**
+	 * Upgrade the given activeService to the replacementService within the given stack, using the currently built
+	 * configuration in directory
+	 *
 	 * @param string $directory
 	 * @param string $stackName
 	 * @param string $activeService
@@ -199,7 +218,7 @@ class RancherService {
 	}
 
 	/**
-	 * Looks for the active service in $stackName which is not a Sidekick and contains $name in it.
+	 * Look for the active service in $stackName which is not a Sidekick and contains $name in it.
 	 * TODO: switch from checking the docker-compose.yml and rancher-compose.yml to api access
 	 *
 	 * @param string $stackName

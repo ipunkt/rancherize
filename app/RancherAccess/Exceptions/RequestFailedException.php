@@ -4,6 +4,8 @@ use Rancherize\Exceptions\Exception;
 /**
  * Class RequestFailedException
  * @package Rancherize\RancherAccess\Exceptions
+ *
+ * thrown by the ApiService if a request was not successful
  */
 class RequestFailedException extends Exception  {
 	/**
