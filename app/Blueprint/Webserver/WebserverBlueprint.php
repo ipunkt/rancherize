@@ -64,7 +64,7 @@ class WebserverBlueprint implements Blueprint {
 		$initializer->init($fallbackConfigurable, 'nginx-config', '', $projectConfigurable);
 
 		$initializer->init($fallbackConfigurable, 'project-name', 'Project', $projectConfigurable);
-		$initializer->init($fallbackConfigurable, 'docker-base-image', 'busybox', $projectConfigurable);
+		$initializer->init($fallbackConfigurable, 'docker.base-image', 'busybox', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'environment', ["EXAMPLE" => 'value']);
 
 
@@ -83,7 +83,7 @@ class WebserverBlueprint implements Blueprint {
 		$config = new ConfigurationFallback($environmentConfigurable, $projectConfigurable);
 
 		$required = [
-			'docker-base-image',
+			'docker.base-image',
 			'project-name',
 		];
 
@@ -162,7 +162,7 @@ class WebserverBlueprint implements Blueprint {
 	protected function makeDockerfile(Configuration $config):Dockerfile {
 		$dockerfile = new Dockerfile();
 
-		$dockerfile->setFrom($config->get('docker-base-image'));
+		$dockerfile->setFrom($config->get('docker.base-image'));
 
 		$dockerfile->addVolume('/var/www/app');
 		$dockerfile->copy('.', '/var/www/app');
