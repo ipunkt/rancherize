@@ -44,12 +44,12 @@ class BuildService {
 	 */
 	public function build(Blueprint $blueprint, Configuration $configuration, string $environment, $skipClear = false) {
 
-		$this->validateService->validate($blueprint, $configuration, $environment);
-		$infrastructure = $blueprint->build($configuration, $environment, $this->version);
-
 		$directory = './.rancherize/';
 		if( file_exists($directory) )
 			mkdir($directory);
+
+		$this->validateService->validate($blueprint, $configuration, $environment);
+		$infrastructure = $blueprint->build($configuration, $environment, $this->version);
 
 		$infrastructureWriter = new InfrastructureWriter($directory);
 		$infrastructureWriter->setSkipClear($skipClear);
