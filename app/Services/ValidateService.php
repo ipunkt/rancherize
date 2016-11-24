@@ -8,10 +8,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class ValidateService
  * @package Rancherize\Services
+ *
+ * Trigger the given blueprint to validate the given configuration
  */
 class ValidateService {
 
 	/**
+	 * validate the configuration for the given environment
+	 *
 	 * @param Blueprint $blueprint
 	 * @param string $environment
 	 * @param Configuration $configuration
@@ -21,6 +25,8 @@ class ValidateService {
 	}
 
 	/**
+	 * Print a table with one "field", "message" per row for all messages left in the ValidationFailedException
+	 *
 	 * @param ValidationFailedException $e
 	 * @param OutputInterface $output
 	 */

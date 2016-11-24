@@ -1,8 +1,17 @@
 <?php
 
+/**
+ * populate the container
+ */
+
 $container = new \Pimple\Container();
 
+
+/**
+ * File handling
+ */
 $container['file-loader'] = function($c) {
+
 	return new \Rancherize\File\FileLoader();
 };
 
@@ -10,6 +19,9 @@ $container['file-writer'] = function($c) {
 	return new \Rancherize\File\FileWriter();
 };
 
+/**
+ * Configuration
+ */
 $container['configuration'] = function($container) {
 	return new \Rancherize\Configuration\ArrayConfiguration();
 };
@@ -88,8 +100,14 @@ $container['blueprint-service'] = function($c) {
 	return new \Rancherize\Services\BlueprintService($c['blueprint-factory']);
 };
 
+/**
+ * Prevent redeclaration in unit tests
+ */
 if( ! function_exists('container') ) {
 
+	/**
+	 * Helper function: container. Replaces accessing the container as global
+	 */
 	/**
 	 * Get an instance from the container
 	 *

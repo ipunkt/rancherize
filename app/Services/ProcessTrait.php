@@ -8,6 +8,12 @@ use Rancherize\Exceptions\Exception;
 use Symfony\Component\Console\Helper\ProcessHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class ProcessTrait
+ * @package Rancherize\Services
+ *
+ * Lets processHelper and output be set from outside the class so it can be used to start commands
+ */
 trait ProcessTrait {
 
 	/**

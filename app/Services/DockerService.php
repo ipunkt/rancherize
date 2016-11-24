@@ -9,12 +9,16 @@ use Symfony\Component\Process\ProcessBuilder;
 /**
  * Class DockerService
  * @package Rancherize\Services
+ *
+ * Capsulates access to docker commands
  */
 class DockerService {
 
 	use ProcessTrait;
 
 	/**
+	 * Build the given image using the given dockerfile or 'Dockerfile' if none is given
+	 *
 	 * @param string $imageName
 	 * @param string $dockerfile
 	 */
@@ -38,6 +42,8 @@ class DockerService {
 	}
 
 	/**
+	 * login to Dockerhub using the given username and password
+	 *
 	 * @param $username
 	 * @param $password
 	 */
@@ -57,8 +63,9 @@ class DockerService {
 	}
 
 	/**
+	 * Push the given image to dockerhub. You will most likely need to login before using this
+	 *
 	 * @param string $imageName
-	 * @param string $dockerfile
 	 */
 	public function push(string $imageName) {
 
@@ -75,9 +82,12 @@ class DockerService {
 	}
 
 	/**
+	 * Start the infrastructure built in directory as projectName
 	 *
+	 * @param string $directory
+	 * @param string $projectName
 	 */
-	public function start($directory, $projectName) {
+	public function start(string $directory, string $projectName) {
 
 		$this->requireProcess();
 
@@ -92,7 +102,10 @@ class DockerService {
 	}
 
 	/**
+	 * Stop the infrastructure built in the directory as projectName
 	 *
+	 * @param string $directory
+	 * @param string $projectName
 	 */
 	public function stop($directory, $projectName) {
 

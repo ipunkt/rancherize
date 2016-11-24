@@ -4,10 +4,14 @@ use Rancherize\Configuration\Configuration;
 /**
  * Class EnvironmentService
  * @package Rancherize\Services
+ *
+ * Access to the environments of the configuration
  */
 class EnvironmentService {
 
 	/**
+	 * Returns the names of all available environments
+	 *
 	 * @param Configuration $configuration
 	 * @return string[]
 	 */

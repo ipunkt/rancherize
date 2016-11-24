@@ -1,10 +1,13 @@
 <?php namespace Rancherize\Services;
+use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Factory\BlueprintFactory;
 use Rancherize\Configuration\Configuration;
 
 /**
  * Class BlueprintService
  * @package Rancherize\Services
+ *
+ * Load the blueprint from the known blueprints
  */
 class BlueprintService {
 	/**
@@ -21,22 +24,27 @@ class BlueprintService {
 	}
 
 	/**
+	 * Retrieve the blueprint that was set in the configuration
+	 *
 	 * @param Configuration $configuration
 	 * @param array $flags
+	 * @return \Rancherize\Blueprint\Blueprint
 	 */
-	public function byConfiguration(Configuration $configuration, array $flags) {
+	public function byConfiguration(Configuration $configuration, array $flags) : Blueprint {
 		$blueprintName = $configuration->get('project.blueprint');
 
 		return $this->load($blueprintName, $flags);
 	}
 
 	/**
+	 * Load by name
+	 *
 	 * @param string $blueprintName
 	 * @param array $flags
 	 * @return \Rancherize\Blueprint\Blueprint
 	 * @internal param array $options
 	 */
-	public function load(string $blueprintName, array $flags) {
+	public function load(string $blueprintName, array $flags) : Blueprint {
 		$blueprint = $this->blueprintFactory->get($blueprintName);
 
 		foreach($flags as $name => $value)
