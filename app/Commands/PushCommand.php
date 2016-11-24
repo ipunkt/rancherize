@@ -86,7 +86,7 @@ class PushCommand extends Command   {
 
 		$this->buildImage($dockerService, $configuration, $config, $image);
 
-		$name = $config->get('project-name');
+		$name = $config->get('service-name');
 		$versionizedName = $name.'-'.$version;
 		try {
 			$activeStack = $this->getRancher()->getActiveService($stackName, $name);

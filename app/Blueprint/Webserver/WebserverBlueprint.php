@@ -40,7 +40,7 @@ class WebserverBlueprint implements Blueprint {
 		$initializer = new ConfigurationInitializer($output);
 
 		if( $this->getFlag('dev', false) ) {
-			$initializer->init($fallbackConfigurable, 'docker-image', 'ipunktbs/nginx-debug');
+			$initializer->init($fallbackConfigurable, 'docker.image', 'ipunktbs/nginx-debug');
 
 			$minPort = $configurable->get('global.min-port', 9000);
 			$maxPort = $configurable->get('global.max-port', 20000);
@@ -63,7 +63,7 @@ class WebserverBlueprint implements Blueprint {
 		$initializer->init($fallbackConfigurable, 'docker.version-prefix', '', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'nginx-config', '', $projectConfigurable);
 
-		$initializer->init($fallbackConfigurable, 'project-name', 'Project', $projectConfigurable);
+		$initializer->init($fallbackConfigurable, 'service-name', 'Project', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'docker.base-image', 'busybox', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'environment', ["EXAMPLE" => 'value']);
 
@@ -84,7 +84,7 @@ class WebserverBlueprint implements Blueprint {
 
 		$required = [
 			'docker.base-image',
-			'project-name',
+			'service-name',
 		];
 
 		$errors = [
@@ -136,7 +136,7 @@ class WebserverBlueprint implements Blueprint {
 
 			$imageName = $config->get('docker.repository').':'.$config->get('docker.version-prefix').$version;
 			$appService = new AppService( $imageName );
-			$appService->setName($config->get('project-name').'-App');
+			$appService->setName($config->get('service-name').'-App');
 
 			$serverService->addSidekick($appService);
 			$serverService->addVolumeFrom($appService);
@@ -185,8 +185,8 @@ class WebserverBlueprint implements Blueprint {
 	 */
 	protected function makeServerService(Configuration $config) : Service {
 		$serverService = new Service();
-		$serverService->setName($config->get('project-name'));
-		$serverService->setImage($config->get('docker-image', 'ipunktbs/nginx:1.9.7-7-1.2.0'));
+		$serverService->setName($config->get('service-name'));
+		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.9.7-7-1.2.0'));
 
 		if ($config->has('expose-port'))
 			$serverService->expose(80, $config->get('expose-port'));
