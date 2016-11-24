@@ -2,16 +2,20 @@
 use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Commands\Traits\BuildsTrait;
 use Rancherize\Commands\Traits\DockerTrait;
+use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Commands\Traits\RancherTrait;
+use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\Docker\DockerAccessService;
 use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
 use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
 use Rancherize\RancherAccess\RancherAccessService;
+use Rancherize\Services\DockerService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -20,6 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class PushCommand extends Command   {
 
+	use IoTrait;
 	use BuildsTrait;
 	use RancherTrait;
 	use LoadsConfigurationTrait;
@@ -32,10 +37,13 @@ class PushCommand extends Command   {
 			->setDescription('Start an environment on the local machine')
 			->addArgument('environment', InputArgument::REQUIRED)
 			->addArgument('version', InputArgument::REQUIRED)
+			->addOption('image-exists', 'i', InputOption::VALUE_NONE, 'Do not build and push the image to dockerhub')
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
+
+		$this->setIo($input,$output);
 
 		$environment = $input->getArgument('environment');
 		$version = $input->getArgument('version');
@@ -75,13 +83,8 @@ class PushCommand extends Command   {
 		$dockerService = $this->getDocker();
 		$dockerService->setOutput($output)
 			->setProcessHelper($this->getHelper('process'));
-		$dockerService->build($image, './.rancherize/Dockerfile');
 
-		$dockerConfiguration = new DockerAccessService($configuration);
-		$dockerAccount = $dockerConfiguration->getAccount( $config->get('docker-account') );
-
-		$dockerService->login( $dockerAccount->getUsername(), $dockerAccount->getPassword() );
-		$dockerService->push($image);
+		$this->buildImage($dockerService, $configuration, $config, $image);
 
 		$name = $config->get('NAME');
 		$versionizedName = $name.'-'.$version;
@@ -95,6 +98,32 @@ class PushCommand extends Command   {
 
 
 		return 0;
+	}
+
+	/**
+	 * @param InputInterface $input
+	 * @param DockerService $dockerService
+	 * @param Configuration $configuration
+	 * @param Configuration $config
+	 * @param $image
+	 * @internal param $dockerAccount
+	 */
+	protected function buildImage(DockerService $dockerService, Configuration $configuration, Configuration $config, $image) {
+
+		if ( $this->getInput()->hasOption('image-exists')) {
+			$this->getOutput()->writeln("Option image-exists was set, skipping build.", OutputInterface::VERBOSITY_VERBOSE);
+
+			return;
+		}
+
+		$dockerService->build($image, './.rancherize/Dockerfile');
+
+		$dockerConfiguration = new DockerAccessService($configuration);
+		$dockerAccount = $dockerConfiguration->getAccount( $config->get('docker-account') );
+
+
+		$dockerService->login($dockerAccount->getUsername(), $dockerAccount->getPassword());
+		$dockerService->push($image);
 	}
 
 
