@@ -9,7 +9,7 @@ For a concrete example on how the configuration becomes easier through this see 
 # Installation
 Rancherize is installed using composer
 
-	composer require ipunkt/rancherize:v2.*@dev
+	composer require 'ipunkt/rancherize:v2.*@dev'
 	
 # Configuration
 
