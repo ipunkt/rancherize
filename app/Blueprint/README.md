@@ -46,14 +46,14 @@ command will be set.
 
 #### Helper
 A trait is available to implement this for you: `Rancherize\Bluerprint\Flags\HasFlagsTrait` provides the method
-`getFlag($flag, $default = null)` method and saves to the protected property $flags
+`getFlag($flag, $default = null)` and saves to the protected property $flags
 
 ### init
 The init method receives the complete configuration and the name of the environment to be initialized. It should set at
 least all configuration values required to pass validation.
 
-If not flags are present then an environment fit for use within rancher should be created  
-If the --dev flag is present then ane environment fit for local development work should be created
+If no flags are present then an environment fit for use within rancher should be created  
+If the --dev flag is present then ane environment fit for local development should be created
 
 User interaction is possible using the passed Symfony2 `InputInterface` and `OutputInterface` but should be kept to a
 minimum. Prefer setting the variable to an invalid explanatory value over asking the user a value with an explanation.
