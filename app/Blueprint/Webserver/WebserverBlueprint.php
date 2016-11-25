@@ -9,7 +9,7 @@ use Rancherize\Blueprint\Infrastructure\Service\Services\DatabaseService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\PmaService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\RedisService;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
-use Rancherize\Blueprint\Validation\Validator;
+use Rancherize\Blueprint\Validation\Traits\HasValidatorTrait;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\PrefixConfigurableDecorator;
@@ -30,14 +30,7 @@ class WebserverBlueprint implements Blueprint {
 
 	use HasFlagsTrait;
 
-	/**
-	 * @var Validator
-	 */
-	protected $validator = null;
-
-	public function __construct() {
-		$this->validator = container('blueprint-validator');
-	}
+	use HasValidatorTrait;
 
 	/**
 	 * @param Configurable $configurable
@@ -105,7 +98,7 @@ class WebserverBlueprint implements Blueprint {
 		$environmentConfigurable = new PrefixConfigurationDecorator($configurable, "project.environments.$environment.");
 		$config = new ConfigurationFallback($environmentConfigurable, $projectConfigurable);
 
-		$this->validator->validate($config, [
+		$this->getValidator()->validate($config, [
 			'docker.base-image' => 'required',
 			'service-name' => 'required',
 
@@ -155,7 +148,6 @@ class WebserverBlueprint implements Blueprint {
 		if( $config->get('add-database', false) ) {
 			$databaseService = new DatabaseService();
 
-			$serverService->addLink($databaseService, 'database-master');
 
 			if( $config->has('database.name') )
 				$databaseService->setDatabaseName( $config->get('database.name') );
@@ -164,7 +156,7 @@ class WebserverBlueprint implements Blueprint {
 			if( $config->has('database.password') )
 				$databaseService->setDatabasePassword( $config->get('database.password') );
 
-
+			$serverService->addLink($databaseService, 'database-master');
 			$serverService->setEnvironmentVariable('DATABASE_NAME', $databaseService->getDatabaseName());
 			$serverService->setEnvironmentVariable('DATABASE_USER', $databaseService->getDatabaseUser());
 			$serverService->setEnvironmentVariable('DATABASE_PASSWORD', $databaseService->getDatabasePassword());
@@ -254,12 +246,4 @@ class WebserverBlueprint implements Blueprint {
 		return $serverService;
 	}
 
-	/**
-	 * @param Validator $validator
-	 * @return WebserverBlueprint
-	 */
-	public function setValidator(Validator $validator): WebserverBlueprint {
-		$this->validator = $validator;
-		return $this;
-	}
 }
