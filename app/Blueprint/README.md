@@ -35,6 +35,11 @@ $projectConfigurable = new PrefixConfigurableDecorator($configurable, "project.d
 $fallbackConfigurable = new ConfigurableFallback($environmentConfigurable, $projectConfigurable);
 ```
 
+- environmentConfigurable will get and set values inside the environment to be written
+- projectConfigurable will get and set values inside the project defaults
+- fallbackConfigurable will get values from the environment. If it is not found there it will get them from the project
+defaults. Values set here will be written to the environmentConfiguration
+
 ### setFlag
 This method is used to pass flags from the init command to the Blueprint. Currently only the --dev flag for the init
 command will be set.
@@ -61,7 +66,7 @@ rather than
 	$configuration->set("example-var", $questionHelper->ask($question));
 	
 #### Helper
-A number of helper are available to allow you to focus on what to initialize rather than how to do it.
+A helper is available to allow you to focus on what to initialize rather than how to do it.
 
 - `Rancherize\Configuration\Services\ConfigurationInitializer` Will only set a given value in the configuration if it is
 not yet present. It will also inform the user about it based on the output verbosity
@@ -72,11 +77,6 @@ $initializer = new ConfigurationInitializer($output);
 $initializer->init($fallbackConfigurable, 'written-to-environment', "value");
 $initializer->init($fallbackConfigurable, 'written-to-defaults', "value", $projectConfigurable);
 ```
-- environmentConfigurable will get and set values inside the environment to be written
-- projectConfigurable will get and set values inside the project defaults
-- fallbackConfigurable will get values from the environment. If it is not found there it will get them from the project
-defaults. Values set here will be written to the environmentConfiguration
-
 ### validate
 
 The validate method should ensure that the minimum configuration values necessary are present and if possible that the
