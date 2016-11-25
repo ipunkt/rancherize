@@ -39,7 +39,7 @@ class StartCommand extends Command   {
 		$config = $this->environmentConfig($configuration, $environment);
 
 		$blueprint = $this->getBlueprintService()->byConfiguration($configuration, $input->getArguments());
-		$this->getBuildService()->build($blueprint, $configuration, $environment);
+		$infrastructure = $this->getBuildService()->build($blueprint, $configuration, $environment);
 
 		$this->getDocker()
 			->setOutput($output)
@@ -48,6 +48,17 @@ class StartCommand extends Command   {
 
 
 		$this->getDocker()->start('./.rancherize', $config->get('service-name') );
+
+		foreach( $infrastructure->getServices() as $service ) {
+			$exposedPorts = $service->getExposedPorts();
+			if( empty($exposedPorts) )
+				continue;
+
+			$serviceName = $service->getName();
+			$ports = implode(', ', $exposedPorts);
+			$output->writeln("Service $serviceName was exposed to the ports $ports");
+		}
+
 
 
 		return 0;

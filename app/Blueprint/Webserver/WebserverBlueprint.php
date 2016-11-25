@@ -5,6 +5,8 @@ use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\Infrastructure\Service\Services\AppService;
+use Rancherize\Blueprint\Infrastructure\Service\Services\DatabaseService;
+use Rancherize\Blueprint\Infrastructure\Service\Services\PmaService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\RedisService;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Configuration\Configurable;
@@ -52,6 +54,15 @@ class WebserverBlueprint implements Blueprint {
 			$initializer->init($fallbackConfigurable, 'use-app-container', false);
 			$initializer->init($fallbackConfigurable, 'mount-workdir', true);
 			$initializer->init($fallbackConfigurable, 'add-redis', false);
+			$initializer->init($fallbackConfigurable, 'add-database', false);
+			$initializer->init($fallbackConfigurable, 'database.pma', false);
+			$initializer->init($fallbackConfigurable, 'database.pma-expose', false);
+
+			do {
+				$pmaPort = mt_rand($minPort, $maxPort);
+			} while($pmaPort === $port);
+
+			$initializer->init($fallbackConfigurable, 'database.pma-port', $pmaPort);
 
 		} else {
 
@@ -143,6 +154,38 @@ class WebserverBlueprint implements Blueprint {
 			$serverService->addSidekick($appService);
 			$serverService->addVolumeFrom($appService);
 			$infrastructure->addService($appService);
+		}
+
+		if( $config->get('add-database', false) ) {
+			$databaseService = new DatabaseService();
+
+			$serverService->addLink($databaseService, 'database-master');
+
+			if( $config->has('database.name') )
+				$databaseService->setDatabaseName( $config->get('database.name') );
+			if( $config->has('database.user') )
+				$databaseService->setDatabaseUser( $config->get('database.user') );
+			if( $config->has('database.password') )
+				$databaseService->setDatabasePassword( $config->get('database.password') );
+
+
+			$serverService->setEnvironmentVariable('DATABASE_NAME', $databaseService->getDatabaseName());
+			$serverService->setEnvironmentVariable('DATABASE_USER', $databaseService->getDatabaseUser());
+			$serverService->setEnvironmentVariable('DATABASE_PASSWORD', $databaseService->getDatabasePassword());
+
+			$infrastructure->addService($databaseService);
+
+			/**
+			 * PMA
+			 */
+			if( $config->get('database.pma', true) ) {
+				$pmaService = new PmaService();
+				$pmaService->addLink($databaseService, 'db');
+				if( $config->get('database.pma-expose', true) )
+					$pmaService->expose(80, $config->get('database.pma-port', 8082));
+
+				$infrastructure->addService($pmaService);
+			}
 		}
 
 		/**

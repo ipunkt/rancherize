@@ -43,9 +43,9 @@ class Infrastructure {
 	}
 
 	/**
-	 * @return mixed
+	 * @return Service[]
 	 */
-	public function getServices() {
+	public function getServices() : array {
 		return $this->services;
 	}
 }

@@ -203,6 +203,18 @@ class Service {
 	}
 
 	/**
+	 * @param string $name
+	 * @param string $default
+	 * @return string
+	 */
+	public function getEnvironmentVariable(string $name, string $default = null) {
+		if( !array_key_exists($name, $this->environmentVariables) )
+			return $default;
+
+		return $this->environmentVariables[$name];
+	}
+
+	/**
 	 * @return boolean
 	 */
 	public function isKeepStdin(): bool {

@@ -46,7 +46,7 @@ class BuildService {
 	 * @param Configuration $configuration
 	 * @param string $environment
 	 * @param bool $skipClear
-	 * @internal param InputInterface $input
+	 * @return \Rancherize\Blueprint\Infrastructure\Infrastructure
 	 */
 	public function build(Blueprint $blueprint, Configuration $configuration, string $environment, $skipClear = false) {
 
@@ -61,6 +61,8 @@ class BuildService {
 		$infrastructureWriter->setPath($directory);
 		$infrastructureWriter->setSkipClear($skipClear);
 		$infrastructureWriter->write($infrastructure, new FileWriter());
+
+		return $infrastructure;
 
 	}
 
