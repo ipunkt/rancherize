@@ -71,6 +71,9 @@ class PushCommand extends Command   {
 		} catch(StackNotFoundException $e) {
 			$output->writeln("Stack not found, creating", OutputInterface::VERBOSITY_NORMAL);
 			$rancher->createStack($stackName);
+
+			$this->getBuildService()->createDockerCompose('');
+			$this->getBuildService()->createRancherCompose('');
 		}
 
 		$repository = $config->get('docker.repository');

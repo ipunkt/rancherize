@@ -2,6 +2,8 @@
 
 This blueprint creates infrastructures to support apps using php7.
 
+### Typical Infrastructure
+
 ### Recognized Configuration Values
 
 | Option | Defaults to | Explanation |
