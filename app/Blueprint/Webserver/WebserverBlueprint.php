@@ -9,6 +9,7 @@ use Rancherize\Blueprint\Infrastructure\Service\Services\DatabaseService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\PmaService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\RedisService;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
+use Rancherize\Blueprint\Validation\Validator;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\PrefixConfigurableDecorator;
@@ -28,6 +29,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 class WebserverBlueprint implements Blueprint {
 
 	use HasFlagsTrait;
+
+	/**
+	 * @var Validator
+	 */
+	protected $validator = null;
+
+	public function __construct() {
+		$this->validator = container('blueprint-validator');
+	}
 
 	/**
 	 * @param Configurable $configurable
@@ -95,25 +105,11 @@ class WebserverBlueprint implements Blueprint {
 		$environmentConfigurable = new PrefixConfigurationDecorator($configurable, "project.environments.$environment.");
 		$config = new ConfigurationFallback($environmentConfigurable, $projectConfigurable);
 
-		$required = [
-			'docker.base-image',
-			'service-name',
-		];
+		$this->validator->validate($config, [
+			'docker.base-image' => 'required',
+			'service-name' => 'required',
 
-		$errors = [
-
-		];
-
-		foreach($required as $key) {
-
-			if( !$config->has($key))
-				$errors[$key] = "Missing.";
-
-		}
-
-		if( !empty($errors) )
-			throw new ValidationFailedException($errors);
-
+		]);
 	}
 
 	/**
@@ -250,5 +246,14 @@ class WebserverBlueprint implements Blueprint {
 		}
 
 		return $serverService;
+	}
+
+	/**
+	 * @param Validator $validator
+	 * @return WebserverBlueprint
+	 */
+	public function setValidator(Validator $validator): WebserverBlueprint {
+		$this->validator = $validator;
+		return $this;
 	}
 }

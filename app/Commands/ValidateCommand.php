@@ -2,6 +2,7 @@
 use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Commands\Traits\BuildsTrait;
+use Rancherize\Commands\Traits\EnvironmentTrait;
 use Rancherize\Commands\Traits\ValidateTrait;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
@@ -21,6 +22,7 @@ class ValidateCommand extends Command   {
 	use LoadsConfigurationTrait;
 	use BlueprintTrait;
 	use ValidateTrait;
+	use EnvironmentTrait;
 
 	protected function configure() {
 		$this->setName('validate')

@@ -6,7 +6,6 @@
 
 $container = new \Pimple\Container();
 
-
 /**
  * File handling
  */
@@ -98,6 +97,17 @@ $container['rancher-service'] = function($c) {
 
 $container['blueprint-service'] = function($c) {
 	return new \Rancherize\Services\BlueprintService($c['blueprint-factory']);
+};
+
+/**
+ * Blueprint Validator
+ */
+$container['blueprint-rule-factory'] = function($c) {
+	return new \Rancherize\Blueprint\Validation\RuleFactory\NamespaceRuleFactory('Rancherize\Blueprint\Validation\Rules');
+};
+
+$container['blueprint-validator'] = function($c) {
+	return new \Rancherize\Blueprint\Validation\Validator($c['blueprint-rule-factory']);
 };
 
 /**

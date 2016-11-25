@@ -36,8 +36,11 @@ class ValidateService {
 		$table->setHeaders( ['Field', 'Problem'] );
 
 		$i = 0;
-		foreach( $e->getFailures() as $field => $message )
-			$table->setRow( $i++, [$field, $message] );
+		foreach( $e->getFailures() as $field => $messages ) {
+			foreach($messages as $message)
+				$table->setRow( $i++, [$field, $message] );
+
+		}
 
 		$table->render();
 	}
