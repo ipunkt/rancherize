@@ -36,7 +36,7 @@ This blueprint creates infrastructures to support apps using php7.
 |`add-database`| false | If set to true then a database server will be started as part of the stack and linked to the main app. Database name, user and password can be found in `DATABASE_NAME`, `DATABASE_USER` and `DATABASE_PORT` |
 |`database.name`| db | Sets the name of the default database created by the database container |
 |`database.user`| user | Sets the name of the default user created by the database container |
-|`database.password`| pw | Sets the name of the default password created by the database container |
+|`database.password`| pw | Sets the default password created by the database container |
 |`database.pma`| true | !Only effective if add-databse is true! If set to true then a phpmyadmin container is started and connected to the database container |
 |`database.expose`| true | Can be set to false to prevent exposing the internal pma port 80 to a host port. |
 |`database.pma-port`| 8082 | Host port to expose the pma container port 80 to. |
