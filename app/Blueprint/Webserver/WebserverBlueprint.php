@@ -132,7 +132,7 @@ class WebserverBlueprint implements Blueprint {
 		$dockerfile = $this->makeDockerfile($config);
 		$infrastructure->setDockerfile($dockerfile);
 
-		$serverService = $this->makeServerService($config);
+		$serverService = $this->makeServerService($config, $projectConfigurable);
 		if( $config->get('add-redis', false) ) {
 			$redisService = new RedisService();
 			$serverService->addLink($redisService, 'redis');
@@ -221,10 +221,11 @@ class WebserverBlueprint implements Blueprint {
 	}
 
 	/**
-	 * @param $config
+	 * @param Configuration $config
+	 * @param Configuration $default
 	 * @return Service
 	 */
-	protected function makeServerService(Configuration $config) : Service {
+	protected function makeServerService(Configuration $config, Configuration $default) : Service {
 		$serverService = new Service();
 		$serverService->setName($config->get('service-name'));
 		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.9.7-7-1.2.0'));
@@ -234,6 +235,11 @@ class WebserverBlueprint implements Blueprint {
 
 		if ($config->get('mount-workdir', false))
 			$serverService->addVolume(getcwd(), '/var/www/app');
+
+		if ($default->has('environment')) {
+			foreach ($default->get('environment') as $name => $value)
+				$serverService->setEnvironmentVariable($name, $value);
+		}
 
 		if ($config->has('environment')) {
 			foreach ($config->get('environment') as $name => $value)
