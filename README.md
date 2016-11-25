@@ -94,6 +94,16 @@ The command `push` exists to deploy the current state of your work directory int
   - If no other version of the service is found it will be created
   - If the same version of the service is found then an in-service upgrade is triggered
   - If a different version of the service is found then a rolling-upgrade ist triggered
+  
+# Blueprints
+
+## Known blueprints
+
+Currently only the [WebserverBlueprint](app/Blueprint/Webserver/README.md) is available. 
+
+## Developing Blueprints
+
+See the [blueprint readme](app/Blueprint/README.md) for more information on how to develop your own blueprints
 
 # Example
 ```yaml
