@@ -6,6 +6,14 @@ of of adding and connecting services.
 
 For a concrete example on how the configuration becomes easier through this see the example at the bottom of this page.
 
+# Requirements
+Rancherize creates configuration to be used with external docker tools. Thus it is necessary to have the following tools
+installed to use Rancherize:
+
+- `docker` https://docs.docker.com/engine/installation/
+- `docker-compose` https://docs.docker.com/compose/install/
+- `rancher-compose` https://docs.rancher.com/rancher/v1.2/en/cattle/rancher-compose/#installation
+
 # Installation
 Rancherize is installed using composer
 
