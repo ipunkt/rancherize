@@ -106,6 +106,11 @@ Currently only the [WebserverBlueprint](app/Blueprint/Webserver/README.md) is av
 See the [Blueprint readme](app/Blueprint/README.md) for more information on how to develop your own blueprints
 
 # Example
+This example tries to illustrate how it becomes easier to add services to work with your app when using rancherize
+blueprints when compared to directly writing docker-compose.yml files.
+
+The following is an extract of a `docker-compose.yml` file. It starts a database and a phpmyadmin that connects to the
+database. The part connecting the app with these services is omited.
 ```yaml
 Database:
   image: 'mysql/mysql'
@@ -129,6 +134,7 @@ PMA:
 
 becomes 
 
+The folllowing is an extract of a `rancherize.json` file, adding the same services as above and connecting them to the app service.
 ```json
 {
 	"example-environment": {
@@ -136,3 +142,17 @@ becomes
 	}
 }
 ```
+
+The required knowledge is reduced from
+- I need a service named Database
+- I need a service named PMA
+- I need to connect my app service to the service Database
+- I need to connect my app service to the service Redis
+- The Service Database uses the image `mysql/mysql`
+- Configuration required by the image `mysql/mysql`
+- The Service PMA uses the image `phpmyadmin/phpmyadmin:4.6.2-3`
+- Configuration required by the image `phpmyadmin/phpmyadmin:4.6.2-3`
+
+To
+- I wish to use add a database
+- The database also starts a pma unless I disable it
