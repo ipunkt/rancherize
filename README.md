@@ -97,13 +97,13 @@ The command `push` exists to deploy the current state of your work directory int
   
 # Blueprints
 
-## Known blueprints
+## Known Blueprints
 
 Currently only the [WebserverBlueprint](app/Blueprint/Webserver/README.md) is available. 
 
 ## Developing Blueprints
 
-See the [blueprint readme](app/Blueprint/README.md) for more information on how to develop your own blueprints
+See the [Blueprint readme](app/Blueprint/README.md) for more information on how to develop your own blueprints
 
 # Example
 ```yaml
