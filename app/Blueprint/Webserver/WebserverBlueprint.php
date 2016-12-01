@@ -1,4 +1,5 @@
 <?php namespace Rancherize\Blueprint\Webserver;
+use Closure;
 use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Flags\HasFlagsTrait;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
@@ -213,6 +214,23 @@ class WebserverBlueprint implements Blueprint {
 	}
 
 	/**
+	 * @param Configuration[] $configs
+	 * @param string $label
+	 * @param Closure $closure
+	 *
+	 * TODO: make service object
+	 */
+	private function addAll(array $configs, string $label, Closure $closure) {
+		foreach($configs as $c) {
+			if(!$c->has('environment'))
+				continue;
+
+			foreach ($c->get('environment') as $name => $value)
+				$closure($name, $value);
+		}
+	}
+
+	/**
 	 * @param Configuration $config
 	 * @param Configuration $default
 	 * @return Service
@@ -228,13 +246,13 @@ class WebserverBlueprint implements Blueprint {
 		if ($config->get('mount-workdir', false))
 			$serverService->addVolume(getcwd(), '/var/www/app');
 
-		foreach([$default, $config] as $c)
-			foreach ($c->get('environment') as $name => $value)
-				$serverService->setEnvironmentVariable($name, $value);
+		$this->addAll([$default, $config], 'environment', function(string $name, $value) use ($serverService) {
+			$serverService->setEnvironmentVariable($name, $value);
+		});
 
-		foreach([$default, $config] as $c)
-			foreach ($c->get('labels') as $name => $value)
-				$serverService->addLabel($name, $value);
+		$this->addAll([$default, $config], 'labels', function(string $name, $value) use ($serverService) {
+			$serverService->addLabel($name, $value);
+		});
 
 		if ($config->has('external_links')) {
 			foreach ($config->get('external_links') as $name => $value)
