@@ -228,15 +228,13 @@ class WebserverBlueprint implements Blueprint {
 		if ($config->get('mount-workdir', false))
 			$serverService->addVolume(getcwd(), '/var/www/app');
 
-		if ($default->has('environment')) {
-			foreach ($default->get('environment') as $name => $value)
+		foreach([$default, $config] as $c)
+			foreach ($c->get('environment') as $name => $value)
 				$serverService->setEnvironmentVariable($name, $value);
-		}
 
-		if ($config->has('environment')) {
-			foreach ($config->get('environment') as $name => $value)
-				$serverService->setEnvironmentVariable($name, $value);
-		}
+		foreach([$default, $config] as $c)
+			foreach ($c->get('labels') as $name => $value)
+				$serverService->addLabel($name, $value);
 
 		if ($config->has('external_links')) {
 			foreach ($config->get('external_links') as $name => $value)

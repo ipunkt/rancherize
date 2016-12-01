@@ -49,11 +49,6 @@ class ServiceWriter {
 			$volumesFrom[] = $value->getName();
 		$this->addNonEmpty('volumes_from', $volumesFrom, $content);
 
-		$labels = [];
-		foreach($service->getLabels() as $name => $value)
-			$labels[$name] = $value;
-		$this->addNonEmpty('labels', $labels, $content);
-
 		$links = [];
 		foreach($service->getLinks() as $name => $linkedService) {
 			$serviceName = $linkedService->getName();
@@ -66,7 +61,7 @@ class ServiceWriter {
 		$this->addNonEmpty('links', $links, $content);
 
 		$labels = [];
-		foreach($service->getLinks() as $name => $value)
+		foreach($service->getLabels() as $name => $value)
 			$labels[$name] = $value;
 		if($service->getRestart() == Service::RESTART_START_ONCE)
 			$labels['io.rancher.container.start_once'] = 'true';
