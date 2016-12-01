@@ -222,10 +222,10 @@ class WebserverBlueprint implements Blueprint {
 	 */
 	private function addAll(array $configs, string $label, Closure $closure) {
 		foreach($configs as $c) {
-			if(!$c->has('environment'))
+			if(!$c->has($label))
 				continue;
 
-			foreach ($c->get('environment') as $name => $value)
+			foreach ($c->get($label) as $name => $value)
 				$closure($name, $value);
 		}
 	}
