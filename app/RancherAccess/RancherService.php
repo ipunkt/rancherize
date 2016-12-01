@@ -198,7 +198,7 @@ class RancherService {
 
 		$commands = [
 			'upgrade' => array_merge($baseCommand, ['upgrade', '-w', '-c', $activeService, $replacementService]),
-			'up' => array_merge($baseCommand, ['up', '-d', '-c', '--force-upgrade']),
+			'up' => array_merge($baseCommand, ['up', '-d', '-c']),
 		];
 
 		$usedCommand = 'upgrade';
