@@ -50,9 +50,7 @@ class BuildService {
 	 */
 	public function build(Blueprint $blueprint, Configuration $configuration, string $environment, $skipClear = false) {
 
-		$directory = './.rancherize/';
-		if( !file_exists($directory) )
-			mkdir($directory);
+		$directory = $this->createTemporaryDirectory();
 
 		$this->validateService->validate($blueprint, $configuration, $environment);
 		$infrastructure = $blueprint->build($configuration, $environment, $this->version);
@@ -70,16 +68,22 @@ class BuildService {
 	 * @param $composerConfig
 	 */
 	public function createDockerCompose($composerConfig) {
+
+		$directory = $this->createTemporaryDirectory();
+
 		$fileWriter = new FileWriter();
-		$fileWriter->put('./.rancherize/docker-compose.yml', $composerConfig);
+		$fileWriter->put($directory.'/docker-compose.yml', $composerConfig);
 	}
 
 	/**
 	 * @param $rancherConfig
 	 */
 	public function createRancherCompose($rancherConfig) {
+
+		$directory = $this->createTemporaryDirectory();
+
 		$fileWriter = new FileWriter();
-		$fileWriter->put('./.rancherize/rancher-compose.yml', $rancherConfig);
+		$fileWriter->put($directory.'/rancher-compose.yml', $rancherConfig);
 	}
 
 	/**
@@ -89,5 +93,17 @@ class BuildService {
 	public function setVersion(string $version) {
 		$this->version = $version;
 		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function createTemporaryDirectory(): string {
+		$directory = './.rancherize/';
+
+		if (!file_exists($directory))
+			mkdir($directory);
+
+		return $directory;
 	}
 }
