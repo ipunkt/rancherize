@@ -240,6 +240,9 @@ class RancherService {
 		// primitive way of handling docker-compose.yml version 2
 		if( array_key_exists('version', $dockerData) && $dockerData['version'] == 2)
 			$dockerData = $dockerData['services'];
+		// primitive way of handling docker-compose.yml version 2
+		if( array_key_exists('version', $rancherData) && $rancherData['version'] == 2)
+			$rancherData = $rancherData['services'];
 
 		$sidekicks = [];
 		foreach($dockerData as $serviceName => $data) {
