@@ -72,7 +72,7 @@ $container['dockerfile-writer'] = function($c) {
 };
 
 $container['service-writer'] = function($c) {
-	return new \Rancherize\Blueprint\Infrastructure\Service\ServiceWriter();
+	return new \Rancherize\Blueprint\Infrastructure\Service\ServiceWriter($c['file-loader']);
 };
 
 $container['infrastructure-writer'] = function($c) {
