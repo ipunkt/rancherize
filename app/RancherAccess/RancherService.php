@@ -132,6 +132,8 @@ class RancherService {
 	 * Prompt Rnacher to create a stack with the given name using the provided dockerCompose and rancherCompose files
 	 *
 	 * @param string $stackName
+	 * @param null $dockerCompose
+	 * @param null $rancherCompose
 	 */
 	public function createStack(string $stackName, $dockerCompose = null, $rancherCompose = null) {
 		if($dockerCompose === null)
@@ -188,7 +190,7 @@ class RancherService {
 	 * @param string $directory
 	 * @param string $stackName
 	 * @param string $activeService
-	 v @param string $replacementService
+	 * @param string $replacementService
 	 */
 	public function upgrade(string $directory, string $stackName, string $activeService, string $replacementService) {
 

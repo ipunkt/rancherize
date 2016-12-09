@@ -1,4 +1,6 @@
 <?php namespace Rancherize\Blueprint\Infrastructure\Service;
+use Rancherize\Configuration\Exceptions\FileNotFoundException;
+use Rancherize\File\FileLoader;
 use Rancherize\File\FileWriter;
 use Symfony\Component\Yaml\Yaml;
 
@@ -9,6 +11,19 @@ use Symfony\Component\Yaml\Yaml;
  * Add services to docker-compose.yml files
  */
 class ServiceWriter {
+	/**
+	 * @var FileLoader
+	 */
+	private $fileLoader;
+
+	/**
+	 * ServiceWriter constructor.
+	 * @param FileLoader $fileLoader
+	 * @internal param FileLoader $loader
+	 */
+	public function __construct(FileLoader $fileLoader) {
+		$this->fileLoader = $fileLoader;
+	}
 
 	/**
 	 * @var string
@@ -98,16 +113,13 @@ class ServiceWriter {
 		$content['restart'] = $restartValues[ $service->getRestart() ];
 
 
-		$dockerYaml = Yaml::dump([$service->getName() => $content], 100, 2);
-
-		$fileWriter->append($this->path.'docker-compose.yml', $dockerYaml);
+		$this->writeYaml($this->path . 'docker-compose.yml', $service, $fileWriter, $content);
 
 		$rancherContent = [
 			'scale' => $service->getScale()
 		];
-		$rancherYaml = Yaml::dump([$service->getName() => $rancherContent], 100, 2);
 
-		$fileWriter->append($this->path.'rancher-compose.yml', $rancherYaml);
+		$this->writeYaml($this->path . 'rancher-compose.yml', $service, $fileWriter, $rancherContent);
 	}
 
 	/**
@@ -142,5 +154,31 @@ class ServiceWriter {
 	public function setPath(string $path): ServiceWriter {
 		$this->path = $path;
 		return $this;
+	}
+
+	/**
+	 * @param Service $service
+	 * @param FileWriter $fileWriter
+	 * @param $content
+	 */
+	protected function writeYaml($targetFile, Service $service, FileWriter $fileWriter, $content) {
+
+		try {
+			$dockerData = Yaml::parse($this->fileLoader->get($targetFile));
+
+			// handle v2 format
+			if (array_key_exists('version', $dockerData))
+				$dockerData['services'][$service->getName()] = $content;
+			else
+				$dockerData[$service->getName()] = $content;
+
+		} catch (FileNotFoundException $e) {
+			$dockerData = [$service->getName() => $content];
+		}
+
+		$dockerYaml = Yaml::dump($dockerData, 100, 2);
+
+
+		$fileWriter->put($targetFile, $dockerYaml);
 	}
 }
