@@ -87,7 +87,7 @@ class GlobalConfiguration {
 			'rancher-compose' => 'rancher-compose',
 		]);
 		$configuration->set('global.docker.default', [
-			'username' => 'user',
+			'user' => 'user',
 			'password' => 'password',
 		]);
 	}
