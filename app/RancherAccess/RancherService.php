@@ -171,7 +171,7 @@ class RancherService {
 	public function start(string $directory, string $stackName) {
 
 		$process = ProcessBuilder::create([
-			'rancher-compose', "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName, 'up', '-d'
+			$this->account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName, 'up', '-d'
 		])
 			->setTimeout(null)
 			->addEnvironmentVariables([
@@ -195,7 +195,7 @@ class RancherService {
 	public function upgrade(string $directory, string $stackName, string $activeService, string $replacementService) {
 
 		$baseCommand = [
-			'rancher-compose', "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName
+			$this->account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName
 		];
 
 		$commands = [

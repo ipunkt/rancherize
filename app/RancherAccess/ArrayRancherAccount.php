@@ -41,10 +41,24 @@ class ArrayRancherAccount implements RancherAccount {
 		return $this->get('secret');
 	}
 
-	private function get($key) {
+	/**
+	 * @param string $key
+	 * @param null $default
+	 * @return mixed|null
+	 */
+	private function get(string $key, $default = null) {
 		if( !array_key_exists($key, $this->account) )
-			return null;
+			return $default;
 
 		return $this->account[$key];
 	}
+
+	/**
+	 * @return string
+	 */
+	public function getRancherCompose() : string {
+		return $this->get('rancher-compose', 'rancher-compose');
+	}
+
+
 }

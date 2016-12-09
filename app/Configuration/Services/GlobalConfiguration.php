@@ -84,6 +84,7 @@ class GlobalConfiguration {
 			'url' => 'http://rancher:8080/api/v1',
 			'key' => 'key',
 			'secret' => 'secret',
+			'rancher-compose' => 'rancher-compose',
 		]);
 		$configuration->set('global.docker.default', [
 			'username' => 'user',

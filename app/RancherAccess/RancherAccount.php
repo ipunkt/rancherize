@@ -27,4 +27,9 @@ interface RancherAccount {
 	 * @return string
 	 */
 	function getSecret();
+
+	/**
+	 * @return string
+	 */
+	function getRancherCompose() : string;
 }
