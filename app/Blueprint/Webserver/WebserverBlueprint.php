@@ -199,7 +199,9 @@ class WebserverBlueprint implements Blueprint {
 		$dockerfile->setFrom($config->get('docker.base-image'));
 
 		$dockerfile->addVolume('/var/www/app');
-		$dockerfile->copy('.', '/var/www/app');
+
+		$copySuffix = $config->get('sub-directory', '.');
+		$dockerfile->copy('.'.$copySuffix, '/var/www/app');
 
 		$nginxConfig = $config->get('nginx-config');
 		if (!empty($nginxConfig)) {
@@ -243,8 +245,11 @@ class WebserverBlueprint implements Blueprint {
 		if ($config->has('expose-port'))
 			$serverService->expose(80, $config->get('expose-port'));
 
-		if ($config->get('mount-workdir', false))
-			$serverService->addVolume(getcwd(), '/var/www/app');
+		if ($config->get('mount-workdir', false)) {
+			$mountSuffix = $config->get('sub-directory', '.');
+
+			$serverService->addVolume(getcwd() . $mountSuffix, '/var/www/app');
+		}
 
 		$this->addAll([$default, $config], 'environment', function(string $name, $value) use ($serverService) {
 			$serverService->setEnvironmentVariable($name, $value);

@@ -20,6 +20,7 @@ This blueprint creates infrastructures to support apps using php7.
 |`use-app-contianer`| true | If set to false no service will be created to mount the app using a docker image |
 |`mount-workdir`| false | If set to true then the project root will be mounted into the main app nginx. !Does not work when deploying into rancher! |
 |`external_links` | [] | Any property set in this object will be added as external link using the name of the property. e.g. `"host": "stackname/servicename"` will make any network traffic to `host` go to a container from `stackname/servicename` |
+|`sub-directory` | '' | Path relative to the project root which should be mounted localy and added to the image. Suffixed after ./getcwd() |
 
 #### Usage options
 | Option | Defaults to | Explanation |
