@@ -200,8 +200,10 @@ class WebserverBlueprint implements Blueprint {
 
 		$dockerfile->addVolume('/var/www/app');
 
-		$copySuffix = $config->get('sub-directory', '.');
-		$dockerfile->copy('.'.$copySuffix, '/var/www/app');
+		$copySuffix = $config->get('work-sub-directory', '');
+		$targetSuffix = $config->get('target-sub-directory', '');
+
+		$dockerfile->copy('.'.$copySuffix, '/var/www/app'.$targetSuffix);
 
 		$nginxConfig = $config->get('nginx-config');
 		if (!empty($nginxConfig)) {
@@ -246,9 +248,10 @@ class WebserverBlueprint implements Blueprint {
 			$serverService->expose(80, $config->get('expose-port'));
 
 		if ($config->get('mount-workdir', false)) {
-			$mountSuffix = $config->get('sub-directory', '.');
+			$mountSuffix = $config->get('work-sub-directory', '');
+			$targetSuffix = $config->get('target-sub-directory', '');
 
-			$serverService->addVolume(getcwd() . $mountSuffix, '/var/www/app');
+			$serverService->addVolume(getcwd() . $mountSuffix, '/var/www/app'.$targetSuffix);
 		}
 
 		$this->addAll([$default, $config], 'environment', function(string $name, $value) use ($serverService) {
