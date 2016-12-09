@@ -188,7 +188,7 @@ class RancherService {
 	 * @param string $directory
 	 * @param string $stackName
 	 * @param string $activeService
-	 * @param string $replacementService
+	 v @param string $replacementService
 	 */
 	public function upgrade(string $directory, string $stackName, string $activeService, string $replacementService) {
 
@@ -234,6 +234,10 @@ class RancherService {
 
 		if( !is_array($dockerData) || !is_array($rancherData) )
 			throw new NoActiveServiceException($name);
+
+		// primitive way of handling docker-compose.yml version 2
+		if( array_key_exists('version', $dockerData) && $dockerData['version'] == 2)
+			$dockerData = $dockerData['services'];
 
 		$sidekicks = [];
 		foreach($dockerData as $serviceName => $data) {
@@ -281,5 +285,16 @@ class RancherService {
 
 		return reset($matchingServices);
 
+	}
+
+	/**
+	 * @param string $stackName
+	 * @param string $serviceName
+	 * @return string
+	 */
+	public function getCurrentVersion(string $stackName, string $serviceName) {
+		$currentService = $this->getActiveService($stackName, $serviceName);
+
+		return substr($currentService, strlen($serviceName.'-') );
 	}
 }
