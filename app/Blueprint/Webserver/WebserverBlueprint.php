@@ -170,6 +170,21 @@ class WebserverBlueprint implements Blueprint {
 
 		}
 
+		// TODO: Move to own function / service class
+		$additionalFiles = $config->get('add-files');
+		if( is_array($additionalFiles) ) {
+			foreach($additionalFiles as $file => $path) {
+				$dockerfile->copy($file, $path);
+			}
+		}
+
+		$additionalVolumes = $config->get('add-volumes');
+		if( is_array($additionalVolumes) ) {
+			foreach($additionalFiles as $path) {
+				$dockerfile->addVolume($path);
+			}
+		}
+
 		$dockerfile->run('rm -Rf /var/www/app/.rancherize');
 		$dockerfile->setCommand('/bin/true');
 		return $dockerfile;
@@ -200,7 +215,7 @@ class WebserverBlueprint implements Blueprint {
 	protected function makeServerService(Configuration $config, Configuration $default) : Service {
 		$serverService = new Service();
 		$serverService->setName($config->get('service-name'));
-		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.9.7-7-1.2.0'));
+		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.9.7-7-1.2.4'));
 
 		if ($config->has('expose-port'))
 			$serverService->expose(80, $config->get('expose-port'));
