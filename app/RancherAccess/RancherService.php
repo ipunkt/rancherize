@@ -58,6 +58,7 @@ class RancherService {
 	 */
 	public function retrieveConfig(string $stackName) : array {
 
+
 		$stackId = $this->getStackIdByName($stackName);
 
 		$url = implode('/', [
@@ -174,7 +175,7 @@ class RancherService {
 
 		// Version 0.10, current
 		$matches = [];
-		if( !preg_match('~(http[s]?://*/)~', $url, $matches) )
+		if( !preg_match('~(http[s]?://.*?/)~', $url, $matches) )
 			throw new UrlConversionFailedException($url, '0.10');
 
 		return $matches[0];
