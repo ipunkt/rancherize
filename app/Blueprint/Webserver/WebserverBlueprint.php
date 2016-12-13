@@ -233,7 +233,7 @@ class WebserverBlueprint implements Blueprint {
 	 * @param Configuration $config
 	 * @param Service $serverService
 	 */
-	protected function addVersionEnvironment(string $version, Configuration $config, Service $serverService) {
+	protected function addVersionEnvironment($version, Configuration $config, Service $serverService) {
 		/**
 		 * Version
 		 */
@@ -292,7 +292,7 @@ class WebserverBlueprint implements Blueprint {
 	 * @param Service $serverService
 	 * @param Infrastructure $infrastructure
 	 */
-	protected function addAppContainer(string $version, Configuration $config, Service $serverService, Infrastructure $infrastructure) {
+	protected function addAppContainer($version, Configuration $config, Service $serverService, Infrastructure $infrastructure) {
 		if ($config->get('use-app-container', true)) {
 
 			$imageName = $config->get('docker.repository') . ':' . $config->get('docker.version-prefix') . $version;
