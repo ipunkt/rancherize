@@ -163,6 +163,24 @@ class RancherService {
 	}
 
 	/**
+	 * TODO: Move to RancherComposeVersion interface
+	 */
+	protected function getUrl() {
+		$url = $this->account->getUrl();
+		$version = $this->account->getComposeVersion();
+
+		if($version === '0.9')
+			return $url;
+
+		// Version 0.10, current
+		$matches = [];
+		if( !preg_match('~(http[s]?://*/)~', $url, $matches) )
+			throw new UrlConversionFailedException($url, '0.10');
+
+		return $matches[0];
+	}
+
+	/**
 	 * Start the currently built configuration inside the given rancher stack
 	 *
 	 * @param string $directory
@@ -170,12 +188,13 @@ class RancherService {
 	 */
 	public function start(string $directory, string $stackName) {
 
+		$url = $this->getUrl();
 		$process = ProcessBuilder::create([
 			$this->account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName, 'up', '-d'
 		])
 			->setTimeout(null)
 			->addEnvironmentVariables([
-				'RANCHER_URL' => $this->account->getUrl(),
+				'RANCHER_URL' => $url,
 				'RANCHER_ACCESS_KEY' => $this->account->getKey(),
 				'RANCHER_SECRET_KEY' => $this->account->getSecret(),
 			])->getProcess();
@@ -208,10 +227,11 @@ class RancherService {
 			$usedCommand = 'up';
 
 
+		$url = $this->getUrl();
 		$process = ProcessBuilder::create( $commands[$usedCommand] )
 			->setTimeout(null)
 			->addEnvironmentVariables([
-				'RANCHER_URL' => $this->account->getUrl(),
+				'RANCHER_URL' => $url,
 				'RANCHER_ACCESS_KEY' => $this->account->getKey(),
 				'RANCHER_SECRET_KEY' => $this->account->getSecret(),
 			])->getProcess();

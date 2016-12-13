@@ -42,6 +42,13 @@ class ArrayRancherAccount implements RancherAccount {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getComposeVersion(): string {
+		return $this->get('compose-version', 'current');
+	}
+
+	/**
 	 * @param string $key
 	 * @param null $default
 	 * @return mixed|null

@@ -29,6 +29,18 @@ interface RancherAccount {
 	function getSecret();
 
 	/**
+	 * Returns a string version identifier for the used rancher-compose version.
+	 * Known versions:
+	 * `current` - use most recent behaviour
+	 * `0.9` - Use full v1 Url
+	 * `0.10` - Use Domain only url
+	 *
+	 *
+	 * @return string
+	 */
+	function getComposeVersion() : string;
+
+	/**
 	 * @return string
 	 */
 	function getRancherCompose() : string;
