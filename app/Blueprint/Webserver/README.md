@@ -29,6 +29,7 @@ This blueprint creates infrastructures to support apps using php7.
 |`nginx-config`|  | If set to the path of a file relative to the app work directory then the file will be used by the main app nginx |
 |`environment` | [] | Any property set in this object will be passed to the running container as shell environment variable `PROPERTNAME=PROPERTYVALUE`. Note that environment values set in the `defaults` can be overwritten but not un-set |
 |`expose-port`|  | if set then the Port 80 of the nginx container will be exposed to this host port |
+|`add-version`|  | The value given here will be used as name for an environment variable which is set to the version that is being built. |
 
 #### Additional services
 

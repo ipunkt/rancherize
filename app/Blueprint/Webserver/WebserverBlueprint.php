@@ -164,6 +164,9 @@ class WebserverBlueprint implements Blueprint {
 
 			$infrastructure->addService($databaseService);
 
+			$this->addVersionEnvironment($version, $config, $serverService);
+
+
 			/**
 			 * PMA
 			 */
@@ -268,6 +271,25 @@ class WebserverBlueprint implements Blueprint {
 		}
 
 		return $serverService;
+	}
+
+	/**
+	 * @param string $version
+	 * @param Configuration $config
+	 * @param Service $serverService
+	 */
+	protected function addVersionEnvironment(string $version, Configuration $config, Service $serverService) {
+		/**
+		 * Version
+		 */
+		$versionEnvironmentVariable = $config->get('add-version');
+		if ($versionEnvironmentVariable === null)
+			return;
+
+		$environmentVersion = $version;
+		if ($version === null)
+			$environmentVersion = 'not set';
+		$serverService->setEnvironmentVariable($versionEnvironmentVariable, $environmentVersion);
 	}
 
 }
