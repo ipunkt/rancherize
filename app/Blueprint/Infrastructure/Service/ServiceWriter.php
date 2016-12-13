@@ -165,6 +165,8 @@ class ServiceWriter {
 
 		try {
 			$dockerData = Yaml::parse($this->fileLoader->get($targetFile));
+			if(!is_array($dockerData))
+				$dockerData = [];
 
 			// handle v2 format
 			if (array_key_exists('version', $dockerData))
