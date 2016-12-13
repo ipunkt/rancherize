@@ -297,7 +297,7 @@ class WebserverBlueprint implements Blueprint {
 
 			$imageName = $config->get('docker.repository') . ':' . $config->get('docker.version-prefix') . $version;
 			$appService = new AppService($imageName);
-			$appService->setName($config->get('service-name') . '-App');
+			$appService->setName($config->get('service-name') . 'App');
 
 			$serverService->addSidekick($appService);
 			$serverService->addVolumeFrom($appService);
