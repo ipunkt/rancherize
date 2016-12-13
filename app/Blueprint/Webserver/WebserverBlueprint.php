@@ -127,58 +127,13 @@ class WebserverBlueprint implements Blueprint {
 		$infrastructure->setDockerfile($dockerfile);
 
 		$serverService = $this->makeServerService($config, $projectConfigurable);
-		if( $config->get('add-redis', false) ) {
-			$redisService = new RedisService();
-			$serverService->addLink($redisService, 'redis');
-			$serverService->setEnvironmentVariable('REDIS_HOST', 'redis');
-			$serverService->setEnvironmentVariable('REDIS_PORT', '6379');
-			$infrastructure->addService($redisService);
-		}
+		$this->addRedis($config, $serverService, $infrastructure);
 
-		if( $config->get('use-app-container', true) ) {
+		$this->addAppContainer($version, $config, $serverService, $infrastructure);
 
-			$imageName = $config->get('docker.repository').':'.$config->get('docker.version-prefix').$version;
-			$appService = new AppService( $imageName );
-			$appService->setName($config->get('service-name').'-App');
+		$this->addVersionEnvironment($version, $config, $serverService);
 
-			$serverService->addSidekick($appService);
-			$serverService->addVolumeFrom($appService);
-			$infrastructure->addService($appService);
-		}
-
-		if( $config->get('add-database', false) ) {
-			$databaseService = new DatabaseService();
-
-
-			if( $config->has('database.name') )
-				$databaseService->setDatabaseName( $config->get('database.name') );
-			if( $config->has('database.user') )
-				$databaseService->setDatabaseUser( $config->get('database.user') );
-			if( $config->has('database.password') )
-				$databaseService->setDatabasePassword( $config->get('database.password') );
-
-			$serverService->addLink($databaseService, 'database-master');
-			$serverService->setEnvironmentVariable('DATABASE_NAME', $databaseService->getDatabaseName());
-			$serverService->setEnvironmentVariable('DATABASE_USER', $databaseService->getDatabaseUser());
-			$serverService->setEnvironmentVariable('DATABASE_PASSWORD', $databaseService->getDatabasePassword());
-
-			$infrastructure->addService($databaseService);
-
-			$this->addVersionEnvironment($version, $config, $serverService);
-
-
-			/**
-			 * PMA
-			 */
-			if( $config->get('database.pma', true) ) {
-				$pmaService = new PmaService();
-				$pmaService->addLink($databaseService, 'db');
-				if( $config->get('database.pma-expose', true) )
-					$pmaService->expose(80, $config->get('database.pma-port', 8082));
-
-				$infrastructure->addService($pmaService);
-			}
-		}
+		$this->addDatabaseService($config, $serverService, $infrastructure);
 
 		/**
 		 * Add Version suffix to the main service and all its sidekicks
@@ -290,6 +245,79 @@ class WebserverBlueprint implements Blueprint {
 		if ($version === null)
 			$environmentVersion = 'not set';
 		$serverService->setEnvironmentVariable($versionEnvironmentVariable, $environmentVersion);
+	}
+
+	/**
+	 * @param Configuration $config
+	 * @param Service $serverService
+	 * @param Infrastructure $infrastructure
+	 */
+	protected function addDatabaseService(Configuration $config, Service $serverService, Infrastructure $infrastructure) {
+		if ($config->get('add-database', false)) {
+			$databaseService = new DatabaseService();
+
+
+			if ($config->has('database.name'))
+				$databaseService->setDatabaseName($config->get('database.name'));
+			if ($config->has('database.user'))
+				$databaseService->setDatabaseUser($config->get('database.user'));
+			if ($config->has('database.password'))
+				$databaseService->setDatabasePassword($config->get('database.password'));
+
+			$serverService->addLink($databaseService, 'database-master');
+			$serverService->setEnvironmentVariable('DATABASE_NAME', $databaseService->getDatabaseName());
+			$serverService->setEnvironmentVariable('DATABASE_USER', $databaseService->getDatabaseUser());
+			$serverService->setEnvironmentVariable('DATABASE_PASSWORD', $databaseService->getDatabasePassword());
+
+			$infrastructure->addService($databaseService);
+
+
+			/**
+			 * PMA
+			 */
+			if ($config->get('database.pma', true)) {
+				$pmaService = new PmaService();
+				$pmaService->addLink($databaseService, 'db');
+				if ($config->get('database.pma-expose', true))
+					$pmaService->expose(80, $config->get('database.pma-port', 8082));
+
+				$infrastructure->addService($pmaService);
+			}
+		}
+	}
+
+	/**
+	 * @param string $version
+	 * @param Configuration $config
+	 * @param Service $serverService
+	 * @param Infrastructure $infrastructure
+	 */
+	protected function addAppContainer(string $version, Configuration $config, Service $serverService, Infrastructure $infrastructure) {
+		if ($config->get('use-app-container', true)) {
+
+			$imageName = $config->get('docker.repository') . ':' . $config->get('docker.version-prefix') . $version;
+			$appService = new AppService($imageName);
+			$appService->setName($config->get('service-name') . '-App');
+
+			$serverService->addSidekick($appService);
+			$serverService->addVolumeFrom($appService);
+			$infrastructure->addService($appService);
+		}
+	}
+
+	/**
+	 * @param Configuration $config
+	 * @param Service $serverService
+	 * @param Infrastructure $infrastructure
+	 */
+	protected function addRedis(Configuration $config, Service $serverService, Infrastructure $infrastructure) {
+		if ($config->get('add-redis', false)) {
+			$redisService = new RedisService();
+			$serverService->addLink($redisService, 'redis');
+			$serverService->setEnvironmentVariable('REDIS_HOST', 'redis');
+			$serverService->setEnvironmentVariable('REDIS_PORT', '6379');
+			$infrastructure->addService($redisService);
+		}
 	}
 
 }
