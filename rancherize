@@ -34,7 +34,7 @@ $dispatcher->addListener(\Symfony\Component\Console\ConsoleEvents::EXCEPTION, fu
 			"",
 		]);
 
-		container('validation-service')->print($e, $output);
+		container('validate-service')->print($e, $output);
 	}
 
 });
