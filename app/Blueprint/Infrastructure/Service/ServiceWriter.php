@@ -169,9 +169,21 @@ class ServiceWriter {
 				$dockerData = [];
 
 			// handle v2 format
-			if (array_key_exists('version', $dockerData))
+			if (array_key_exists('version', $dockerData)) {
+
 				$dockerData['services'][$service->getName()] = $content;
-			else
+
+				/**
+				 * Rancher version 1.2.2 produces rancher-compose.yaml files which rancher-compose does not read:
+				 * Bug workaround: `line 25: cannot unmarshal !!map into []string`
+				 */
+				foreach( $dockerData['services'] as $key => &$service ) {
+
+					if( array_key_exists('lb_config', $service) )
+						unset($service['lb_config']);
+				}
+
+			} else
 				$dockerData[$service->getName()] = $content;
 
 		} catch (FileNotFoundException $e) {
