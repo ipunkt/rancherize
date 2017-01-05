@@ -8,20 +8,6 @@ function require_root {
 	fi
 }
 
-
-SELF=$0
-if [ -L "$0"  ] ; then
-	SELF=$(readlink -f $0)
-fi
-SCRIPTPATH=$(dirname $SELF)
-
-PHP="php"
-if [ -x "./php" ] ; then
-	PHP="$(readlink -f ./php) -d $(readlink -f $(pwd))"
-fi
-
-. $SCRIPTPATH/upgrade_lib.sh
-
 function read_link {
 	if [ "`uname`" == "Linux" ] ; then
 		DIRECTORY=$(readlink -f $1)
@@ -30,6 +16,20 @@ function read_link {
 	fi
 	echo $DIRECTORY
 }
+
+
+SELF=$0
+if [ -L "$0"  ] ; then
+	SELF=$(read_link $0)
+fi
+SCRIPTPATH=$(dirname $SELF)
+
+PHP="php"
+if [ -x "./php" ] ; then
+	PHP="$(read_link ./php) -d $(read_link $(pwd))"
+fi
+
+. $SCRIPTPATH/upgrade_lib.sh
 
 PARAMETERS=( ${*:2} )
 if svn info > /dev/null 2>&1 ; then
