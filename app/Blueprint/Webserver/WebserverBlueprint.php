@@ -284,6 +284,15 @@ class WebserverBlueprint implements Blueprint {
 			$serverService->setEnvironmentVariable('DATABASE_USER', $databaseService->getDatabaseUser());
 			$serverService->setEnvironmentVariable('DATABASE_PASSWORD', $databaseService->getDatabasePassword());
 
+			/**
+			 * Laravel 5.3 compatibility env vars https://ipunkt-intern.demobereich.de/trac/ticket/217#comment:1
+			 */
+			$serverService->setEnvironmentVariable('DB_HOST', 'database-master');
+			$serverService->setEnvironmentVariable('DB_PORT', 3306);
+			$serverService->setEnvironmentVariable('DB_DATABASE', $databaseService->getDatabaseName());
+			$serverService->setEnvironmentVariable('DB_USERNAME', $databaseService->getDatabaseUser());
+			$serverService->setEnvironmentVariable('DB_PASSWORD', $databaseService->getDatabasePassword());
+
 			$infrastructure->addService($databaseService);
 
 
