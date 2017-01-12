@@ -224,6 +224,12 @@ class WebserverBlueprint implements Blueprint {
 			$mountSuffix = $config->get('work-sub-directory', '');
 			$targetSuffix = $config->get('target-sub-directory', '');
 
+			$nginxConfig = $config->get('nginx-config');
+			if (!empty($nginxConfig)) {
+				$configName = basename($nginxConfig);
+				$serverService->addVolume(getcwd() . DIRECTORY_SEPARATOR . $nginxConfig, '/etc/nginx/conf.template.d/'.$configName);
+			}
+
 			$serverService->addVolume(getcwd() . $mountSuffix, '/var/www/app'.$targetSuffix);
 		}
 
