@@ -4,14 +4,20 @@
 namespace Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm;
 
 
-use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMaker;
-
 trait PhpFpmMakerTrait {
+
+	/**
+	 * @var PhpFpmMaker
+	 */
+	protected $phpMaker = null;
 
 	/**
 	 * @return PhpFpmMaker
 	 */
 	public function getPhpFpmMaker() {
-		return container('php-fpm-maker');
+		if($this->phpMaker === null)
+			$this->phpMaker = container('php-fpm-maker');
+
+		return $this->phpMaker;
 	}
 }

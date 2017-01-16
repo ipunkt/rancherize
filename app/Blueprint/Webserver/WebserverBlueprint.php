@@ -236,7 +236,10 @@ class WebserverBlueprint implements Blueprint {
 				$serverService->addVolume(getcwd() . DIRECTORY_SEPARATOR . $nginxConfig, '/etc/nginx/conf.template.d/'.$configName);
 			}
 
-			$serverService->addVolume(getcwd() . $mountSuffix, '/var/www/app'.$targetSuffix);
+			$hostDirectory = getcwd() . $mountSuffix;
+			$containerDirectory = '/var/www/app' . $targetSuffix;
+			$serverService->addVolume($hostDirectory, $containerDirectory);
+			$this->getPhpFpmMaker()->setAppMount($hostDirectory, $containerDirectory);
 		}
 
 		$this->addAll([$default, $config], 'environment', function(string $name, $value) use ($serverService) {
@@ -338,6 +341,7 @@ class WebserverBlueprint implements Blueprint {
 			$serverService->addSidekick($appService);
 			$serverService->addVolumeFrom($appService);
 			$infrastructure->addService($appService);
+			$this->getPhpFpmMaker()->setAppService($appService);
 		}
 	}
 

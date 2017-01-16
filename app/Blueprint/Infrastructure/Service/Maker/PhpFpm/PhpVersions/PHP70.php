@@ -22,4 +22,27 @@ class PHP70 implements PhpVersion {
 	public function getVersion() {
 		return '7.0';
 	}
+
+	/**
+	 * @param string $hostDirectory
+	 * @param string $containerDirectory
+	 * @return $this
+	 */
+	public function setAppMount(string $hostDirectory, string $containerDirectory) {
+		/**
+		 * Nothing to do while fpm 7.0 is still used from internal
+		 */
+		return $this;
+	}
+
+	/**
+	 * @param Service $appService
+	 * @return $this
+	 */
+	public function setAppService(Service $appService) {
+		/**
+		 * Nothing to do while fpm 7.0 is still used from internal
+		 */
+		return $this;
+	}
 }

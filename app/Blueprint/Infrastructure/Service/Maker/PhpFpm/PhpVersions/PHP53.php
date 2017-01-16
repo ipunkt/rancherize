@@ -11,6 +11,11 @@ use Rancherize\Configuration\Configuration;
 class PHP53 implements PhpVersion {
 
 	/**
+	 * @var string|Service
+	 */
+	protected $appTarget;
+
+	/**
 	 * @param Configuration $config
 	 * @param Service $mainService
 	 * @param Infrastructure $infrastructure
@@ -26,6 +31,8 @@ class PHP53 implements PhpVersion {
 		$phpFpmService->setImage('ipunktbs/php-fpm');
 		$phpFpmService->setRestart(Service::RESTART_UNLESS_STOPPED);
 
+		$this->addAppSource($phpFpmService);
+
 		$mainService->addSidekick($phpFpmService);
 		$mainService->addVolumeFrom($phpFpmService);
 		$infrastructure->addService($phpFpmService);
@@ -36,5 +43,39 @@ class PHP53 implements PhpVersion {
 	 */
 	public function getVersion() {
 		return '5.3';
+	}
+
+	/**
+	 * @param string $hostDirectory
+	 * @param string $containerDirectory
+	 * @return $this
+	 */
+	public function setAppMount(string $hostDirectory, string $containerDirectory) {
+		$this->appTarget = [$hostDirectory, $containerDirectory];
+		return $this;
+	}
+
+	/**
+	 * @param Service $appService
+	 * @return $this
+	 */
+	public function setAppService(Service $appService) {
+		$this->appTarget = $appService;
+		return $this;
+	}
+
+	/**
+	 * @param $phpFpmService
+	 */
+	protected function addAppSource(Service $phpFpmService) {
+		$appTarget = $this->appTarget;
+
+		if ($appTarget instanceof Service) {
+			$phpFpmService->addVolumeFrom($appTarget);
+			return;
+		}
+
+		list($hostDirectory, $containerDirectory) = $appTarget;
+		$phpFpmService->addVolume($hostDirectory, $containerDirectory);
 	}
 }

@@ -20,6 +20,26 @@ class PhpFpmMaker {
 	protected $defaultVersion = null;
 
 	/**
+	 * @var string|Service
+	 */
+	private $appTarget;
+
+	/**
+	 * @param string $hostDirectory
+	 * @param string $containerDirectory
+	 */
+	public function setAppMount(string $hostDirectory, string $containerDirectory) {
+		$this->appTarget = [$hostDirectory, $containerDirectory];
+	}
+
+	/**
+	 * @param Service $service
+	 */
+	public function setAppService(Service $service) {
+		$this->appTarget = $service;
+	}
+
+	/**
 	 * @param Configuration $config
 	 * @param Service $mainService
 	 * @param Infrastructure $infrastructure
@@ -29,13 +49,17 @@ class PhpFpmMaker {
 		if( empty($this->phpVersions) )
 			throw new NoPhpVersionsAvailableException;
 
-		$phpVersion = $config->get('php', '7.0');
+		$phpVersionString = $config->get('php', '7.0');
 
-		if( !array_key_exists($phpVersion, $this->phpVersions) ) {
-			throw new PhpVersionNotAvailableException($phpVersion);
+		if( !array_key_exists($phpVersionString, $this->phpVersions) ) {
+			throw new PhpVersionNotAvailableException($phpVersionString);
 		}
 
-		$this->phpVersions[$phpVersion]->make($config, $mainService, $infrastructure);
+		$phpVersion= $this->phpVersions[$phpVersionString];
+
+		$this->setAppSource($phpVersion);
+
+		$phpVersion->make($config, $mainService, $infrastructure);
 	}
 
 	/**
@@ -51,5 +75,20 @@ class PhpFpmMaker {
 		$this->phpVersions[$versionString] = $version;
 
 		return $this;
+	}
+
+	/**
+	 * @param $phpVersion
+	 */
+	protected function setAppSource(PhpVersion $phpVersion) {
+		$appTarget = $this->appTarget;
+
+		if ($appTarget instanceof Service) {
+			$phpVersion->setAppService($appTarget);
+			return;
+		}
+
+		list($hostDirectory, $containerDirectory) = $appTarget;
+		$phpVersion->setAppMount($hostDirectory, $containerDirectory);
 	}
 }

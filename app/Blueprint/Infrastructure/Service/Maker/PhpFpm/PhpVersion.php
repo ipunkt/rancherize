@@ -8,6 +8,20 @@ use Rancherize\Configuration\Configuration;
  * @package Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm
  */
 interface PhpVersion {
+
+	/**
+	 * @param string $hostDirectory
+	 * @param string $containerContainerDirectory
+	 * @return $this
+	 */
+	function setAppMount(string $hostDirectory, string $containerContainerDirectory);
+
+	/**
+	 * @param Service $appService
+	 * @return $this
+	 */
+	function setAppService(Service $appService);
+
 	/**
 	 * @param Configuration $config
 	 * @param Service $mainService
