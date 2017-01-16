@@ -4,6 +4,7 @@ use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Flags\HasFlagsTrait;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
+use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMakerTrait;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\Infrastructure\Service\Services\AppService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\DatabaseService;
@@ -32,6 +33,8 @@ class WebserverBlueprint implements Blueprint {
 	use HasFlagsTrait;
 
 	use HasValidatorTrait;
+
+	use PhpFpmMakerTrait;
 
 	/**
 	 * @param Configurable $configurable
@@ -76,6 +79,7 @@ class WebserverBlueprint implements Blueprint {
 			$initializer->init($fallbackConfigurable, 'rancher.stack', 'Project');
 		}
 
+		$initializer->init($fallbackConfigurable, 'php', "7.0");
 		$initializer->init($fallbackConfigurable, 'docker.repository', 'repo/name', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'docker.version-prefix', '', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'nginx-config', '', $projectConfigurable);
@@ -134,6 +138,8 @@ class WebserverBlueprint implements Blueprint {
 		$this->addVersionEnvironment($version, $config, $serverService);
 
 		$this->addDatabaseService($config, $serverService, $infrastructure);
+
+		$this->getPhpFpmMaker()->make($config, $serverService, $infrastructure);
 
 		/**
 		 * Add Version suffix to the main service and all its sidekicks

@@ -36,6 +36,7 @@ This blueprint creates infrastructures to support apps using php7.
 
 | Option | Defaults to | Explanation |
 | ------- |:-----------:| ------------ |
+|`php`| `7.0` | Add php fpm to the nginx. The default version `7.0` does not start an extra service. Other fpm versions are run in their own container and will be a sidekick inside the nginx service. Available Versions: `7.0`, `5.3` |
 |`add-redis`| false | Add a Redis server and link it to the main app, providing its name and port in `REDIS_HOST` and `REDIS_PORT` |
 |`add-database`| false | If set to true then a database server will be started as part of the stack and linked to the main app. Database name, user and password can be found in `DATABASE_NAME`, `DATABASE_USER` and `DATABASE_PORT` |
 |`database.name`| db | Sets the name of the default database created by the database container |

@@ -100,6 +100,17 @@ $container['blueprint-service'] = function($c) {
 };
 
 /**
+ * Service Maker
+ */
+$container['php-fpm-maker'] = function($c) {
+	$phpFpmMaker = new \Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMaker();
+
+	$phpFpmMaker->addVersion(new \Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions\PHP70());
+	$phpFpmMaker->addVersion(new \Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions\PHP53());
+
+	return $phpFpmMaker;
+};
+/**
  * Blueprint Validator
  */
 $container['blueprint-rule-factory'] = function($c) {
