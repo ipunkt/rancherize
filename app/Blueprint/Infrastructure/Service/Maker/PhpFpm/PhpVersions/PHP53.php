@@ -33,6 +33,12 @@ class PHP53 implements PhpVersion {
 
 		$this->addAppSource($phpFpmService);
 
+		/**
+		 * Copy environment variables because environment variables are expected to be available in php
+		 */
+		foreach( $mainService->getEnvironmentVariables() as $name => $value )
+			$phpFpmService->setEnvironmentVariable($name, $value);
+
 		$mainService->addSidekick($phpFpmService);
 		$mainService->addVolumeFrom($phpFpmService);
 		$infrastructure->addService($phpFpmService);
