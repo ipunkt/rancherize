@@ -221,7 +221,7 @@ class WebserverBlueprint implements Blueprint {
 	protected function makeServerService(Configuration $config, Configuration $default) : Service {
 		$serverService = new Service();
 		$serverService->setName($config->get('service-name'));
-		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.9.7-7-1.2.4'));
+		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.9.7-7-1.2.5'));
 
 		if ($config->has('expose-port'))
 			$serverService->expose(80, $config->get('expose-port'));
