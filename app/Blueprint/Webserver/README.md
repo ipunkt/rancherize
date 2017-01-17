@@ -31,6 +31,7 @@ This blueprint creates infrastructures to support apps using php7.
 |`add-version`|  | The value given here will be used as name for an environment variable which is set to the version that is being built. |
 |`work-sub-directory` | '' | Appended to `.` / `getcwd()` as source directory for mounting / copying to the image |
 |`target-sub-directory` | '' | Appended to `/var/www/app` as target directory for mounting / copying to the image |
+|`extra-files` | [] | A list of pathes relative to the project root. All files will be added to /opt/custom/ |
 
 #### Additional services
 

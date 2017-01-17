@@ -4,6 +4,7 @@ use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Flags\HasFlagsTrait;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
+use Rancherize\Blueprint\Infrastructure\Service\Maker\CustomFiles\CustomFilesTrait;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMakerTrait;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\Infrastructure\Service\Services\AppService;
@@ -35,6 +36,8 @@ class WebserverBlueprint implements Blueprint {
 	use HasValidatorTrait;
 
 	use PhpFpmMakerTrait;
+
+	use CustomFilesTrait;
 
 	/**
 	 * @param Configurable $configurable
@@ -139,7 +142,10 @@ class WebserverBlueprint implements Blueprint {
 
 		$this->addDatabaseService($config, $serverService, $infrastructure);
 
+		$this->getCustomFilesMaker()->make($config, $serverService, $infrastructure);
+
 		$this->getPhpFpmMaker()->make($config, $serverService, $infrastructure);
+
 
 		/**
 		 * Add Version suffix to the main service and all its sidekicks
@@ -175,6 +181,8 @@ class WebserverBlueprint implements Blueprint {
 			$dockerfile->copy($nginxConfig, '/etc/nginx/conf.template.d/');
 
 		}
+
+		$this->getCustomFilesMaker()->applyToDockerfile($config, $dockerfile);
 
 		// TODO: Move to own function / service class
 		$additionalFiles = $config->get('add-files');
@@ -233,7 +241,7 @@ class WebserverBlueprint implements Blueprint {
 			$nginxConfig = $config->get('nginx-config');
 			if (!empty($nginxConfig)) {
 				$configName = basename($nginxConfig);
-				$serverService->addVolume(getcwd() . DIRECTORY_SEPARATOR . $nginxConfig, '/etc/nginx/conf.template.d/'.$configName);
+				$serverService->addVolume(getcwd() . DIRECTORY_SEPARATOR . $nginxConfig, '/etc/nginx/conf.template.d/999-laravel.conf.tpl');
 			}
 
 			$hostDirectory = getcwd() . $mountSuffix;

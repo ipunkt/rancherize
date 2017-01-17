@@ -110,6 +110,11 @@ $container['php-fpm-maker'] = function($c) {
 
 	return $phpFpmMaker;
 };
+
+$container['custom-files-maker'] = function($c) {
+	return new \Rancherize\Blueprint\Infrastructure\Service\Maker\CustomFiles\CustomFilesMaker();
+};
+
 /**
  * Blueprint Validator
  */

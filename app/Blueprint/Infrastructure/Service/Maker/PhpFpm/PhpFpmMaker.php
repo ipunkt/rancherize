@@ -51,9 +51,8 @@ class PhpFpmMaker {
 
 		$phpVersionString = $config->get('php', '7.0');
 
-		if( !array_key_exists($phpVersionString, $this->phpVersions) ) {
+		if( !array_key_exists($phpVersionString, $this->phpVersions) )
 			throw new PhpVersionNotAvailableException($phpVersionString);
-		}
 
 		$phpVersion= $this->phpVersions[$phpVersionString];
 
