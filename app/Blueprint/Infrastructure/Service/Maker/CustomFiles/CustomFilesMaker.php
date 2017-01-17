@@ -31,7 +31,7 @@ class CustomFilesMaker {
 		foreach($extraFiles as $filePath) {
 			$fileName = basename($filePath);
 
-			$mainService->addVolume($filePath, '/opt/custom/'.$fileName);
+			$mainService->addVolume(getcwd().DIRECTORY_SEPARATOR.$filePath, '/opt/custom/'.$fileName);
 		}
 	}
 
