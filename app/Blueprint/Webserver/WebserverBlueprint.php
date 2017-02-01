@@ -54,7 +54,8 @@ class WebserverBlueprint implements Blueprint {
 		$initializer = new ConfigurationInitializer($output);
 
 		if( $this->getFlag('dev', false) ) {
-			$initializer->init($fallbackConfigurable, 'docker.image', 'ipunktbs/nginx-debug:debug-1.2.5');
+			//$initializer->init($fallbackConfigurable, 'docker.image', 'ipunktbs/nginx-debug:debug-1.2.5');
+			$initializer->init($fallbackConfigurable, 'debug-image', true);
 
 			$minPort = $configurable->get('global.min-port', 9000);
 			$maxPort = $configurable->get('global.max-port', 20000);
@@ -230,6 +231,8 @@ class WebserverBlueprint implements Blueprint {
 		$serverService = new Service();
 		$serverService->setName($config->get('service-name'));
 		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.9.7-7-1.2.5'));
+		if( $config->get('debug-image', false) )
+			$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx-debug:debug-1.2.5'));
 
 		if ($config->has('expose-port'))
 			$serverService->expose(80, $config->get('expose-port'));
