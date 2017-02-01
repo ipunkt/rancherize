@@ -57,6 +57,8 @@ class StartCommand extends Command   {
 			$serviceName = $service->getName();
 			$ports = implode(', ', $exposedPorts);
 			$output->writeln("Service $serviceName was exposed to the ports $ports");
+			foreach($exposedPorts as $port)
+				$output->writeln("Link for convenience: http://localhost:$port");
 		}
 
 
