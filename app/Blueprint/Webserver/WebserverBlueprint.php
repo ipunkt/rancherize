@@ -61,6 +61,7 @@ class WebserverBlueprint implements Blueprint {
 			$maxPort = $configurable->get('global.max-port', 20000);
 			$port = mt_rand($minPort, $maxPort);
 
+			$initializer->init($fallbackConfigurable, 'sync-user-into-container', true);
 			$initializer->init($fallbackConfigurable, 'expose-port', $port);
 			$initializer->init($fallbackConfigurable, 'use-app-container', false);
 			$initializer->init($fallbackConfigurable, 'mount-workdir', true);
@@ -233,6 +234,11 @@ class WebserverBlueprint implements Blueprint {
 		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.9.7-7-1.2.6'));
 		if( $config->get('debug-image', false) )
 			$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx-debug:debug-1.2.6'));
+
+		if( $config->get('sync-user-into-container', false) ) {
+			$serverService->setEnvironmentVariable('USER_ID', getmyuid());
+			$serverService->setEnvironmentVariable('GROUP_ID', getmygid());
+		}
 
 		if ($config->has('expose-port'))
 			$serverService->expose(80, $config->get('expose-port'));

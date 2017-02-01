@@ -25,6 +25,7 @@ This blueprint creates infrastructures to support apps using php7.
 #### Usage options
 | Option | Defaults to | Explanation |
 | ------- |:-----------:| ------------ |
+|`sync-user-into-container`| false  | If set rancherize will set USER_ID and GROUP_ID of the container to your current uid/gid. Default images react to this by creating a user with it and running under this user. |
 |`debug-image`| false  | Use the debug version of the default build instead - !overwrites docker.image if set to true! |
 |`nginx-config`|  | If set to the path of a file relative to the app work directory then the file will be used by the main app nginx. This file gets included, so you have to configure only the `server` configuration for nginx. |
 |`environment` | [] | Any property set in this object will be passed to the running container as shell environment variable `PROPERTNAME=PROPERTYVALUE`. Note that environment values set in the `defaults` can be overwritten but not un-set |
