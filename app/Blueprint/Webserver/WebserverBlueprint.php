@@ -54,7 +54,7 @@ class WebserverBlueprint implements Blueprint {
 		$initializer = new ConfigurationInitializer($output);
 
 		if( $this->getFlag('dev', false) ) {
-			$initializer->init($fallbackConfigurable, 'docker.image', 'ipunktbs/nginx-debug');
+			$initializer->init($fallbackConfigurable, 'docker.image', 'ipunktbs/nginx-debug:debug-1.2.5');
 
 			$minPort = $configurable->get('global.min-port', 9000);
 			$maxPort = $configurable->get('global.max-port', 20000);
