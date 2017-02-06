@@ -231,9 +231,9 @@ class WebserverBlueprint implements Blueprint {
 	protected function makeServerService(Configuration $config, Configuration $default) : Service {
 		$serverService = new Service();
 		$serverService->setName($config->get('service-name'));
-		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.9.7-7-1.2.7'));
+		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.9.7-7-1.2.8'));
 		if( $config->get('debug-image', false) )
-			$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx-debug:debug-1.2.7'));
+			$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx-debug:debug-1.2.8'));
 
 		if( $config->get('sync-user-into-container', false) ) {
 			$serverService->setEnvironmentVariable('USER_ID', getmyuid());
