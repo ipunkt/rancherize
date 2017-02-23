@@ -6,6 +6,7 @@ require __DIR__.'/app/bootstrap.php';
 use Rancherize\Blueprint\Commands\BlueprintAdd;
 use Rancherize\Blueprint\Commands\BlueprintList;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
+use Rancherize\Configuration\Services\ProjectConfiguration;
 use Symfony\Component\Console\Application;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -53,6 +54,30 @@ $application->add(new \Rancherize\Plugin\Commands\PluginInstallCommand());
 $application->add(new \Rancherize\Plugin\Commands\PluginRegisterCommand());
 $application->add(new BlueprintAdd());
 $application->add(new BlueprintList());
+
+try {
+
+	/**
+	 * @var ProjectConfiguration $projectConfig
+	 */
+	$projectConfig = container('project-config-service');
+
+	$configuration = container('configuration');
+	$configuration = $projectConfig->load($configuration);
+	container()->offsetSet('project-config', $configuration);
+
+	/**
+	 * @var \Rancherize\Plugin\Loader\PluginLoader $pluginLoader
+	 */
+	$pluginLoader = container('plugin-loader');
+	$pluginLoader->load( $configuration, $application, container() );
+
+} catch(Exception $e) {
+
+    echo "Warning! Load Plugins failed: ". $e->getMessage();
+
+}
+
 
 $returnCode = $application->run();
 

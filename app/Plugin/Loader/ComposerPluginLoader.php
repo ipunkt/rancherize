@@ -1,6 +1,9 @@
 <?php namespace Rancherize\Plugin\Loader;
 
+use Pimple\Container;
 use Rancherize\Configuration\Configurable;
+use Rancherize\Plugin\Provider;
+use Symfony\Component\Console\Application;
 
 /**
  * Class ComposerPluginLoader
@@ -20,24 +23,46 @@ class ComposerPluginLoader implements PluginLoader {
 	}
 
 	/**
+	 * @param string $plugin
 	 * @param string $classpath
-	 * @return
 	 */
-	public function register(string $classpath) {
+	public function register(string $plugin, string $classpath) {
 		$plugins = $this->configurable->get('plugins');
 
 		if( !is_array($plugins) )
 			$plugins = [];
 
 		if( in_array($classpath, $plugins) )
-			throw new PluginAlreadyRegisteredException();
+			throw new PluginAlreadyRegisteredException($classpath);
+
+		$this->configurable->set($plugin, $classpath);
 	}
 
 	/**
 	 * @param \Rancherize\Configuration\Configuration $configuration
-	 * @return
+	 * @param Application $application
+	 * @param Container $container
 	 */
-	public function load(\Rancherize\Configuration\Configuration $configuration) {
-		// TODO: Implement load() method.
+	public function load(\Rancherize\Configuration\Configuration $configuration, Application $application, Container $container) {
+		$pluginClasspathes = $configuration->get('plugins');
+		if( !is_array($pluginClasspathes) )
+			$pluginClasspathes = [];
+
+		$plugins = [];
+		foreach($pluginClasspathes as $classpath) {
+			$plugin = new $classpath;
+			if( ! $plugin instanceof  Provider)
+				continue;
+
+			$plugin->setApplication($application);
+			$plugin->setContainer($container);
+			$plugin->register();
+
+			$plugins[] = $plugin;
+		}
+
+		foreach($plugins as $plugin) {
+			$plugin->boot();
+		}
 	}
 }

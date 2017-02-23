@@ -26,7 +26,7 @@ class StopCommand extends Command   {
 
 	protected function configure() {
 		$this->setName('stop')
-			->setDescription('Start an environment on the local machine')
+			->setDescription('Stop an environment on the local machine')
 			->addArgument('environment', InputArgument::REQUIRED)
 		;
 	}

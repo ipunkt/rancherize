@@ -1,4 +1,6 @@
 <?php namespace Rancherize\Plugin\Installer;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Interface PluginInstaller
@@ -7,9 +9,11 @@ interface PluginInstaller {
 
 	/**
 	 * @param $name
-	 * @return mixed
+	 * @param InputInterface $input
+	 * @param OutputInterface $output
+	 * @return
 	 */
-	function install($name);
+	function install($name, InputInterface $input, OutputInterface $output);
 
 	/**
 	 * @param $name

@@ -100,6 +100,31 @@ $container['blueprint-service'] = function($c) {
 };
 
 /**
+ * Plugins
+ */
+$container['plugin-installer'] = function($c) {
+	global $application;
+
+	$nameParser = new \Rancherize\Plugin\Composer\ComposerPacketNameParser();
+	$pathMaker = new \Rancherize\Plugin\Composer\ComposerPacketPathMaker();
+
+	$installer = new \Rancherize\Plugin\Installer\ComposerPluginInstaller($nameParser, $pathMaker);
+
+	$processHelper = $application->getHelperSet()->get('process');
+	$installer->setProcessHelper($processHelper);
+
+	return $installer;
+};
+
+$container['plugin-loader'] = function($c) {
+	/*
+	 * project-config is not set in this file - it is set in the rancherize.php once the project config was loaded for
+	 * use with the plugin system
+	 */
+	return new \Rancherize\Plugin\Loader\ComposerPluginLoader($c['project-config']);
+};
+
+/**
  * Service Maker
  */
 $container['php-fpm-maker'] = function($c) {

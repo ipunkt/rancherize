@@ -37,7 +37,7 @@ class PushCommand extends Command   {
 
 	protected function configure() {
 		$this->setName('push')
-			->setDescription('Start an environment on the local machine')
+			->setDescription('Start or upgrade the given environment in Rancher')
 			->addArgument('environment', InputArgument::REQUIRED)
 			->addArgument('version', InputArgument::REQUIRED)
 			->addOption('image-exists', 'i', InputOption::VALUE_NONE, 'Do not build and push the image to dockerhub')

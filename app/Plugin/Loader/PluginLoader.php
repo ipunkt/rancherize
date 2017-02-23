@@ -1,6 +1,8 @@
 <?php namespace Rancherize\Plugin\Loader;
 
+use Pimple\Container;
 use Rancherize\Configuration\Configuration;
+use Symfony\Component\Console\Application;
 
 /**
  * Interface PluginLoader
@@ -8,14 +10,17 @@ use Rancherize\Configuration\Configuration;
 interface PluginLoader {
 
 	/**
+	 * @param string $plugin
 	 * @param string $classpath
 	 * @return
 	 */
-	function register(string $classpath);
+	function register(string $plugin, string $classpath);
 
 	/**
 	 * @param Configuration $configuration
+	 * @param Application $application
+	 * @param Container $container
 	 * @return
 	 */
-	function load(Configuration $configuration);
+	function load(Configuration $configuration, Application $application, Container $container);
 }
