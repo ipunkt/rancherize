@@ -35,7 +35,8 @@ class ComposerPluginLoader implements PluginLoader {
 		if( in_array($classpath, $plugins) )
 			throw new PluginAlreadyRegisteredException($classpath);
 
-		$this->configurable->set($plugin, $classpath);
+		$plugins[$plugin] = $classpath;
+		$this->configurable->set('plugins', $plugins);
 	}
 
 	/**
