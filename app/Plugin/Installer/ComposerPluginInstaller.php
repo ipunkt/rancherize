@@ -1,7 +1,9 @@
 <?php namespace Rancherize\Plugin\Installer;
+
 use Rancherize\Plugin\Composer\ComposerPacketNameParser;
 use Rancherize\Plugin\Composer\ComposerPacketPathMaker;
 use Rancherize\Plugin\Exceptions\ComposerPacketNotRancherizePluginException;
+use Rancherize\Plugin\Exceptions\InstallFailedException;
 use Rancherize\Services\ProcessTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -49,6 +51,8 @@ class ComposerPluginInstaller implements PluginInstaller {
 			->setTimeout(null)
 			->getProcess();
 		$this->processHelper->run($output, $process, "Installation of packet $name failed");
+		if( !$process->isSuccessful() )
+			throw new InstallFailedException();
 	}
 
 	/**
@@ -64,13 +68,13 @@ class ComposerPluginInstaller implements PluginInstaller {
 		$composerContent = file_get_contents( $composerJson );
 		$composerData = json_decode( $composerContent, true );
 
-		if( !array_key_exists('extras', $composerData) )
-			throw new ComposerPacketNotRancherizePluginException($name, 'extras');
+		if( !array_key_exists('extra', $composerData) )
+			throw new ComposerPacketNotRancherizePluginException($name, 'extra');
 
-		$extras = $composerData['extras'];
-		if( !array_key_exists('rancherize-provider', $extras) )
-			throw new ComposerPacketNotRancherizePluginException($name, 'extras.rancherize-provider');
+		$extra = $composerData['extra'];
+		if( !array_key_exists('rancherize-provider', $extra) )
+			throw new ComposerPacketNotRancherizePluginException($name, 'extra.rancherize-provider');
 
-		return $extras['rancherize-provider'];
+		return $extra['rancherize-provider'];
 	}
 }

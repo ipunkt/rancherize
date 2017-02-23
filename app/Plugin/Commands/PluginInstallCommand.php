@@ -35,7 +35,7 @@ class PluginInstallCommand extends Command {
 		$classPath = $pluginInstaller->getClasspath($pluginName);
 
 		$pluginLoader = $this->getPluginLoader();
-		$pluginLoader->register($classPath);
+		$pluginLoader->register($pluginName, $classPath);
 	}
 
 

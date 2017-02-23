@@ -2,6 +2,7 @@
 
 use Pimple\Container;
 use Rancherize\Configuration\Configurable;
+use Rancherize\Configuration\Services\ProjectConfiguration;
 use Rancherize\Plugin\Provider;
 use Symfony\Component\Console\Application;
 
@@ -13,13 +14,19 @@ class ComposerPluginLoader implements PluginLoader {
 	 * @var Configurable
 	 */
 	private $configurable;
+	/**
+	 * @var ProjectConfiguration
+	 */
+	private $projectConfiguration;
 
 	/**
 	 * ComposerPluginLoader constructor.
 	 * @param Configurable $configurable
+	 * @param ProjectConfiguration $projectConfiguration
 	 */
-	public function __construct(Configurable $configurable) {
+	public function __construct(Configurable $configurable, ProjectConfiguration $projectConfiguration) {
 		$this->configurable = $configurable;
+		$this->projectConfiguration = $projectConfiguration;
 	}
 
 	/**
@@ -27,7 +34,7 @@ class ComposerPluginLoader implements PluginLoader {
 	 * @param string $classpath
 	 */
 	public function register(string $plugin, string $classpath) {
-		$plugins = $this->configurable->get('plugins');
+		$plugins = $this->configurable->get('project.plugins');
 
 		if( !is_array($plugins) )
 			$plugins = [];
@@ -36,7 +43,9 @@ class ComposerPluginLoader implements PluginLoader {
 			throw new PluginAlreadyRegisteredException($classpath);
 
 		$plugins[$plugin] = $classpath;
-		$this->configurable->set('plugins', $plugins);
+		$this->configurable->set('project.plugins', $plugins);
+
+		$this->projectConfiguration->save($this->configurable);
 	}
 
 	/**
@@ -45,7 +54,7 @@ class ComposerPluginLoader implements PluginLoader {
 	 * @param Container $container
 	 */
 	public function load(\Rancherize\Configuration\Configuration $configuration, Application $application, Container $container) {
-		$pluginClasspathes = $configuration->get('plugins');
+		$pluginClasspathes = $configuration->get('project.plugins');
 		if( !is_array($pluginClasspathes) )
 			$pluginClasspathes = [];
 

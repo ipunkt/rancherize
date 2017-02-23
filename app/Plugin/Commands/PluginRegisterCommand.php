@@ -35,7 +35,7 @@ class PluginRegisterCommand extends Command {
 		$pluginLoader = $this->getPluginLoader();
 
 		$classPath = $pluginInstaller->getClasspath($pluginName);
-		$pluginLoader->register($classPath);
+		$pluginLoader->register($pluginName, $classPath);
 
 
 	}
