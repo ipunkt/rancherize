@@ -49,6 +49,8 @@ $application->add(new \Rancherize\Commands\ValidateCommand());
 $application->add(new \Rancherize\Commands\RancherAccessCommand());
 $application->add(new \Rancherize\Commands\EnvironmentSetCommand());
 $application->add(new \Rancherize\Commands\EnvironmentVersionCommand());
+$application->add(new \Rancherize\Plugin\Commands\PluginInstallCommand());
+$application->add(new \Rancherize\Plugin\Commands\PluginRegisterCommand());
 $application->add(new BlueprintAdd());
 $application->add(new BlueprintList());
 
