@@ -7,9 +7,9 @@
 interface DockerComposeParserVersion {
 
 	/**
-	 * @param string $stackName
+	 * @param string $serviceName
 	 * @param array $data
 	 * @return array
 	 */
-	function getService(string $stackName, array $data);
+	function getService(string $serviceName, array $data);
 }
