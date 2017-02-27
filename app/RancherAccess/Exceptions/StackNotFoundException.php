@@ -1,4 +1,5 @@
 <?php namespace Rancherize\RancherAccess\Exceptions;
+
 use Rancherize\Exceptions\Exception;
 
 /**
@@ -7,7 +8,7 @@ use Rancherize\Exceptions\Exception;
  *
  * Thrown when RancherService::getStackidByName does not find a stack with the given name
  */
-class StackNotFoundException extends Exception  {
+class StackNotFoundException extends NameNotFoundException  {
 	/**
 	 * @var string
 	 */

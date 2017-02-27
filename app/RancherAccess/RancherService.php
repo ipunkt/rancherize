@@ -1,6 +1,7 @@
 <?php namespace Rancherize\RancherAccess;
 use Rancherize\RancherAccess\ApiService\ApiService;
 use Rancherize\RancherAccess\Exceptions\MultipleActiveServicesException;
+use Rancherize\RancherAccess\Exceptions\NameNotFoundException;
 use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
 use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
 use Rancherize\Services\ProcessTrait;
@@ -109,12 +110,14 @@ class RancherService {
 		$jsonData = $this->apiService->get($url, $headers);
 		$data = json_decode($jsonData, true);
 
-		foreach($data['data'] as $stack) {
-			if(strtolower($stack['name']) === strtolower($stackName) )
-				return $stack['id'];
+		$nameService = new ByNameService();
+		try {
+			$stack = $nameService->findName($data, $stackName);
+			return $stack['id'];
+		} catch(NameNotFoundException $e) {
+			throw new StackNotFoundException($stackName, 11);
 		}
 
-		throw new StackNotFoundException($stackName, 11);
 	}
 
 	/**
