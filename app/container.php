@@ -151,6 +151,14 @@ $container['blueprint-validator'] = function($c) {
 	return new \Rancherize\Blueprint\Validation\Validator($c['blueprint-rule-factory']);
 };
 
+$container['docker-compose-reader'] = function($c) {
+	return new Rancherize\Docker\DockerComposeReader\DockerComposeReader();
+};
+
+$container['docker-compose-versionizer'] = function($c) {
+	return new \Rancherize\Docker\DockerComposerVersionizer();
+};
+
 /**
  * Prevent redeclaration in unit tests
  */
