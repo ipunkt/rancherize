@@ -11,19 +11,20 @@ class SidekickParser {
 	 * @var SidekickNameParser
 	 */
 	private $nameParser;
+
 	/**
-	 * @var ByKeyService
+	 * @var ServiceParser
 	 */
-	private $byKeyService;
+	private $serviceParser;
 
 	/**
 	 * SidekickParser constructor.
 	 * @param SidekickNameParser $nameParser
-	 * @param ByKeyService $byKeyService
+	 * @param ServiceParser $serviceParser
 	 */
-	public function __construct(SidekickNameParser $nameParser, ByKeyService $byKeyService) {
+	public function __construct(SidekickNameParser $nameParser, ServiceParser $serviceParser) {
 		$this->nameParser = $nameParser;
-		$this->byKeyService = $byKeyService;
+		$this->serviceParser = $serviceParser;
 	}
 
 	public function parseSidekicks($serviceName, array $service, array $services) {
@@ -31,7 +32,7 @@ class SidekickParser {
 
 		$sidekicks = [];
 		foreach($names as $name) {
-			$sidekick = $this->byKeyService->byKey($name, $services);
+			$sidekick = $this->serviceParser->parse($name, $services);
 			$sidekicks[] = $sidekick;
 		}
 

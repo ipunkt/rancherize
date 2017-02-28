@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Docker\DockerComposeParser;
 
+use Rancherize\Docker\DockerComposeParser\Parsers\ServiceParserV2;
 use Rancherize\Docker\DockerComposeParser\Parsers\SidekickNameParser;
 use Rancherize\Docker\DockerComposeParser\Parsers\SidekickParser;
 use Rancherize\Docker\DockerfileParser\DockerComposeParserVersion;
@@ -16,17 +17,8 @@ class DockerComposeParserV2 implements DockerComposeParserVersion {
 	 * @return array
 	 */
 	public function getService(string $serviceName, array $data) {
-		if(!array_key_exists('services', $data))
-			throw new NotFoundException('services field', 'services', array_keys($data));
-
-		$services = $data['services'];
-
-		foreach($services as $currentServiceName => $serviceData) {
-			if( strtolower($serviceName) === strtolower($currentServiceName) )
-				return $serviceData;
-		}
-
-		throw new NotFoundException('service', $serviceName, array_keys($services));
+		$parser = new ServiceParserV2();
+		return $parser->parse($serviceName, $data);
 	}
 
 	/**
@@ -46,7 +38,7 @@ class DockerComposeParserV2 implements DockerComposeParserVersion {
 	 * @return array
 	 */
 	public function getSidekicks(string $serviceName, array $service, array $services) {
-		$parser = new SidekickParser(new SidekickNameParser(), container('by-key-service'));
+		$parser = new SidekickParser(new SidekickNameParser(), new ServiceParserV2());
 		return $parser->parseSidekicks($serviceName, $service, $services);
 	}
 }
