@@ -159,6 +159,10 @@ $container['docker-compose-versionizer'] = function($c) {
 	return new \Rancherize\Docker\DockerComposerVersionizer();
 };
 
+$container['by-key-service'] = function($c) {
+	return new \Rancherize\General\Services\ByKeyService();
+};
+
 /**
  * Prevent redeclaration in unit tests
  */
