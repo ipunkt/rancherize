@@ -21,7 +21,7 @@ class SidekickNameParser {
 		if(! array_key_exists('io.rancher.sidekicks', $labels) )
 			throw new NotFoundException('io.rancher.sidekicks', $serviceName, array_keys($labels));
 
-		$sidekickNames = explode(',', $labels);
+		$sidekickNames = explode(',', $labels['io.rancher.sidekicks']);
 
 		return $sidekickNames;
 	}
