@@ -21,6 +21,6 @@ class ByKeyService {
 				return [$currentKey, $currentValue];
 		}
 
-		throw new KeyNotFoundException($key, $data);
+		throw new KeyNotFoundException($key, array_keys($data));
 	}
 }
