@@ -113,13 +113,13 @@ class ServiceWriter {
 		$content['restart'] = $restartValues[ $service->getRestart() ];
 
 
-		$this->writeYaml($this->path . 'docker-compose.yml', $service, $fileWriter, $content);
+		$this->writeYaml($this->path . '/docker-compose.yml', $service, $fileWriter, $content);
 
 		$rancherContent = [
 			'scale' => $service->getScale()
 		];
 
-		$this->writeYaml($this->path . 'rancher-compose.yml', $service, $fileWriter, $rancherContent);
+		$this->writeYaml($this->path . '/rancher-compose.yml', $service, $fileWriter, $rancherContent);
 	}
 
 	/**

@@ -41,7 +41,7 @@ class VolumeWriter {
 
 		$this->addNonEmpty('driver', $volume->getDriver(), $content);
 
-		$this->writeYaml($this->path . 'rancher-compose.yml', $volume, $fileWriter, $content);
+		$this->writeYaml($this->path . '/docker-compose.yml', $volume, $fileWriter, $content);
 	}
 
 	/**
