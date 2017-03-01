@@ -167,6 +167,11 @@ $container['by-key-service'] = function($c) {
 	return new \Rancherize\General\Services\ByKeyService();
 };
 
+$container['name-is-path-checker'] = function($c) {
+	return new \Rancherize\General\Services\NameIsPathChecker();
+};
+
+
 /**
  * Prevent redeclaration in unit tests
  */
