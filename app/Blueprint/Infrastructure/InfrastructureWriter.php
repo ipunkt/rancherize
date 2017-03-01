@@ -52,9 +52,7 @@ class InfrastructureWriter {
 	 */
 	public function write(Infrastructure $infrastructure, FileWriter $fileWriter) {
 
-		$dockerfileWriter = $this->dockerfileWriter;
-		$dockerfileWriter->setPath($this->path);
-		$dockerfileWriter->write($infrastructure->getDockerfile(), $fileWriter);
+		$this->writeDockerfile($infrastructure, $fileWriter);
 
 		$serviceWriter = $this->serviceWriter;
 		$serviceWriter->setPath($this->path);
@@ -88,5 +86,18 @@ class InfrastructureWriter {
 	public function setPath(string $path) {
 		$this->path = $path;
 		return $this;
+	}
+
+	/**
+	 * @param Infrastructure $infrastructure
+	 * @param FileWriter $fileWriter
+	 */
+	private function writeDockerfile(Infrastructure $infrastructure, FileWriter $fileWriter) {
+		if( !$infrastructure->hasDockerfile() )
+			return;
+
+		$dockerfileWriter = $this->dockerfileWriter;
+		$dockerfileWriter->setPath($this->path);
+		$dockerfileWriter->write($infrastructure->getDockerfile(), $fileWriter);
 	}
 }

@@ -68,4 +68,11 @@ class Infrastructure {
 	public function getVolumes(): array {
 		return $this->volumes;
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasDockerfile() {
+		return ($this->dockerfile !== null);
+	}
 }
