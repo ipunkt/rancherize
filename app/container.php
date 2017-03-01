@@ -155,6 +155,10 @@ $container['docker-compose-reader'] = function($c) {
 	return new Rancherize\Docker\DockerComposeReader\DockerComposeReader();
 };
 
+$container['rancher-compose-reader'] = function($c) {
+	return new Rancherize\Docker\RancherComposeReader\RancherComposeReader();
+};
+
 $container['docker-compose-versionizer'] = function($c) {
 	return new \Rancherize\Docker\DockerComposerVersionizer();
 };
