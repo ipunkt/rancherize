@@ -141,8 +141,8 @@ class ServiceWriter {
 	 * @param FileWriter $fileWriter
 	 */
 	public function clear(FileWriter $fileWriter) {
-		$fileWriter->put($this->path.'docker-compose.yml', '');
-		$fileWriter->put($this->path.'rancher-compose.yml', '');
+		$fileWriter->put($this->path.'/docker-compose.yml', '');
+		$fileWriter->put($this->path.'/rancher-compose.yml', '');
 	}
 
 	/**
