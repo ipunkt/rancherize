@@ -33,7 +33,7 @@ class SidekickParser {
 		$sidekicks = [];
 		foreach($names as $name) {
 			$sidekick = $this->serviceParser->parse($name, $services);
-			$sidekicks[] = $sidekick;
+			$sidekicks[$name] = $sidekick;
 		}
 
 		return $sidekicks;
