@@ -1,6 +1,7 @@
 <?php namespace Rancherize\Blueprint\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
+use Rancherize\Blueprint\Infrastructure\Volume\Volume;
 
 /**
  * Class Infrastructure
@@ -20,6 +21,11 @@ class Infrastructure {
 	 * Service[]
 	 */
 	protected $services = [];
+
+	/**
+	 * @var Volume[]
+	 */
+	protected $volumes = [];
 
 	/**
 	 * @param Dockerfile $dockerfile
@@ -47,5 +53,19 @@ class Infrastructure {
 	 */
 	public function getServices() : array {
 		return $this->services;
+	}
+
+	/**
+	 * @param Volume $volume
+	 */
+	public function addVolume(Volume $volume) {
+		$this->volumes[$volume->getName()] = $volume;
+	}
+
+	/**
+	 * @return Volume[]
+	 */
+	public function getVolumes(): array {
+		return $this->volumes;
 	}
 }

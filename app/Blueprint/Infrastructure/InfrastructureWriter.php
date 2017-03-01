@@ -27,15 +27,22 @@ class InfrastructureWriter {
 	 * @var ServiceWriter
 	 */
 	private $serviceWriter;
+	/**
+	 * @var VolumeWriter
+	 */
+	private $volumeWriter;
 
 	/**
 	 * InfrastructureWriter constructor.
 	 * @param DockerfileWriter $dockerfileWriter
 	 * @param ServiceWriter $serviceWriter
+	 * @param VolumeWriter $volumeWriter
 	 */
-	public function __construct(DockerfileWriter $dockerfileWriter, ServiceWriter $serviceWriter) {
+	public function __construct(DockerfileWriter $dockerfileWriter, ServiceWriter $serviceWriter,
+								VolumeWriter $volumeWriter) {
 		$this->dockerfileWriter = $dockerfileWriter;
 		$this->serviceWriter = $serviceWriter;
+		$this->volumeWriter = $volumeWriter;
 	}
 
 	/**
@@ -50,12 +57,17 @@ class InfrastructureWriter {
 
 		$serviceWriter = $this->serviceWriter;
 		$serviceWriter->setPath($this->path);
+		$volumeWriter = $this->volumeWriter;
+		$volumeWriter->setPath($this->path);
 
 		if( !$this->skipClear )
 			$serviceWriter->clear($fileWriter);
 
 		foreach($infrastructure->getServices() as $service)
 			$serviceWriter->write($service, $fileWriter);
+
+		foreach($infrastructure->getVolumes() as $volume)
+			$volumeWriter->write($volume, $fileWriter);
 
 	}
 
