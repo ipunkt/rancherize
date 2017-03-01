@@ -1,6 +1,7 @@
 <?php namespace Rancherize\Blueprint\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\DockerfileWriter;
 use Rancherize\Blueprint\Infrastructure\Service\ServiceWriter;
+use Rancherize\Blueprint\Infrastructure\Volume\VolumeWriter;
 use Rancherize\File\FileWriter;
 
 /**
