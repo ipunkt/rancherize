@@ -152,6 +152,11 @@ class ServiceWriter {
 	 * @return ServiceWriter
 	 */
 	public function setPath(string $path): ServiceWriter {
+
+		// remove trailing '/' if found
+		if( substr($path, -1) === '/' )
+			$path = substr($path, 0, -1);
+
 		$this->path = $path;
 		return $this;
 	}

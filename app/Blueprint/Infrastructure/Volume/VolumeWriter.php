@@ -63,8 +63,8 @@ class VolumeWriter {
 	 * @param FileWriter $fileWriter
 	 */
 	public function clear(FileWriter $fileWriter) {
-		$fileWriter->put($this->path.'docker-compose.yml', '');
-		$fileWriter->put($this->path.'rancher-compose.yml', '');
+		$fileWriter->put($this->path.'/docker-compose.yml', '');
+		$fileWriter->put($this->path.'/rancher-compose.yml', '');
 	}
 
 	/**
@@ -74,6 +74,11 @@ class VolumeWriter {
 	 * @return VolumeWriter
 	 */
 	public function setPath(string $path): VolumeWriter {
+
+		// remove trailing '/' if found
+		if( substr($path, -1) === '/' )
+			$path = substr($path, 0, -1);
+
 		$this->path = $path;
 		return $this;
 	}
