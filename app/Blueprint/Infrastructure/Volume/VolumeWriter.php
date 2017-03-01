@@ -73,7 +73,7 @@ class VolumeWriter {
 	 * @param string $path
 	 * @return VolumeWriter
 	 */
-	public function setPath(string $path): ServiceWriter {
+	public function setPath(string $path): VolumeWriter {
 		$this->path = $path;
 		return $this;
 	}
