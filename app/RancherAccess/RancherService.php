@@ -326,4 +326,23 @@ class RancherService {
 
 		return substr($currentService, strlen($serviceName.'-') );
 	}
+
+	/**
+	 * @param string $directory
+	 * @param string $stackName
+	 */
+	public function stop(string $directory, string $stackName) {
+		$url = $this->getUrl();
+		$process = ProcessBuilder::create([
+			$this->account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName, 'stop'
+		])
+			->setTimeout(null)
+			->addEnvironmentVariables([
+				'RANCHER_URL' => $url,
+				'RANCHER_ACCESS_KEY' => $this->account->getKey(),
+				'RANCHER_SECRET_KEY' => $this->account->getSecret(),
+			])->getProcess();
+
+		$this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+	}
 }
