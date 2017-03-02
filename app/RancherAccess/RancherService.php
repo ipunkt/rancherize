@@ -406,13 +406,9 @@ class RancherService {
 			$objects = $data['data'];
 			$service = $this->byNameService->findName($objects, $serviceName);
 
-			if( !array_key_exists('data', $service) )
-				throw new MissingDataException('service.data', array_keys($data) );
-			$serviceData = $service['data'];
-
 			++$run;
-		} while( !$stateMatcher->match($serviceData) );
+		} while( !$stateMatcher->match($service) );
 
-		return $serviceData;
+		return $service;
 	}
 }
