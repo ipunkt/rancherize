@@ -13,10 +13,12 @@ class ByNameService {
 	 * @param $name
 	 * @return array
 	 */
-	public function findName(array $data, $name) {
+	public function findName(array $data, $name, $field = null) {
+		if($field == null)
+			$field = 'name';
 
-		foreach($data['data'] as $stack) {
-			if(strtolower($stack['name']) === strtolower($name) )
+		foreach($data as $stack) {
+			if(strtolower($stack[$field]) === strtolower($name) )
 				return $stack;
 		}
 

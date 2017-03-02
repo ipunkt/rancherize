@@ -1,5 +1,6 @@
 <?php namespace Rancherize\RancherAccess;
 use Rancherize\RancherAccess\ApiService\ApiService;
+use Rancherize\RancherAccess\Exceptions\MissingDataException;
 use Rancherize\RancherAccess\Exceptions\MultipleActiveServicesException;
 use Rancherize\RancherAccess\Exceptions\NameNotFoundException;
 use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
@@ -27,6 +28,11 @@ class RancherService {
 	 */
 	private $apiService;
 
+	/**
+	 * @var
+	 */
+	private $byNameService;
+
 	use ProcessTrait;
 
 
@@ -38,6 +44,7 @@ class RancherService {
 	public function __construct(ApiService $apiService, RancherAccount $account = null) {
 		$this->account = $account;
 		$this->apiService = $apiService;
+		$this->byNameService = new ByNameService();
 	}
 
 	/**
@@ -109,10 +116,12 @@ class RancherService {
 
 		$jsonData = $this->apiService->get($url, $headers);
 		$data = json_decode($jsonData, true);
+		if( !array_key_exists('data', $data) )
+			throw new MissingDataException('data', array_keys($data) );
+		$stacks = $data['data'];
 
-		$nameService = new ByNameService();
 		try {
-			$stack = $nameService->findName($data, $stackName);
+			$stack = $this->byNameService->findName($stacks, $stackName);
 			return $stack['id'];
 		} catch(NameNotFoundException $e) {
 			throw new StackNotFoundException($stackName, 11);
@@ -346,5 +355,58 @@ class RancherService {
 			])->getProcess();
 
 		$this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+	}
+
+	/**
+	 * Waits until the given service reaches a state thats matched by the $stateMatcher. The $delayer is called between
+	 * runs to wait before trying again.
+	 * The actual status reached is returned
+	 *
+	 * @param string $stackName
+	 * @param string $serviceName
+	 * @param StateMatcher $stateMatcher defaults to SingleStateMatcher('active') - wait until active
+	 * @param Delayer $delayer defaults to FixedSleepDelayer(500000) - wait for half a second
+	 * @return string
+	 */
+	public function wait(string $stackName, string $serviceName, StateMatcher $stateMatcher = null, Delayer $delayer = null) {
+		if($stateMatcher === null)
+			$stateMatcher = new SingleStateMatcher('active');
+		if($delayer === null)
+			$delayer = new FixedSleepDelayer(500000);
+
+		$stackId = $this->getStackIdByName($stackName);
+		$url = implode('/', [
+			$this->account->getUrl(),
+			'projects',
+			$stackId,
+			'services'
+		]);
+
+		$run = 1;
+		do {
+			if( 1 < $run )
+				$delayer->delay($run);
+
+			$headers = [];
+			$this->addAuthHeader($headers);
+
+			$jsonData = $this->apiService->get($url, $headers);
+			$data = json_decode($jsonData, true);
+
+			if( !array_key_exists('data', $data) )
+				throw new MissingDataException('data', array_keys($data) );
+
+			$objects = $data['data'];
+			$service = $this->byNameService->findName($objects, $serviceName);
+
+			if( !array_key_exists('state', $data) )
+				throw new MissingDataException('state', array_keys($data) );
+
+			$state = $service['state'];
+
+			++$run;
+		} while( !$stateMatcher->match($state) );
+
+		return $state;
 	}
 }
