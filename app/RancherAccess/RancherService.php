@@ -6,11 +6,9 @@ use Rancherize\RancherAccess\Exceptions\NameNotFoundException;
 use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
 use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
 use Rancherize\Services\ProcessTrait;
-use Symfony\Component\Console\Helper\ProcessHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\ProcessBuilder;
 use Symfony\Component\Yaml\Yaml;
-use ZipArchive;
 
 /**
  * Class RancherService
