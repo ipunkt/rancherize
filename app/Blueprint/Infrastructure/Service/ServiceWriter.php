@@ -53,6 +53,7 @@ class ServiceWriter {
 		$this->addNonEmpty('ports', $ports, $content);
 
 		$this->addNonEmpty('stdin_open', $service->isKeepStdin(), $content);
+		$this->addNonEmpty('command', $service->getCommand(), $content);
 
 		$volumes = [];
 		foreach($service->getVolumes() as $name => $value)
