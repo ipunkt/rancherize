@@ -189,13 +189,15 @@ class RancherService {
 	 *
 	 * @param string $directory
 	 * @param string $stackName
+	 * @param bool $run Defaults to false. Set to true to not disconnect from the service. Use Case: Run one time commands in a container/service which terminate
 	 */
-	public function start(string $directory, string $stackName) {
+	public function start(string $directory, string $stackName, $run = false) {
 
 		$url = $this->getUrl();
-		$process = ProcessBuilder::create([
-			$this->account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName, 'up', '-d'
-		])
+		$command = [ $this->account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName, 'up' ];
+		if( !$run )
+			$command[] = '-d';
+		$process = ProcessBuilder::create( $command )
 			->setTimeout(null)
 			->addEnvironmentVariables([
 				'RANCHER_URL' => $url,
