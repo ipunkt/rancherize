@@ -196,14 +196,23 @@ class RancherService {
 	 *
 	 * @param string $directory
 	 * @param string $stackName
-	 * @param bool $run Defaults to false. Set to true to not disconnect from the service. Use Case: Run one time commands in a container/service which terminate
+	 * @param array $serviceNames only start a certain service
+	 * @param bool $upgrade
 	 */
-	public function start(string $directory, string $stackName, $run = false) {
+	public function start(string $directory, string $stackName, array $serviceNames = null, bool $upgrade = false) {
+		if($serviceNames === null)
+			$serviceNames = [];
+		if( !is_array($serviceNames) )
+			$serviceNames = [$serviceNames];
 
 		$url = $this->getUrl();
-		$command = [ $this->account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName, 'up' ];
-		if( !$run )
-			$command[] = '-d';
+		$command = [ $this->account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName, 'up', '-d' ];
+
+		if($upgrade)
+			$command = array_merge($command, ['--upgrade']);
+
+		$command = array_merge($command, $serviceNames);
+
 		$process = ProcessBuilder::create( $command )
 			->setTimeout(null)
 			->addEnvironmentVariables([
