@@ -9,8 +9,8 @@
  */
 interface StateMatcher {
 	/**
-	 * @param $state
+	 * @param $service
 	 * @return bool
 	 */
-	function match($state);
+	function match($service);
 }

@@ -367,7 +367,7 @@ class RancherService {
 	/**
 	 * Waits until the given service reaches a state thats matched by the $stateMatcher. The $delayer is called between
 	 * runs to wait before trying again.
-	 * The actual status reached is returned
+	 * The matched service data
 	 *
 	 * @param string $stackName
 	 * @param string $serviceName
@@ -410,14 +410,9 @@ class RancherService {
 				throw new MissingDataException('service.data', array_keys($data) );
 			$serviceData = $service['data'];
 
-			if( !array_key_exists('state', $serviceData) )
-				throw new MissingDataException('service.data.state', array_keys($serviceData) );
-
-			$state = $serviceData['state'];
-
 			++$run;
-		} while( !$stateMatcher->match($state) );
+		} while( !$stateMatcher->match($serviceData) );
 
-		return $state;
+		return $serviceData;
 	}
 }

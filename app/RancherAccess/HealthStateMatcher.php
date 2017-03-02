@@ -4,7 +4,7 @@
  * Class SingleStateMatcher
  * @package Rancherize\RancherAccess
  */
-class SingleStateMatcher implements StateMatcher {
+class HealthStateMatcher implements StateMatcher {
 	/**
 	 * @var string
 	 */
@@ -23,6 +23,6 @@ class SingleStateMatcher implements StateMatcher {
 	 * @return bool
 	 */
 	public function match($service) {
-		return (strtolower($service['state']) === $this->expectedState);
+		return (strtolower($service['healthState']) === $this->expectedState);
 	}
 }
