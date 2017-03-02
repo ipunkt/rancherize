@@ -377,7 +377,7 @@ class RancherService {
 		$stackId = $this->getStackIdByName($stackName);
 		$url = implode('/', [
 			$this->account->getUrl(),
-			'projects',
+			'environments',
 			$stackId,
 			'services'
 		]);
