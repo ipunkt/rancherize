@@ -41,6 +41,9 @@ class VolumeWriter {
 
 		$this->addNonEmpty('driver', $volume->getDriver(), $content);
 
+		if($volume->hasExternal() && $volume->getExternal())
+			$content['external'] = true;
+
 		$this->writeYaml($this->path . '/docker-compose.yml', $volume, $fileWriter, $content);
 	}
 

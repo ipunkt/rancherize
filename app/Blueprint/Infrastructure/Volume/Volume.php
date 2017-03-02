@@ -17,6 +17,11 @@ class Volume {
 	protected $driver;
 
 	/**
+	 * @var string
+	 */
+	protected $external;
+
+	/**
 	 * @return string
 	 */
 	public function getName(): string {
@@ -44,6 +49,26 @@ class Volume {
 		$this->driver = $driver;
 	}
 
+	/**
+	 * @return bool
+	 */
+	public function hasExternal() : bool {
+		return $this->external !== null;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getExternal(): string {
+		return $this->external;
+	}
+
+	/**
+	 * @param string $external
+	 */
+	public function setExternal(string $external) {
+		$this->external = $external;
+	}
 
 
 }
