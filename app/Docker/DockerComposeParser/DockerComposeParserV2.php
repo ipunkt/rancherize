@@ -6,6 +6,7 @@ use Rancherize\Docker\DockerComposeParser\Parsers\SidekickParser;
 use Rancherize\Docker\DockerComposeParser\Parsers\VolumeNameSplitter;
 use Rancherize\Docker\DockerComposeParser\Parsers\VolumeParser;
 use Rancherize\Docker\DockerComposeParser\Parsers\VolumeSetter;
+use Rancherize\General\Services\ByKeyService;
 
 /**
  * Class DockerComposeParserV2
@@ -19,7 +20,7 @@ class DockerComposeParserV2 implements DockerComposeParserVersion {
 	 * @return array
 	 */
 	public function getService(string $serviceName, array $data) {
-		$parser = new ServiceParserV2();
+		$parser = new ServiceParserV2(new ByKeyService());
 		return $parser->parse($serviceName, $data);
 	}
 
@@ -40,7 +41,7 @@ class DockerComposeParserV2 implements DockerComposeParserVersion {
 	 * @return array
 	 */
 	public function getSidekicks(string $serviceName, array $service, array $services) {
-		$parser = new SidekickParser(new SidekickNameParser(), new ServiceParserV2());
+		$parser = new SidekickParser(new SidekickNameParser(), new ServiceParserV2(new ByKeyService()));
 		return $parser->parseSidekicks($serviceName, $service, $services);
 	}
 

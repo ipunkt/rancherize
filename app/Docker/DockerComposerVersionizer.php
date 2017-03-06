@@ -2,10 +2,8 @@
 
 use Rancherize\Docker\DockerComposeParser\DockerComposeParserV1;
 use Rancherize\Docker\DockerComposeParser\DockerComposeParserV2;
-use Rancherize\Docker\DockerComposeReader\DockerComposeReader;
-use Rancherize\Docker\DockerfileParser\DockerComposeParserVersion;
+use Rancherize\Docker\DockerComposeParser\DockerComposeParserVersion;
 use Rancherize\Docker\Exceptions\UnkownDockerComposeVersion;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class DockerComposerVersionizer
