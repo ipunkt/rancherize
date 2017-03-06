@@ -6,7 +6,6 @@ use Rancherize\Docker\DockerComposeParser\Parsers\SidekickParser;
 use Rancherize\Docker\DockerComposeParser\Parsers\VolumeNameSplitter;
 use Rancherize\Docker\DockerComposeParser\Parsers\VolumeParser;
 use Rancherize\Docker\DockerComposeParser\Parsers\VolumeSetter;
-use Rancherize\Docker\DockerfileParser\DockerComposeParserVersion;
 
 /**
  * Class DockerComposeParserV2

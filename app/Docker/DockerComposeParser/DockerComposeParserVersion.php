@@ -1,4 +1,4 @@
-<?php namespace Rancherize\Docker\DockerfileParser;
+<?php namespace Rancherize\Docker\DockerComposeParser;
 
 /**
  * Interface DockerComposeParserVersion
