@@ -26,6 +26,8 @@ class ServiceParserV1 implements ServiceParser {
 	 * @return mixed
 	 */
 	public function parse(string $serviceName, array $data) {
-		return $this->byKeyService->byKey($serviceName, $data);
+		list($key, $service) = $this->byKeyService->byKey($serviceName, $data);
+
+		return $service;
 	}
 }

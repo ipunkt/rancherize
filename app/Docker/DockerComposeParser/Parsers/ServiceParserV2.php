@@ -33,6 +33,8 @@ class ServiceParserV2 implements ServiceParser {
 
 		$services = $data['services'];
 
-		return $this->byKeyService->byKey($serviceName, $services);
+		list($key, $service) = $this->byKeyService->byKey($serviceName, $services);
+
+		return $service;
 	}
 }
