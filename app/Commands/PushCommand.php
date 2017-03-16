@@ -98,7 +98,7 @@ class PushCommand extends Command   {
 			$activeStack = $this->getRancher()->getActiveService($stackName, $name);
 
 			if($activeStack === $versionizedName)
-				$this->getRancher()->start('./.rancherize', $stackName, $versionizedName);
+				$this->getRancher()->start('./.rancherize', $stackName, [$versionizedName]);
 			else
 				$this->getRancher()->upgrade('./.rancherize', $stackName, $activeStack, $versionizedName);
 		} catch(NoActiveServiceException $e) {
