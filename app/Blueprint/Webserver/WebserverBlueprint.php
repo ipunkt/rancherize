@@ -67,8 +67,9 @@ class WebserverBlueprint implements Blueprint {
 			$initializer->init($fallbackConfigurable, 'mount-workdir', true);
 			$initializer->init($fallbackConfigurable, 'add-redis', false);
 			$initializer->init($fallbackConfigurable, 'add-database', false);
-			$initializer->init($fallbackConfigurable, 'database.pma', false);
-			$initializer->init($fallbackConfigurable, 'database.pma-expose', false);
+			$initializer->init($fallbackConfigurable, 'database.pma.enable', false);
+			$initializer->init($fallbackConfigurable, 'database.pma.require-login', false);
+			$initializer->init($fallbackConfigurable, 'database.pma.expose', false);
 
 			do {
 				$pmaPort = mt_rand($minPort, $maxPort);
@@ -344,8 +345,11 @@ class WebserverBlueprint implements Blueprint {
 						$databaseService->getDatabasePassword()
 					);
 				}
-				if ($config->get('database.pma-expose', true))
-					$pmaService->expose(80, $config->get('database.pma-port', 8082));
+				if ($config->get('database.pma-expose', true) || $config->get('database.pma.expose', true)) {
+					$legacyPort = $config->get('database.pma-port', 8082);
+					$pmaService->expose(80, $config->get('database.pma.port', $legacyPort));
+
+				}
 
 				$infrastructure->addService($pmaService);
 			}

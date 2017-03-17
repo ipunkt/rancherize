@@ -47,5 +47,5 @@ This blueprint creates infrastructures to support apps using php7.
 |`database.password`| pw | Sets the default password created by the database container |
 |`database.pma` OR `database.pma.enable`| true | !Only effective if add-database is true! If set to true then a phpmyadmin container is started and connected to the database container |
 |`database.pma.require-login`| false | !Only effective if database.pma is true! `true` requires login to pma. `false` logs pma into the database with the database user and password.|
-|`database.expose`| true | Can be set to false to prevent exposing the internal pma port 80 to a host port. |
-|`database.pma-port`| 8082 | Host port to expose the pma container port 80 to. |
+|`database.pma-expose` OR `database.pma.expose`| true | Can be set to false to prevent exposing the internal pma port 80 to a host port. |
+|`database.pma-port` OR `database.pma.port`| 8082 | Host port to expose the pma container port 80 to. |
