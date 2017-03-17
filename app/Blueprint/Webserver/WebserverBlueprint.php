@@ -331,11 +331,14 @@ class WebserverBlueprint implements Blueprint {
 			/**
 			 * PMA
 			 */
-			if ($config->get('database.pma', true)) {
+			$pma = $config->get('database.pma', true);
+			$isPmaEnabledDirectly = ( !is_array($pma) && $pma == true );
+			$isPmaEnabledInArray = ( is_array($pma) && $config->get('database.pma.enable', true) );
+			if ( $isPmaEnabledInArray ||  $isPmaEnabledDirectly ) {
 				$pmaService = new PmaService();
 				$pmaService->addLink($databaseService, 'db');
 
-				if ($config->get('database.pma-require-login', false)) {
+				if ( !$config->get('database.pma.require-login', false) ) {
 					$pmaService->setLogin(
 						$databaseService->getDatabaseUser(),
 						$databaseService->getDatabasePassword()
