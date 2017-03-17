@@ -249,7 +249,7 @@ class WebserverBlueprint implements Blueprint {
 
 			$nginxConfig = $config->get('nginx-config');
 			if (!empty($nginxConfig)) {
-				$configName = basename($nginxConfig);
+				//$configName = basename($nginxConfig);
 				$serverService->addVolume(getcwd() . DIRECTORY_SEPARATOR . $nginxConfig, '/etc/nginx/conf.template.d/999-laravel.conf.tpl');
 			}
 
@@ -334,6 +334,13 @@ class WebserverBlueprint implements Blueprint {
 			if ($config->get('database.pma', true)) {
 				$pmaService = new PmaService();
 				$pmaService->addLink($databaseService, 'db');
+
+				if ($config->get('database.pma-require-login', false)) {
+					$pmaService->setLogin(
+						$databaseService->getDatabaseUser(),
+						$databaseService->getDatabasePassword()
+					);
+				}
 				if ($config->get('database.pma-expose', true))
 					$pmaService->expose(80, $config->get('database.pma-port', 8082));
 

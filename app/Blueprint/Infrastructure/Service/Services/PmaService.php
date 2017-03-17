@@ -18,4 +18,13 @@ class PmaService extends Service {
 		$this->setKeepStdin(true);
 	}
 
+	/**
+	 * @param $user
+	 * @param $password
+	 */
+	public function setLogin($user, $password) {
+		$this->setEnvironmentVariable('PMA_USER', $user);
+		$this->setEnvironmentVariable('PMA_PASSWORD', $password);
+	}
+
 }
