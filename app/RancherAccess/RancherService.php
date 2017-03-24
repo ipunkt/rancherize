@@ -335,6 +335,7 @@ class RancherService {
 		}
 
 		$matchingServices = [];
+		$matchingServiceNames = [];
 		foreach($rancherData as $serviceName => $data) {
 
 			$translatedServiceName = trim(strtolower($serviceName));
@@ -359,10 +360,11 @@ class RancherService {
 			$dockerDefinition = $dockerData[$serviceName];
 			$dockerDefinition['name'] = $serviceName;
 			$matchingServices[] = $dockerDefinition;
+			$matchingServiceNames[] = $serviceName;
 		}
 
 		if( 1 < count($matchingServices) )
-			throw new MultipleActiveServicesException($name, $matchingServices);
+			throw new MultipleActiveServicesException($name, $matchingServiceNames);
 
 		if( empty($matchingServices))
 			throw new NoActiveServiceException($name);
