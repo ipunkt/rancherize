@@ -88,6 +88,13 @@ class Service {
 	protected $externalLinks = [];
 
 	/**
+	 * If true: use upgrade strategy start before stopping.
+	 *
+	 * @var bool
+	 */
+	protected $startFirst = true;
+
+	/**
 	 * @return string
 	 */
 	public function getName(): string {
@@ -322,6 +329,20 @@ class Service {
 	 */
 	public function addSidekick(Service $sidekicks) {
 		$this->sidekicks[] = $sidekicks;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isStartFirst(): bool {
+		return $this->startFirst;
+	}
+
+	/**
+	 * @param bool $startFirst
+	 */
+	public function setStartFirst(bool $startFirst) {
+		$this->startFirst = $startFirst;
 	}
 
 
