@@ -1,5 +1,4 @@
 <?php namespace Rancherize\RancherAccess;
-use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\RancherAccess\ApiService\ApiService;
 use Rancherize\RancherAccess\Exceptions\MissingDataException;
 use Rancherize\RancherAccess\Exceptions\MultipleActiveServicesException;
@@ -322,8 +321,12 @@ class RancherService {
 			if( !$containerIsActive )
 				continue;
 
-			$data['name'] = $serviceName;
-			$matchingServices[] = $data;
+			if( !array_key_exists($serviceName, $dockerData) )
+				throw new ServiceMissingInDockerfileException($serviceName);
+
+			$dockerDefinition = $dockerData[$serviceName];
+			$dockerDefinition['name'] = $serviceName;
+			$matchingServices[] = $dockerDefinition;
 		}
 
 		if( 1 < count($matchingServices) )
