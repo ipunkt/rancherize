@@ -104,6 +104,9 @@ The command `push` exists to deploy the current state of your work directory int
     and subsequently in-service upgrades of this service
   - If the same version of the service is found then an in-service upgrade is triggered
   - If a different version of the service is found then a rolling-upgrade ist triggered
+  - In case of an in-service upgrade rancherize waits for the stack to reach `upgraded` and confirms the upgrade.  
+    You can set `rancher.upgrade-healthcheck` to `true` to wait for it to report `healthy` instead. Not that this only
+    works if a service has a health-check is defined(not yet supported through rancherize)
   
 # Blueprints
 
