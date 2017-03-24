@@ -153,7 +153,7 @@ class WebserverBlueprint implements Blueprint {
 
 		$this->getPhpFpmMaker()->make($config, $serverService, $infrastructure);
 
-		$this->addVersionSuffix($serverService, $versionSuffix);
+		$this->addVersionSuffix($config, $serverService, $versionSuffix);
 
 
 		$infrastructure->addService($serverService);
