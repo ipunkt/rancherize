@@ -145,6 +145,7 @@ class WebserverBlueprint implements Blueprint {
 		$this->addAppContainer($version, $config, $serverService, $infrastructure);
 
 		$this->addVersionEnvironment($version, $config, $serverService);
+		$this->addVersionLabel($version, $config, $serverService);
 
 		$this->addDatabaseService($config, $serverService, $infrastructure);
 
@@ -291,6 +292,14 @@ class WebserverBlueprint implements Blueprint {
 			$environmentVersion = 'not set';
 		$serverService->setEnvironmentVariable($versionEnvironmentVariable, $environmentVersion);
 
+	}
+
+	/**
+	 * @param string $version
+	 * @param Configuration $config
+	 * @param Service $serverService
+	 */
+	protected function addVersionLabel($version, Configuration $config, Service $serverService) {
 		$labelVersion = $version;
 		if($version === null)
 			$labelVersion = '';
