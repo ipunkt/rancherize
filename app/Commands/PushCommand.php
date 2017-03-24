@@ -13,6 +13,7 @@ use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
 use Rancherize\RancherAccess\HealthStateMatcher;
 use Rancherize\RancherAccess\InServiceCheckerTrait;
 use Rancherize\RancherAccess\RancherAccessService;
+use Rancherize\RancherAccess\SingleStateMatcher;
 use Rancherize\Services\DockerService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -110,7 +111,7 @@ class PushCommand extends Command   {
 				$this->getRancher()->start('./.rancherize', $stackName, [$versionizedName], true);
 
 				// Use default Matcher
-				$stateMatcher = null;
+				$stateMatcher = new SingleStateMatcher('upgraded');
 				if( $config->get('rancher.upgrade-healthcheck', false) )
 					$stateMatcher = new HealthStateMatcher('healthy');
 
