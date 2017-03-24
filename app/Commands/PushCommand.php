@@ -98,7 +98,7 @@ class PushCommand extends Command   {
 		$name = $config->get('service-name');
 
 		$versionizedName = $name.'-'.$version;
-		if( $this->inServiceChecker->isInService($config) )
+		if( $this->getInServiceChecker()->isInService($config) )
 			$versionizedName = $name;
 
 		try {

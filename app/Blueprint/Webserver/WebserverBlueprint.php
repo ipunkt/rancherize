@@ -20,7 +20,6 @@ use Rancherize\Configuration\PrefixConfigurationDecorator;
 use Rancherize\Configuration\Services\ConfigurableFallback;
 use Rancherize\Configuration\Services\ConfigurationFallback;
 use Rancherize\Configuration\Services\ConfigurationInitializer;
-use Rancherize\RancherAccess\InServiceChecker;
 use Rancherize\RancherAccess\InServiceCheckerTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -154,7 +153,6 @@ class WebserverBlueprint implements Blueprint {
 		$this->getPhpFpmMaker()->make($config, $serverService, $infrastructure);
 
 		$this->addVersionSuffix($config, $serverService, $versionSuffix);
-
 
 		$infrastructure->addService($serverService);
 
