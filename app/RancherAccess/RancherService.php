@@ -1,4 +1,5 @@
 <?php namespace Rancherize\RancherAccess;
+use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\RancherAccess\ApiService\ApiService;
 use Rancherize\RancherAccess\Exceptions\MissingDataException;
 use Rancherize\RancherAccess\Exceptions\MultipleActiveServicesException;
@@ -267,9 +268,9 @@ class RancherService {
 	 *
 	 * @param string $stackName
 	 * @param string $name
-	 * @return string
+	 * @return array
 	 */
-	public function getActiveService(string $stackName, string $name) : string {
+	public function getActiveServiceDefinition(string $stackName, string $name) : array {
 
 		list($dockerConfig, $rancherConfig) = $this->retrieveConfig($stackName);
 
@@ -321,7 +322,8 @@ class RancherService {
 			if( !$containerIsActive )
 				continue;
 
-			$matchingServices[] = $serviceName;
+			$data['name'] = $serviceName;
+			$matchingServices[] = $data;
 		}
 
 		if( 1 < count($matchingServices) )
@@ -336,13 +338,30 @@ class RancherService {
 
 	/**
 	 * @param string $stackName
+	 * @param string $name
+	 * @return string
+	 */
+	public function getActiveService(string $stackName, string $name) : string {
+		$definition = $this->getActiveServiceDefinition($stackName, $name);
+
+		return $definition['name'];
+	}
+
+	/**
+	 * @param string $stackName
 	 * @param string $serviceName
 	 * @return string
 	 */
 	public function getCurrentVersion(string $stackName, string $serviceName) {
-		$currentService = $this->getActiveService($stackName, $serviceName);
+		$currentService = $this->getActiveServiceDefinition($stackName, $serviceName);
 
-		return substr($currentService, strlen($serviceName.'-') );
+		if( !array_key_exists('labels', $currentService) || !array_key_exists('version', $currentService['labels']) ) {
+			$currentServiceName = $currentService['name'];
+
+			return substr($currentServiceName, strlen($serviceName.'-') );
+		}
+
+		return $currentService['labels']['version'];
 	}
 
 	/**

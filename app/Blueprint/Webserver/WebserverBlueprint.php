@@ -20,6 +20,8 @@ use Rancherize\Configuration\PrefixConfigurationDecorator;
 use Rancherize\Configuration\Services\ConfigurableFallback;
 use Rancherize\Configuration\Services\ConfigurationFallback;
 use Rancherize\Configuration\Services\ConfigurationInitializer;
+use Rancherize\RancherAccess\InServiceChecker;
+use Rancherize\RancherAccess\InServiceCheckerTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -38,6 +40,8 @@ class WebserverBlueprint implements Blueprint {
 	use PhpFpmMakerTrait;
 
 	use CustomFilesTrait;
+
+	use InServiceCheckerTrait;
 
 	/**
 	 * @param Configurable $configurable
@@ -149,13 +153,8 @@ class WebserverBlueprint implements Blueprint {
 
 		$this->getPhpFpmMaker()->make($config, $serverService, $infrastructure);
 
+		$this->addVersionSuffix($serverService, $versionSuffix);
 
-		/**
-		 * Add Version suffix to the main service and all its sidekicks
-		 */
-		$serverService->setName( $serverService->getName().$versionSuffix );
-		foreach($serverService->getSidekicks() as $sidekick)
-			$sidekick->setName( $sidekick->getName().$versionSuffix );
 
 		$infrastructure->addService($serverService);
 
@@ -293,6 +292,7 @@ class WebserverBlueprint implements Blueprint {
 		if ($version === null)
 			$environmentVersion = 'not set';
 		$serverService->setEnvironmentVariable($versionEnvironmentVariable, $environmentVersion);
+		$serverService->addLabel('version', $version);
 	}
 
 	/**
@@ -389,6 +389,24 @@ class WebserverBlueprint implements Blueprint {
 			$serverService->setEnvironmentVariable('REDIS_PORT', '6379');
 			$infrastructure->addService($redisService);
 		}
+	}
+
+	/**
+	 * @param Configuration $config
+	 * @param Service $serverService
+	 * @param $versionSuffix
+	 */
+	private function addVersionSuffix(Configuration $config, Service $serverService, $versionSuffix) {
+
+		if( $this->getInServiceChecker()->isInService($config) )
+			return;
+
+		/**
+		 * Add Version suffix to the main service and all its sidekicks
+		 */
+		$serverService->setName($serverService->getName() . $versionSuffix);
+		foreach ($serverService->getSidekicks() as $sidekick)
+			$sidekick->setName($sidekick->getName() . $versionSuffix);
 	}
 
 }

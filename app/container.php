@@ -175,6 +175,9 @@ $container['name-is-path-checker'] = function($c) {
 	return new \Rancherize\General\Services\NameIsPathChecker();
 };
 
+$container['in-service-checker'] = function($c) {
+	return new \Rancherize\RancherAccess\InServiceChecker();
+};
 
 /**
  * Prevent redeclaration in unit tests

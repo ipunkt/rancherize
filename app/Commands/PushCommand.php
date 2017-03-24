@@ -10,6 +10,7 @@ use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\Docker\DockerAccessService;
 use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
 use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
+use Rancherize\RancherAccess\InServiceCheckerTrait;
 use Rancherize\RancherAccess\RancherAccessService;
 use Rancherize\Services\DockerService;
 use Symfony\Component\Console\Command\Command;
@@ -34,6 +35,7 @@ class PushCommand extends Command   {
 	use DockerTrait;
 	use EnvironmentConfigurationTrait;
 	use BlueprintTrait;
+	use InServiceCheckerTrait;
 
 	protected function configure() {
 		$this->setName('push')
@@ -43,6 +45,7 @@ class PushCommand extends Command   {
 			->addOption('image-exists', 'i', InputOption::VALUE_NONE, 'Do not build and push the image to dockerhub')
 		;
 	}
+
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 
@@ -93,11 +96,15 @@ class PushCommand extends Command   {
 		$this->buildImage($dockerService, $configuration, $config, $image);
 
 		$name = $config->get('service-name');
+
 		$versionizedName = $name.'-'.$version;
+		if( $this->inServiceChecker->isInService($config) )
+			$versionizedName = $name;
+
 		try {
 			$activeStack = $this->getRancher()->getActiveService($stackName, $name);
 
-			if($activeStack === $versionizedName)
+			if( $activeStack === $versionizedName )
 				$this->getRancher()->start('./.rancherize', $stackName, [$versionizedName]);
 			else
 				$this->getRancher()->upgrade('./.rancherize', $stackName, $activeStack, $versionizedName);

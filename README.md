@@ -100,6 +100,8 @@ The command `push` exists to deploy the current state of your work directory int
 - The apps configuration is added to the stack configuration
 - The app is deployed into the stack
   - If no other version of the service is found it will be created
+  - !NEW! If `rancher.in-service` is set to `true` then a rolling upgrade will be triggered to a non-versionized name
+    and subsequently in-service upgrades of this service
   - If the same version of the service is found then an in-service upgrade is triggered
   - If a different version of the service is found then a rolling-upgrade ist triggered
   
