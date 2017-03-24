@@ -290,7 +290,12 @@ class WebserverBlueprint implements Blueprint {
 		if ($version === null)
 			$environmentVersion = 'not set';
 		$serverService->setEnvironmentVariable($versionEnvironmentVariable, $environmentVersion);
-		$serverService->addLabel('version', $version);
+
+		$labelVersion = $version;
+		if($version === null)
+			$labelVersion = '';
+
+		$serverService->addLabel('version', $labelVersion);
 	}
 
 	/**
