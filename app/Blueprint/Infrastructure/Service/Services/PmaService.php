@@ -14,7 +14,7 @@ class PmaService extends Service {
 	public function __construct() {
 		$this->setName('PMA');
 		$this->setTty(true);
-		$this->setImage('phpmyadmin/phpmyadmin:4.6.2-3');
+		$this->setImage('phpmyadmin/phpmyadmin:latest');
 		$this->setKeepStdin(true);
 	}
 
