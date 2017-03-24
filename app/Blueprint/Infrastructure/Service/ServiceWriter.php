@@ -114,17 +114,17 @@ class ServiceWriter {
 		$content['restart'] = $restartValues[ $service->getRestart() ];
 
 
-		if( $service->isStartFirst() ) {
-			$rancherContent['upgrade_strategry'] = [
-				'start_first' => true
-			];
-		}
-
 		$this->writeYaml($this->path . '/docker-compose.yml', $service, $fileWriter, $content);
 
 		$rancherContent = [
 			'scale' => $service->getScale()
 		];
+
+		if( $service->isStartFirst() ) {
+			$rancherContent['upgrade_strategy'] = [
+				'start_first' => true
+			];
+		}
 
 		$this->writeYaml($this->path . '/rancher-compose.yml', $service, $fileWriter, $rancherContent);
 	}
