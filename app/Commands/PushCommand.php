@@ -10,6 +10,7 @@ use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\Docker\DockerAccessService;
 use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
 use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
+use Rancherize\RancherAccess\HealthStateMatcher;
 use Rancherize\RancherAccess\InServiceCheckerTrait;
 use Rancherize\RancherAccess\RancherAccessService;
 use Rancherize\Services\DockerService;
@@ -104,9 +105,21 @@ class PushCommand extends Command   {
 		try {
 			$activeStack = $this->getRancher()->getActiveService($stackName, $name);
 
-			if( $activeStack === $versionizedName )
+			if( $activeStack === $versionizedName ) {
+
 				$this->getRancher()->start('./.rancherize', $stackName, [$versionizedName], true);
-			else
+
+				// Use default Matcher
+				$stateMatcher = null;
+				if( $config->get('rancher.upgrade-healthcheck', false) )
+					$stateMatcher = new HealthStateMatcher('healthy');
+
+				$this->getRancher()->wait($stackName, $versionizedName, $stateMatcher);
+				// TODO: set timeout and roll back the upgrade if the timeout is reached without health confirmation.
+
+				$this->getRancher()->confirm('./.rancherize', $stackName, [$versionizedName]);
+
+			} else
 				$this->getRancher()->upgrade('./.rancherize', $stackName, $activeStack, $versionizedName);
 		} catch(NoActiveServiceException $e) {
 
