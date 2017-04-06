@@ -17,7 +17,7 @@ class PluginInstallCommand extends Command {
 	 */
 	protected function configure() {
 		$this->setName('plugin:install')
-			->setDescription('Install a plugin for rancherize trough composer install')
+			->setDescription('Install a plugin for rancherize through composer install')
 			->setHelp('Uses composer require to install a composer plugin then applies plugin:register to it.')
 			->addArgument('plugin name')
 			;
