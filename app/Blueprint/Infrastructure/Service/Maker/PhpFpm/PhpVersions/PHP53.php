@@ -28,7 +28,7 @@ class PHP53 implements PhpVersion {
 
 		$phpFpmService = new Service();
 		$phpFpmService->setName('PHP-FPM');
-		$phpFpmService->setImage('ipunktbs/php-fpm:53-1.0.4');
+		$phpFpmService->setImage('ipunktbs/php-fpm:53-1.0.5');
 		$phpFpmService->setRestart(Service::RESTART_UNLESS_STOPPED);
 
 		$this->addAppSource($phpFpmService);
