@@ -143,24 +143,24 @@ class WebserverBlueprint implements Blueprint {
 		$serverService = $this->makeServerService($config, $projectConfigurable);
 		$this->addRedis($config, $serverService, $infrastructure);
 
-		$this->addQueueWorker($config, $serverService, $infrastructure);
+        $this->addAppContainer($version, $config, $serverService, $infrastructure);
 
-		$this->addAppContainer($version, $config, $serverService, $infrastructure);
+        $this->addVersionEnvironment($version, $config, $serverService);
+        $this->addVersionLabel($version, $config, $serverService);
 
-		$this->addVersionEnvironment($version, $config, $serverService);
-		$this->addVersionLabel($version, $config, $serverService);
+        $this->addDatabaseService($config, $serverService, $infrastructure);
 
-		$this->addDatabaseService($config, $serverService, $infrastructure);
+        $this->getCustomFilesMaker()->make($config, $serverService, $infrastructure);
 
-		$this->getCustomFilesMaker()->make($config, $serverService, $infrastructure);
+        $this->getPhpFpmMaker()->make($config, $serverService, $infrastructure);
 
-		$this->getPhpFpmMaker()->make($config, $serverService, $infrastructure);
+        $this->addVersionSuffix($config, $serverService, $versionSuffix);
 
-		$this->addVersionSuffix($config, $serverService, $versionSuffix);
+        $infrastructure->addService($serverService);
 
-		$infrastructure->addService($serverService);
+        $this->addQueueWorker($config, $serverService, $infrastructure);
 
-		return $infrastructure;
+        return $infrastructure;
 	}
 
 	/**
@@ -418,7 +418,7 @@ class WebserverBlueprint implements Blueprint {
             $connection = $config->get("queues.$key.connection", 'default');
 
             $laravelQueueWorker = new LaravelQueueWorker();
-            $laravelQueueWorker->setName('QueueWorker' . $name);
+            $laravelQueueWorker->setName('QueueWorker' . ucwords($name));
             $laravelQueueWorker->addVolumeFrom($serverService);
             $laravelQueueWorker->addLinksFrom($serverService);
             $laravelQueueWorker->setEnvironmentVariablesFrom($serverService);
