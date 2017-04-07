@@ -209,6 +209,16 @@ class Service {
 		$this->environmentVariables[$name] = $value;
 	}
 
+    /**
+     * @param Service $service
+     */
+	public function setEnvironmentVariablesFrom(Service $service) {
+	    $environmentVariables = $service->getEnvironmentVariables();
+		foreach($environmentVariables as $name => $value) {
+		    $this->setEnvironmentVariable($name, $value);
+        }
+	}
+
 	/**
 	 * @param string $name
 	 * @param string $default
@@ -252,6 +262,31 @@ class Service {
 		}
 
 		$this->links[$name] = $service;
+	}
+
+    /**
+     * Add internal and external links from other service
+     * @param Service $service
+     */
+	public function addLinksFrom(Service $service) {
+	    $links = $service->getLinks();
+	    foreach($links as $name => $link) {
+	        if (is_numeric($name)) {
+                $this->addLink($link);
+            } else {
+                $this->addLink($link, $name);
+            }
+        }
+
+        $externalLinks = $service->getExternalLinks();
+	    foreach($externalLinks as $name => $link) {
+	        if (is_numeric($name)) {
+                $this->addExternalLink($link);
+            } else {
+                $this->addExternalLink($link, $name);
+            }
+        }
+
 	}
 
 	/**
