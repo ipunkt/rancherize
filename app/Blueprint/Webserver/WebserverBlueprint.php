@@ -9,6 +9,7 @@ use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMakerTrait;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\Infrastructure\Service\Services\AppService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\DatabaseService;
+use Rancherize\Blueprint\Infrastructure\Service\Services\LaravelQueueWorker;
 use Rancherize\Blueprint\Infrastructure\Service\Services\PmaService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\RedisService;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
@@ -68,7 +69,6 @@ class WebserverBlueprint implements Blueprint {
 			$initializer->init($fallbackConfigurable, 'expose-port', $port);
 			$initializer->init($fallbackConfigurable, 'use-app-container', false);
 			$initializer->init($fallbackConfigurable, 'mount-workdir', true);
-			$initializer->init($fallbackConfigurable, 'add-redis', false);
 			$initializer->init($fallbackConfigurable, 'add-database', false);
 			$initializer->init($fallbackConfigurable, 'database.pma.enable', false);
 			$initializer->init($fallbackConfigurable, 'database.pma.require-login', false);
@@ -89,10 +89,11 @@ class WebserverBlueprint implements Blueprint {
 		}
 
 		$initializer->init($fallbackConfigurable, 'php', "7.0");
+		$initializer->init($fallbackConfigurable, 'queues', []);
 		$initializer->init($fallbackConfigurable, 'docker.repository', 'repo/name', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'docker.version-prefix', '', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'nginx-config', '', $projectConfigurable);
-
+        $initializer->init($fallbackConfigurable, 'add-redis', false);
 		$initializer->init($fallbackConfigurable, 'service-name', 'Project', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'docker.base-image', 'busybox', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'environment', ["EXAMPLE" => 'value']);
@@ -141,6 +142,8 @@ class WebserverBlueprint implements Blueprint {
 
 		$serverService = $this->makeServerService($config, $projectConfigurable);
 		$this->addRedis($config, $serverService, $infrastructure);
+
+		$this->addQueueWorker($config, $serverService, $infrastructure);
 
 		$this->addAppContainer($version, $config, $serverService, $infrastructure);
 
@@ -401,6 +404,31 @@ class WebserverBlueprint implements Blueprint {
 			$serverService->setEnvironmentVariable('REDIS_PORT', '6379');
 			$infrastructure->addService($redisService);
 		}
+	}
+
+	/**
+	 * @param Configuration $config
+	 * @param Service $serverService
+	 * @param Infrastructure $infrastructure
+	 */
+	protected function addQueueWorker(Configuration $config, Service $serverService, Infrastructure $infrastructure) {
+	    $queues = $config->get('queues', []);
+        foreach($queues as $key => $queue) {
+            $name = $config->get("queues.$key.name", 'default');
+            $connection = $config->get("queues.$key.connection", 'default');
+
+            $laravelQueueWorker = new LaravelQueueWorker();
+            $laravelQueueWorker->setName('QueueWorker' . $name);
+            $laravelQueueWorker->addVolumeFrom($serverService);
+            $laravelQueueWorker->addLinksFrom($serverService);
+            $laravelQueueWorker->setEnvironmentVariablesFrom($serverService);
+
+            $laravelQueueWorker->setEnvironmentVariable('QUEUE_NAME', $name);
+            $laravelQueueWorker->setEnvironmentVariable('QUEUE_CONNECTION', $connection);
+
+            $serverService->addSidekick($laravelQueueWorker);
+            $infrastructure->addService($laravelQueueWorker);
+        }
 	}
 
 	/**
