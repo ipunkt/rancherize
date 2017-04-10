@@ -154,11 +154,18 @@ class WebserverBlueprint implements Blueprint {
 
         $this->getPhpFpmMaker()->make($config, $serverService, $infrastructure);
 
+		$this->addQueueWorker($config, $serverService, $infrastructure);
+
+		/**
+		 * This adds -$VERSION to the server service and all its sidekicks unless in-service upgrades are activated
+		 *
+		 * Reason: doing a rolling-upgrade from one service to another requires both to exist in parallel. So all services
+		 *  which belong to the ugprade need to have unique names, since rancher otherwise errors with `service name not unique`
+		 */
         $this->addVersionSuffix($config, $serverService, $versionSuffix);
 
         $infrastructure->addService($serverService);
 
-        $this->addQueueWorker($config, $serverService, $infrastructure);
 
         return $infrastructure;
 	}
