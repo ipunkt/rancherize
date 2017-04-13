@@ -17,7 +17,7 @@ installed to use Rancherize:
 # Installation
 Rancherize is installed using composer
 
-	composer require 'ipunkt/rancherize:2.0.7'
+	composer require 'ipunkt/rancherize:^2.5.0'
 	
 # Configuration
 
