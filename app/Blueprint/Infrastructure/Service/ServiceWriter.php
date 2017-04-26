@@ -228,7 +228,7 @@ class ServiceWriter {
 			$dockerData['volumes'] = [];
 
 		foreach($volumes as $volumeName => $volumeData)
-			$dockerData[$volumeName] = $volumeData;
+			$dockerData['volumes'][$volumeName] = $volumeData;
 	}
 
 	/**
