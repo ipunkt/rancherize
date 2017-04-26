@@ -219,7 +219,7 @@ class ServiceWriter {
 	 * @param array $dockerData
 	 * @parama array $volumes
 	 */
-	private function addVolumes( array $dockerData, array $volumes ) {
+	private function addVolumes( array &$dockerData, array $volumes ) {
 
 		if( empty($volumes) )
 			return;
