@@ -23,7 +23,7 @@ class Service {
 	protected $image = '';
 
 	/**
-	 * @var string[]
+	 * @var Volume[]
 	 */
 	protected $volumes = [];
 
@@ -126,15 +126,41 @@ class Service {
 	 * @return \string[]
 	 */
 	public function getVolumes(): array {
+
+		$volumes = [];
+
+		/**
+		 *
+		 */
+		foreach($this->volumes as $volume) {
+			$volumes[$volume->getExternalPath()] = $volume->getInternalPath();
+		}
+
+		return $volumes;
+	}
+
+	/**
+	 * @return Volume[]
+	 */
+	public function getVolumeObjects( ) {
 		return $this->volumes;
 	}
 
 	/**
-	 * @param $name
+	 * @param $nameOrVolume
 	 * @param $internalPath
 	 */
-	public function addVolume($name, $internalPath) {
-		$this->volumes[$name] = $internalPath;
+	public function addVolume( $nameOrVolume, $internalPath = null) {
+		if($nameOrVolume instanceof Volume) {
+			$this->volumes[ $nameOrVolume->getExternalPath() ] = $nameOrVolume;
+			return;
+		}
+
+		$volume = new Volume();
+		$volume->setExternalPath($nameOrVolume);
+		$volume->setInternalPath($internalPath);
+
+		$this->volumes[$nameOrVolume] = $volume;
 	}
 
 	/**
@@ -300,7 +326,7 @@ class Service {
 	 * @param string $externalLink
 	 * @param string $name
 	 */
-	public function addExternalLink(string $externalLink, string $name) {
+	public function addExternalLink(string $externalLink, string $name = null) {
 		if($name === null) {
 			$this->externalLinks[] = $externalLink;
 			return;

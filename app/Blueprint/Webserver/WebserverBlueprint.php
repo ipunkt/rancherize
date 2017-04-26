@@ -268,6 +268,15 @@ class WebserverBlueprint implements Blueprint {
 			$this->getPhpFpmMaker()->setAppMount($hostDirectory, $containerDirectory);
 		}
 
+		$persistentDriver = $config->get('docker.persistent-driver', 'pxd');
+		foreach( $config->get('persistent-volumes', []) as $volumeName => $path ) {
+			$volume = new \Rancherize\Blueprint\Infrastructure\Service\Volume();
+			$volume->setDriver($persistentDriver);
+			$volume->setExternalPath($volumeName);
+			$volume->setInternalPath($path);
+			$serverService->addVolume( $volume );
+		}
+
 		$this->addAll([$default, $config], 'environment', function(string $name, $value) use ($serverService) {
 			$serverService->setEnvironmentVariable($name, $value);
 		});

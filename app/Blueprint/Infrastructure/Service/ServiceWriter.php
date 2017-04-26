@@ -113,8 +113,9 @@ class ServiceWriter {
 		];
 		$content['restart'] = $restartValues[ $service->getRestart() ];
 
+		$volumeDefinitions = $this->buildVolumeDefinitions($service);
 
-		$this->writeYaml($this->path . '/docker-compose.yml', $service, $fileWriter, $content);
+		$this->writeYaml($this->path . '/docker-compose.yml', $service, $fileWriter, $content, $volumeDefinitions);
 
 		$rancherContent = [
 			'scale' => $service->getScale()
@@ -169,11 +170,15 @@ class ServiceWriter {
 	}
 
 	/**
+	 * @param $targetFile
 	 * @param Service $service
 	 * @param FileWriter $fileWriter
 	 * @param $content
+	 * @param array $volumes
 	 */
-	protected function writeYaml($targetFile, Service $service, FileWriter $fileWriter, $content) {
+	protected function writeYaml($targetFile, Service $service, FileWriter $fileWriter, $content, array $volumes = null) {
+		if( $volumes === null )
+			$volumes = [];
 
 		try {
 			$dockerData = Yaml::parse($this->fileLoader->get($targetFile));
@@ -181,9 +186,11 @@ class ServiceWriter {
 				$dockerData = [];
 
 			// handle v2 format
-			if (array_key_exists('version', $dockerData)) {
+			if ( array_key_exists('version', $dockerData) ) {
 
 				$dockerData['services'][$service->getName()] = $content;
+
+				$this->addVolumes($dockerData, $volumes);
 
 				/**
 				 * Rancher version 1.2.2 produces rancher-compose.yaml files which rancher-compose does not read:
@@ -207,4 +214,43 @@ class ServiceWriter {
 
 		$fileWriter->put($targetFile, $dockerYaml);
 	}
+
+	/**
+	 * @param array $dockerData
+	 * @parama array $volumes
+	 */
+	private function addVolumes( array $dockerData, array $volumes ) {
+
+		if( empty($volumes) )
+			return;
+
+		if( !array_key_exists('volumes', $dockerData) )
+			$dockerData['volumes'] = [];
+
+		foreach($volumes as $volumeName => $volumeData)
+			$dockerData[$volumeName] = $volumeData;
+	}
+
+	/**
+	 * @param Service $service
+	 * @return array
+	 */
+	private function buildVolumeDefinitions( Service $service ) {
+
+		$volumeDefinitions = [];
+
+		foreach($service->getVolumeObjects() as $volumeObject) {
+			$driver = $volumeObject->getDriver();
+
+			if( empty($driver) )
+				continue;
+
+			$volumeDefinitions[ $volumeObject->getExternalPath() ] = [
+				'driver' => $driver,
+			];
+		}
+
+		return $volumeDefinitions;
+	}
+
 }
