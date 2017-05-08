@@ -22,7 +22,7 @@ class Volume {
 	/**
 	 * @var string
 	 */
-	protected $driver;
+	protected $driver = '';
 
 	/**
 	 * @return string
