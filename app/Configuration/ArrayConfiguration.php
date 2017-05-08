@@ -82,6 +82,11 @@ class ArrayConfiguration implements Configurable  {
 		$currentValues = $this->values;
 
 		foreach($keyParts as $keyPart) {
+
+			// Without this check offering an alternative key = true vs key = [ 'enabled' => true, ... ] throw a warning
+			if( ! is_array($currentValues) )
+				return $default;
+
 			if( !array_key_exists($keyPart, $currentValues) )
 				return $default;
 
