@@ -23,7 +23,7 @@ This blueprint creates infrastructures to support apps using php7.
 |`external_links` | [] | Any property set in this object will be added as external link using the name of the property. e.g. `"host": "stackname/servicename"` will make any network traffic to `host` go to a container from `stackname/servicename` |
 |`docker.persistent-driver`| pxd | Driver to use for volumes given as `persistent-volumes` |
 |`docker.persistent-options`| ['repl'=>3, 'shared' => 'on'] | Driveroptions to use for volumes given as `persistent-volumes` |
-|`persitent-volumes`| [] | "volumeName": "/internal/path" for named volumes to be used with `docker.persistent-driver` as storage driver |
+|`persistent-volumes`| [] | "volumeName": "/internal/path" for named volumes to be used with `docker.persistent-driver` as storage driver |
 
 
 #### Usage options
