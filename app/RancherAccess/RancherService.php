@@ -312,11 +312,19 @@ class RancherService {
 			throw new NoActiveServiceException($name);
 
 		// primitive way of handling docker-compose.yml version 2
-		if( array_key_exists('version', $dockerData) && $dockerData['version'] == 2)
-			$dockerData = $dockerData['services'];
+		if( array_key_exists('version', $dockerData) && $dockerData['version'] == 2) {
+			if( array_key_exists('services', $dockerData ) )
+				$dockerData = $dockerData['services'];
+			else
+				$dockerData = [];
+		}
 		// primitive way of handling docker-compose.yml version 2
-		if( array_key_exists('version', $rancherData) && $rancherData['version'] == 2)
-			$rancherData = $rancherData['services'];
+		if( array_key_exists('version', $rancherData) && $rancherData['version'] == 2) {
+			if( array_key_exists('services', $rancherData ) )
+				$rancherData = $rancherData['services'];
+			else
+				$rancherData = [];
+		}
 
 		$sidekicks = [];
 		foreach($dockerData as $serviceName => $data) {
