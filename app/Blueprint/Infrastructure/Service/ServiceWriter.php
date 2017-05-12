@@ -241,13 +241,19 @@ class ServiceWriter {
 
 		foreach($service->getVolumeObjects() as $volumeObject) {
 			$driver = $volumeObject->getDriver();
+			$options = $volumeObject->getOptions();
 
 			if( empty($driver) )
 				continue;
 
-			$volumeDefinitions[ $volumeObject->getExternalPath() ] = [
+			$volumeDefinition = [
 				'driver' => $driver,
 			];
+
+			if( is_array($options) && !empty($options) )
+				$volumeDefinition['driver_opts'] = $options;
+
+			$volumeDefinitions[ $volumeObject->getExternalPath() ] = $volumeDefinition;
 		}
 
 		return $volumeDefinitions;

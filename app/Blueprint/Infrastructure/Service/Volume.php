@@ -25,6 +25,11 @@ class Volume {
 	protected $driver = '';
 
 	/**
+	 * @var array
+	 */
+	private $options = [];
+
+	/**
 	 * @return string
 	 */
 	public function getDriver(): string {
@@ -67,4 +72,17 @@ class Volume {
 	}
 
 
+	/**
+	 * @param array $options
+	 */
+	public function setOptions( array $options ) {
+		$this->options = $options;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getOptions(): array {
+		return $this->options;
+	}
 }

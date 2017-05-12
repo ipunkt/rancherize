@@ -269,9 +269,14 @@ class WebserverBlueprint implements Blueprint {
 		}
 
 		$persistentDriver = $config->get('docker.persistent-driver', 'pxd');
+		$persistentOptions = $config->get('docker.persistent-options', [
+			'repl' => '3',
+			'shared' => 'on',
+		]);
 		foreach( $config->get('persistent-volumes', []) as $volumeName => $path ) {
 			$volume = new \Rancherize\Blueprint\Infrastructure\Service\Volume();
 			$volume->setDriver($persistentDriver);
+			$volume->setOptions($persistentOptions);
 			$volume->setExternalPath($volumeName);
 			$volume->setInternalPath($path);
 			$serverService->addVolume( $volume );
