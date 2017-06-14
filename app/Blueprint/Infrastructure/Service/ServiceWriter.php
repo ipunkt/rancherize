@@ -24,6 +24,7 @@ class ServiceWriter {
 	/**
 	 * ServiceWriter constructor.
 	 * @param FileLoader $fileLoader
+	 * @param EventDispatcher $event
 	 * @internal param FileLoader $loader
 	 */
 	public function __construct(FileLoader $fileLoader, EventDispatcher $event) {
