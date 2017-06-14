@@ -52,6 +52,13 @@ class Service {
 	 */
 	protected $labels = [];
 
+	/**
+	 * extra information set and retrieved by plugins
+	 *
+	 * @var ServiceExtraInformation[]
+	 */
+	protected $extraInformation;
+
 	const RESTART_UNLESS_STOPPED = 0;
 	const RESTART_NEVER = 1;
 	const RESTART_AWAYS = 2;
@@ -279,7 +286,8 @@ class Service {
 	}
 
 	/**
-	 * @param \string[] $links
+	 * @param Service $service
+	 * @param string|null $name
 	 */
 	public function addLink(Service $service, $name = null) {
 		if($name === null) {
@@ -404,6 +412,27 @@ class Service {
 	 */
 	public function setStartFirst(bool $startFirst) {
 		$this->startFirst = $startFirst;
+	}
+
+	/**
+	 * @param $identifier
+	 * @return ServiceExtraInformation
+	 */
+	public function getExtraInformation( $identifier ) {
+		if( !array_key_exists($identifier, $this->extraInformation) )
+			throw new ExtraInformationNotFoundException($identifier);
+
+		return $this->extraInformation[ $identifier ];
+	}
+
+	/**
+	 * @param ServiceExtraInformation $extraInformation
+	 */
+	public function addExtraInformation( ServiceExtraInformation $extraInformation ) {
+
+		$identifier = $extraInformation->getIdentifier();
+
+		$this->extraInformation[ $identifier ] = $extraInformation;
 	}
 
 

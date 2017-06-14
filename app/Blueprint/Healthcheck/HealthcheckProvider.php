@@ -1,5 +1,7 @@
 <?php namespace Rancherize\Blueprint\Healthcheck;
 
+use Rancherize\Blueprint\Healthcheck\HealthcheckYamlWriter\HealthcheckYamlWriter;
+use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterRancherServicePreparedEvent;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -15,6 +17,12 @@ class HealthcheckProvider implements Provider {
 	/**
 	 */
 	public function register() {
+		$this->container['healthcheck-yaml-writer'] = function() {
+			return new HealthcheckYamlWriter();
+		};
+		$this->container[healthcheck-service-writer-listener] = function () {
+
+		};
 	}
 
 	/**
@@ -24,5 +32,7 @@ class HealthcheckProvider implements Provider {
 		 * @var EventDispatcher $event
 		 */
 		$event = $this->container['event'];
+		$listener = c['healthcheck-service-writer-listener'];
+		$event->addListener(ServiceWriterRancherServicePreparedEvent::NAME, [$listener, 'rancherServicePrepared']);
 	}
 }

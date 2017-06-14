@@ -1,4 +1,5 @@
 <?php namespace Rancherize\Blueprint\Infrastructure\Service;
+use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterRancherServicePreparedEvent;
 use Rancherize\Configuration\Exceptions\FileNotFoundException;
 use Rancherize\File\FileLoader;
 use Rancherize\File\FileWriter;
@@ -133,6 +134,11 @@ class ServiceWriter {
 				'start_first' => true
 			];
 		}
+
+		$rancherContentPreparedEvent = new ServiceWriterRancherServicePreparedEvent($service, $rancherContent);
+		$this->event->dispatch(ServiceWriterRancherServicePreparedEvent::NAME, $rancherContentPreparedEvent);
+		// might have been changed by the listeners
+		$rancherContent = $rancherContentPreparedEvent->getRancherContent();
 
 		$this->writeYaml($this->path . '/rancher-compose.yml', $service, $fileWriter, $rancherContent);
 	}
