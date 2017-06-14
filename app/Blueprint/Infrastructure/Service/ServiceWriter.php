@@ -223,6 +223,7 @@ class ServiceWriter {
 
 	/**
 	 * @param array $dockerData
+	 * @param array $volumes
 	 * @parama array $volumes
 	 */
 	private function addVolumes( array &$dockerData, array $volumes ) {
