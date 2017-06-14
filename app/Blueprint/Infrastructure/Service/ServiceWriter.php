@@ -2,6 +2,7 @@
 use Rancherize\Configuration\Exceptions\FileNotFoundException;
 use Rancherize\File\FileLoader;
 use Rancherize\File\FileWriter;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -15,14 +16,19 @@ class ServiceWriter {
 	 * @var FileLoader
 	 */
 	private $fileLoader;
+	/**
+	 * @var EventDispatcher
+	 */
+	private $event;
 
 	/**
 	 * ServiceWriter constructor.
 	 * @param FileLoader $fileLoader
 	 * @internal param FileLoader $loader
 	 */
-	public function __construct(FileLoader $fileLoader) {
+	public function __construct(FileLoader $fileLoader, EventDispatcher $event) {
 		$this->fileLoader = $fileLoader;
+		$this->event = $event;
 	}
 
 	/**

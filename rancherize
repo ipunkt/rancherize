@@ -3,17 +3,17 @@
 
 require __DIR__.'/app/bootstrap.php';
 
-use Rancherize\Blueprint\Commands\BlueprintAdd;
-use Rancherize\Blueprint\Commands\BlueprintList;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Configuration\Services\ProjectConfiguration;
 use Symfony\Component\Console\Application;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
-$dispatcher = new EventDispatcher();
+/**
+ * @var EventDispatcher $dispatcher
+ */
+$dispatcher = container('event');
 $application = new Application();
 $application->setDispatcher($dispatcher);
-
 
 $dispatcher->addListener(\Symfony\Component\Console\ConsoleEvents::EXCEPTION, function(\Symfony\Component\Console\Event\ConsoleExceptionEvent $event) {
 
@@ -41,23 +41,19 @@ $dispatcher->addListener(\Symfony\Component\Console\ConsoleEvents::EXCEPTION, fu
 });
 
 // ... register commands
-$application->add(new \Rancherize\Commands\InitCommand());
-$application->add(new \Rancherize\Commands\StartCommand());
-$application->add(new \Rancherize\Commands\StopCommand());
-$application->add(new \Rancherize\Commands\BuildCommand());
-$application->add(new \Rancherize\Commands\PushCommand());
-$application->add(new \Rancherize\Commands\ValidateCommand());
-$application->add(new \Rancherize\Commands\RancherAccessCommand());
-$application->add(new \Rancherize\Commands\EnvironmentSetCommand());
-$application->add(new \Rancherize\Commands\EnvironmentVersionCommand());
-$application->add(new \Rancherize\Plugin\Commands\PluginInstallCommand());
-$application->add(new \Rancherize\Plugin\Commands\PluginRegisterCommand());
-$application->add(new BlueprintAdd());
-$application->add(new BlueprintList());
+$commands = require_once __DIR__.'/app/lists/commands.php';
+foreach($commands as $commandName) {
+    $command = new $commandName;
+    $application->add($command);
+}
+
+$internalPlugins = require_once __DIR__.'/app/lists/plugins.php';
+foreach($internalPlugins as $internalPlugin)
+    container('plugin-loader-extra')->registerExtra($internalPlugin);
 
 try {
 
-	/**
+		/**
 	 * @var ProjectConfiguration $projectConfig
 	 */
 	$projectConfig = container('project-config-service');
@@ -74,7 +70,7 @@ try {
 
 } catch(Exception $e) {
 
-    echo "Warning! Load Plugins failed: ". $e->getMessage();
+    echo "Warning! Load Plugins failed: ". $e->getMessage()."\n";
 
 }
 

@@ -4,7 +4,13 @@
  * populate the container
  */
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
 $container = new \Pimple\Container();
+
+$container['event'] = function ($c) {
+	return new EventDispatcher();
+};
 
 /**
  * File handling
@@ -72,7 +78,7 @@ $container['dockerfile-writer'] = function($c) {
 };
 
 $container['service-writer'] = function($c) {
-	return new \Rancherize\Blueprint\Infrastructure\Service\ServiceWriter($c['file-loader']);
+	return new \Rancherize\Blueprint\Infrastructure\Service\ServiceWriter($c['file-loader'], $c['event']);
 };
 
 $container['volume-writer'] = function($c) {
@@ -120,13 +126,35 @@ $container['plugin-installer'] = function($c) {
 	return $installer;
 };
 
+$container['loader-interface'] = function ($c) {
+	return new \Rancherize\Plugin\Loader\NewLoader();
+};
+
+$container['plugin-loader-extra'] = function($c) {
+	return new \Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator($c['loader-interface']);
+};
+
 $container['plugin-loader'] = function($c) {
+
 	/*
 	 * project-config is not set in this file - it is set in the rancherize.php once the project config was loaded for
 	 * use with the plugin system
 	 */
 	return new \Rancherize\Plugin\Loader\ComposerPluginLoader($c['project-config'], $c['project-config-service']);
 };
+
+$container->extend('plugin-loader', function($pluginLoader, $c) {
+
+	/**
+	 * @var \Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator $extraPluginLoader
+	 */
+	$extraPluginLoader = $c['plugin-loader-extra'];
+
+	$extraPluginLoader->setPluginLoader($pluginLoader);
+
+	return $extraPluginLoader;
+
+});
 
 /**
  * Service Maker
