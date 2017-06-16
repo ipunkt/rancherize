@@ -40,14 +40,14 @@ class PublishUrlsExtraInformation implements ServiceExtraInformation {
 	/**
 	 * @return int
 	 */
-	public function getPort(): int {
+	public function getPort() {
 		return $this->port;
 	}
 
 	/**
 	 * @param int $port
 	 */
-	public function setPort( int $port ) {
+	public function setPort( $port ) {
 		$this->port = $port;
 	}
 
@@ -75,21 +75,21 @@ class PublishUrlsExtraInformation implements ServiceExtraInformation {
 	/**
 	 * @param string $type
 	 */
-	public function setType( string $type ) {
+	public function setType( $type ) {
 		$this->type = $type;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getPriority(): int {
+	public function getPriority() {
 		return $this->priority;
 	}
 
 	/**
 	 * @param int $priority
 	 */
-	public function setPriority( int $priority ) {
+	public function setPriority( $priority ) {
 		$this->priority = $priority;
 	}
 }
