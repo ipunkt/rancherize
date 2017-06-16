@@ -2,6 +2,8 @@
 use Closure;
 use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Flags\HasFlagsTrait;
+use Rancherize\Blueprint\Healthcheck\HealthcheckConfigurationToService\HealthcheckConfigurationToService;
+use Rancherize\Blueprint\Healthcheck\HealthcheckInitService\HealthcheckInitService;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\CustomFiles\CustomFilesTrait;
@@ -81,11 +83,13 @@ class WebserverBlueprint implements Blueprint {
 			$initializer->init($fallbackConfigurable, 'database.pma-port', $pmaPort);
 
 		} else {
-
 			$initializer->init($fallbackConfigurable, 'external_links', [
 				'Frontend/mysql-tunnel',
 			]);
 			$initializer->init($fallbackConfigurable, 'rancher.stack', 'Project');
+
+			$healthcheckInit = new HealthcheckInitService($initializer);
+			$healthcheckInit->init($projectConfigurable);
 		}
 
 		$initializer->init($fallbackConfigurable, 'php', "7.0");
@@ -163,6 +167,13 @@ class WebserverBlueprint implements Blueprint {
 		 *  which belong to the ugprade need to have unique names, since rancher otherwise errors with `service name not unique`
 		 */
         $this->addVersionSuffix($config, $serverService, $versionSuffix);
+
+        // Add Healthcheck config
+		/**
+		 * @var HealthcheckConfigurationToService $healthcheckParser
+		 */
+		$healthcheckParser = container('healthcheck-parser');
+		$healthcheckParser->parseToService( $serverService, $config );
 
         $infrastructure->addService($serverService);
 
