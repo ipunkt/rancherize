@@ -29,6 +29,6 @@ class V2HealthcheckYamlWriter implements HealthcheckYamlWriterVersion {
 		if( $hasUrl )
 			$healthcheckData['request_line'] = "GET \"$url\" \"HTTP/1.0\"";
 
-		$rancherService['healthcheck'] = $healthcheckData;
+		$rancherService['health_check'] = $healthcheckData;
 	}
 }
