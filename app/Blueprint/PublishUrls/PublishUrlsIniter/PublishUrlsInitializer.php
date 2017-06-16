@@ -28,6 +28,9 @@ class PublishUrlsInitializer {
 	 */
 	public function init( Configurable $config, Configurable $setter = null ) {
 
+		if($setter === null)
+			$setter = $config;
+
 		$publishConfigurable = new PrefixConfigurableDecorator($config, 'publish.');
 		$publishSetterConfigurable = new PrefixConfigurableDecorator($setter, 'publish.');
 
