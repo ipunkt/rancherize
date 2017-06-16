@@ -43,7 +43,7 @@ class HealthcheckConfigurationToService {
 		$healthcheckInformation = new HealthcheckExtraInformation();
 		$this->defaultInformationSetter->setDefaults( $healthcheckInformation );
 
-		$url = $healthcheckConfig->get('url');
+		$url = $healthcheckConfig->get('url', '');
 		$healthcheckInformation->setUrl( $url );
 
 		$service->addExtraInformation($healthcheckInformation);
