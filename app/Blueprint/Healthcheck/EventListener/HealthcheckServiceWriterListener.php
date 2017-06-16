@@ -2,7 +2,7 @@
 
 use Rancherize\Blueprint\Healthcheck\HealthcheckExtraInformation\HealthcheckExtraInformation;
 use Rancherize\Blueprint\Healthcheck\HealthcheckYamlWriter\HealthcheckYamlWriter;
-use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterRancherServicePreparedEvent;
+use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterServicePreparedEvent;
 use Rancherize\Blueprint\Infrastructure\Service\ExtraInformationNotFoundException;
 
 /**
@@ -24,9 +24,9 @@ class HealthcheckServiceWriterListener {
 	}
 
 	/**
-	 * @param ServiceWriterRancherServicePreparedEvent $event
+	 * @param ServiceWriterServicePreparedEvent $event
 	 */
-	public function rancherServicePrepared( ServiceWriterRancherServicePreparedEvent $event ) {
+	public function servicePrepared( ServiceWriterServicePreparedEvent $event ) {
 		$rancherData = $event->getRancherContent();
 
 		$fileVersion = $event->getFileVersion();

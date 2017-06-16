@@ -4,16 +4,22 @@ use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Class ServiceWriterRancherServicePreparedEvent
+ * Class ServiceWriterServicePreparedEvent
  * @package Rancherize\Blueprint\Infrastructure\Service\Events
  */
-class ServiceWriterRancherServicePreparedEvent extends Event {
+class ServiceWriterServicePreparedEvent extends Event {
 
 	const NAME = 'service-writer.write';
+
 	/**
 	 * @var Service
 	 */
 	private $service;
+
+	/**
+	 * @var array
+	 */
+	private $dockerContent;
 
 	/**
 	 * @var
@@ -21,12 +27,17 @@ class ServiceWriterRancherServicePreparedEvent extends Event {
 	private $rancherContent;
 
 	/**
+	 * @var array
+	 */
+	private $volumeDefinition;
+
+	/**
 	 * @var int
 	 */
 	private $fileVersion = 2;
 
 	/**
-	 * ServiceWriterRancherServicePreparedEvent constructor.
+	 * ServiceWriterServicePreparedEvent constructor.
 	 * @param Service $service
 	 * @param $rancherContent
 	 */
@@ -61,6 +72,34 @@ class ServiceWriterRancherServicePreparedEvent extends Event {
 	 */
 	public function getFileVersion() {
 		return $this->fileVersion;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getDockerContent() {
+		return $this->dockerContent;
+	}
+
+	/**
+	 * @param array $dockerContent
+	 */
+	public function setDockerContent( array $dockerContent ) {
+		$this->dockerContent = $dockerContent;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getVolumeDefinition() {
+		return $this->volumeDefinition;
+	}
+
+	/**
+	 * @param array $volumeDefinition
+	 */
+	public function setVolumeDefinition( array $volumeDefinition ) {
+		$this->volumeDefinition = $volumeDefinition;
 	}
 
 }

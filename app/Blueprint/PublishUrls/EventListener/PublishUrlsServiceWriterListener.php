@@ -1,48 +1,47 @@
 <?php namespace Rancherize\Blueprint\PublisUrls\EventListener;
 
-use Rancherize\Blueprint\Healthcheck\HealthcheckExtraInformation\HealthcheckExtraInformation;
-use Rancherize\Blueprint\Healthcheck\HealthcheckYamlWriter\HealthcheckYamlWriter;
-use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterRancherServicePreparedEvent;
+use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterServicePreparedEvent;
 use Rancherize\Blueprint\Infrastructure\Service\ExtraInformationNotFoundException;
+use Rancherize\Blueprint\PublishUrls\PublishUrlsExtraInformation\PublishUrlsExtraInformation;
+use Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\PublishUrlsYamlWriter;
 
 /**
  * Class HealthcheckServiceWriterListener
  * @package Rancherize\Blueprint\Healthcheck\EventListener
  */
 class PublishUrlsServiceWriterListener {
+	/**
+	 * @var PublishUrlsYamlWriter
+	 */
+	private $yamlWriter;
 
 	/**
-	 * @var HealthcheckYamlWriter
+	 * PublishUrlsServiceWriterListener constructor.
+	 * @param PublishUrlsYamlWriter $yamlWriter
 	 */
-	private $healthcheckYamlWriter;
-
-	/**
-	 * HealthcheckServiceWriterListener constructor.
-	 * @param HealthcheckYamlWriter $healthcheckYamlWriter
-	 */
-	public function __construct( HealthcheckYamlWriter $healthcheckYamlWriter) {
-		$this->healthcheckYamlWriter = $healthcheckYamlWriter;
+	public function __construct( PublishUrlsYamlWriter $yamlWriter ) {
+		$this->yamlWriter = $yamlWriter;
 	}
 
 	/**
-	 * @param ServiceWriterRancherServicePreparedEvent $event
+	 * @param ServiceWriterServicePreparedEvent $event
 	 */
-	public function rancherServicePrepared( ServiceWriterRancherServicePreparedEvent $event ) {
-		$rancherData = $event->getRancherContent();
+	public function dockerServicePrepared( ServiceWriterServicePreparedEvent $event ) {
+		$dockerContent = $event->getDockerContent();
 
 		$fileVersion = $event->getFileVersion();
 		$service = $event->getService();
 		try {
-			$extraInformation = $service->getExtraInformation(HealthcheckExtraInformation::IDENTIFIER);
+			$extraInformation = $service->getExtraInformation(PublishUrlsExtraInformation::IDENTIFIER );
 		} catch(ExtraInformationNotFoundException $e) {
 			return;
 		}
 
-		if( !$extraInformation instanceof HealthcheckExtraInformation )
+		if( !$extraInformation instanceof PublishUrlsExtraInformation )
 			return;
 
-		$this->healthcheckYamlWriter->write( $fileVersion, $extraInformation, $rancherData );
+		$this->yamlWriter->write( $fileVersion, $extraInformation, $dockerContent );
 
-		$event->setRancherContent($rancherData);
+		$event->setDockerContent($dockerContent);
 	}
 }

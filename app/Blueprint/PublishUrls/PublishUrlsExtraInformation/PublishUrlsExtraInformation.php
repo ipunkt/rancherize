@@ -8,6 +8,13 @@ use Rancherize\Blueprint\Infrastructure\Service\ServiceExtraInformation;
  */
 class PublishUrlsExtraInformation implements ServiceExtraInformation {
 
+	const IDENTIFIER = 'publish-urls';
+
+	/**
+	 * @var string
+	 */
+	protected $type;
+
 	/**
 	 * @var int
 	 */
@@ -17,6 +24,11 @@ class PublishUrlsExtraInformation implements ServiceExtraInformation {
 	 * @var
 	 */
 	protected $urls = [];
+
+	/**
+	 * @var int
+	 */
+	protected $priority;
 
 	/**
 	 * @return mixed
@@ -51,5 +63,33 @@ class PublishUrlsExtraInformation implements ServiceExtraInformation {
 	 */
 	public function setUrls( $urls ) {
 		$this->urls = $urls;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getType() {
+		return $this->type;
+	}
+
+	/**
+	 * @param string $type
+	 */
+	public function setType( string $type ) {
+		$this->type = $type;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getPriority(): int {
+		return $this->priority;
+	}
+
+	/**
+	 * @param int $priority
+	 */
+	public function setPriority( int $priority ) {
+		$this->priority = $priority;
 	}
 }

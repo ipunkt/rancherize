@@ -1,5 +1,7 @@
 <?php namespace Rancherize\Blueprint\PublishUrls;
 
+use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterServicePreparedEvent;
+use Rancherize\Blueprint\PublisUrls\EventListener\PublishUrlsServiceWriterListener;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -15,6 +17,9 @@ class PublishUrlsProvider implements Provider {
 	/**
 	 */
 	public function register() {
+		$this->container['publish-urls-service-writer-listener'] = function($c) {
+			return new PublishUrlsServiceWriterListener();
+		};
 	}
 
 	/**
@@ -25,6 +30,6 @@ class PublishUrlsProvider implements Provider {
 		 */
 		$event = $this->container['event'];
 		$listener = $this->container['publish-urls-service-writer-listener'];
-		$event->addListener(ServiceWriterRancherServicePreparedEvent::NAME, [$listener, 'rancherServicePrepared']);
+		$event->addListener(ServiceWriterServicePreparedEvent::NAME, [$listener, 'servicePrepared']);
 	}
 }

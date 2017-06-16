@@ -4,7 +4,7 @@ use Rancherize\Blueprint\Healthcheck\EventListener\HealthcheckServiceWriterListe
 use Rancherize\Blueprint\Healthcheck\HealthcheckConfigurationToService\HealthcheckConfigurationToService;
 use Rancherize\Blueprint\Healthcheck\HealthcheckExtraInformation\HealthcheckDefaultInformationSetter;
 use Rancherize\Blueprint\Healthcheck\HealthcheckYamlWriter\HealthcheckYamlWriter;
-use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterRancherServicePreparedEvent;
+use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterServicePreparedEvent;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -42,6 +42,6 @@ class HealthcheckProvider implements Provider {
 		 */
 		$event = $this->container['event'];
 		$listener = $this->container['healthcheck-service-writer-listener'];
-		$event->addListener(ServiceWriterRancherServicePreparedEvent::NAME, [$listener, 'rancherServicePrepared']);
+		$event->addListener(ServiceWriterServicePreparedEvent::NAME, [$listener, 'servicePrepared']);
 	}
 }
