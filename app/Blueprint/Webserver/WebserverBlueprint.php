@@ -14,6 +14,8 @@ use Rancherize\Blueprint\Infrastructure\Service\Services\DatabaseService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\LaravelQueueWorker;
 use Rancherize\Blueprint\Infrastructure\Service\Services\PmaService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\RedisService;
+use Rancherize\Blueprint\PublishUrls\PublishUrlsIniter\PublishUrlsInitializer;
+use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Blueprint\Validation\Traits\HasValidatorTrait;
 use Rancherize\Configuration\Configurable;
@@ -89,7 +91,10 @@ class WebserverBlueprint implements Blueprint {
 			$initializer->init($fallbackConfigurable, 'rancher.stack', 'Project');
 
 			$healthcheckInit = new HealthcheckInitService($initializer);
-			$healthcheckInit->init($projectConfigurable);
+			$healthcheckInit->init($fallbackConfigurable);
+
+			$publishUrlsInit = new PublishUrlsInitializer($initializer);
+			$publishUrlsInit->init($fallbackConfigurable);
 		}
 
 		$initializer->init($fallbackConfigurable, 'php', "7.0");
@@ -174,6 +179,12 @@ class WebserverBlueprint implements Blueprint {
 		 */
 		$healthcheckParser = container('healthcheck-parser');
 		$healthcheckParser->parseToService( $serverService, $config );
+
+		/**
+		 * @var PublishUrlsParser $publishUrlsParser
+		 */
+		$publishUrlsParser = container('publish-urls-parser');
+		$publishUrlsParser->parseToService( $serverService, $config );
 
         $infrastructure->addService($serverService);
 

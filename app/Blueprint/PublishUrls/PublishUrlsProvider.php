@@ -1,6 +1,8 @@
 <?php namespace Rancherize\Blueprint\PublishUrls;
 
 use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterServicePreparedEvent;
+use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
+use Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\PublishUrlsYamlWriter;
 use Rancherize\Blueprint\PublisUrls\EventListener\PublishUrlsServiceWriterListener;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
@@ -17,8 +19,16 @@ class PublishUrlsProvider implements Provider {
 	/**
 	 */
 	public function register() {
+		$this->container['publish-urls-yaml-writer'] = function($c) {
+			return new PublishUrlsYamlWriter();
+		};
+
 		$this->container['publish-urls-service-writer-listener'] = function($c) {
-			return new PublishUrlsServiceWriterListener();
+			return new PublishUrlsServiceWriterListener( $c['publish-urls-yaml-writer'] );
+		};
+
+		$this->container['publish-urls-parser'] = function($c) {
+			return new PublishUrlsParser();
 		};
 	}
 
