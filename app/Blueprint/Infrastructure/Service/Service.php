@@ -57,7 +57,7 @@ class Service {
 	 *
 	 * @var ServiceExtraInformation[]
 	 */
-	protected $extraInformation;
+	protected $extraInformation = [];
 
 	const RESTART_UNLESS_STOPPED = 0;
 	const RESTART_NEVER = 1;
