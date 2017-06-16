@@ -1,5 +1,11 @@
 # PublishUrls
-Takes care of setting docker 
+Takes care of setting docker environment variables / labels to request the publish of a given domain(and path) to the
+rancher service spawned by rancherize.  
+These settings have to be picked up by service discovery. The `traefik` rancher load balancer does this on its own, based
+on labels.
+
+# List of implementations
+- traefik
 
 ## Use case
 The rancher traefik loadbalancer publishes service ports based on a list of labels:
