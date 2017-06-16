@@ -15,9 +15,8 @@ class TraefikDomainWriter implements PartWriter {
 	 * @return mixed
 	 */
 	public function write( PublishUrlsExtraInformation $extraInformation, array &$dockerService ) {
-		$urls = $extraInformation->getUrls();
-		$firstUrl = reset($urls);
-		$fullPath = parse_url($firstUrl, PHP_URL_HOST);
+		$url = $extraInformation->getUrl();
+		$fullPath = parse_url($url, PHP_URL_HOST);
 		$hostname = preg_match('[^\.]', $fullPath);
 		$domainName = substr($fullPath, count($hostname) + 2);
 

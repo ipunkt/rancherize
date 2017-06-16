@@ -21,9 +21,14 @@ class PublishUrlsExtraInformation implements ServiceExtraInformation {
 	protected $port;
 
 	/**
-	 * @var
+	 * @var string
 	 */
-	protected $urls = [];
+	protected $url;
+
+	/**
+	 * @var array
+	 */
+	protected $pathes = [];
 
 	/**
 	 * @var int
@@ -52,17 +57,17 @@ class PublishUrlsExtraInformation implements ServiceExtraInformation {
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
-	public function getUrls() {
-		return $this->urls;
+	public function getUrl() {
+		return $this->url;
 	}
 
 	/**
-	 * @param mixed $urls
+	 * @param string $url
 	 */
-	public function setUrls( $urls ) {
-		$this->urls = $urls;
+	public function setUrl( $url ) {
+		$this->url = $url;
 	}
 
 	/**
@@ -91,5 +96,19 @@ class PublishUrlsExtraInformation implements ServiceExtraInformation {
 	 */
 	public function setPriority( $priority ) {
 		$this->priority = $priority;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getPathes(): array {
+		return $this->pathes;
+	}
+
+	/**
+	 * @param array $pathes
+	 */
+	public function setPathes( array $pathes ) {
+		$this->pathes = $pathes;
 	}
 }

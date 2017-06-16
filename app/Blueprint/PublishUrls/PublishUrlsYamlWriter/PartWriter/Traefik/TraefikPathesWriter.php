@@ -15,17 +15,7 @@ class TraefikPathesWriter implements PartWriter {
 	 * @return mixed
 	 */
 	public function write( PublishUrlsExtraInformation $extraInformation, array &$dockerService ) {
-		$urls = $extraInformation->getUrls();
-
-		$pathes = [];
-		foreach ($urls as $url) {
-			$path = parse_url($url, PHP_URL_PATH);
-
-			if( empty($path) || $path === '/' )
-				continue;
-
-			$pathes[] = $path;
-		}
+		$pathes = $extraInformation->getPathes();
 
 		if( empty($pathes) )
 			return;

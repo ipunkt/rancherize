@@ -23,19 +23,19 @@ class PublishUrlsInitializer {
 	}
 
 	/**
-	 * @param Configurable $config
-	 * @param Configurable $setter
+	 * @param Configurable $environmentSetter
+	 * @param Configurable $projectSetter
 	 */
-	public function init( Configurable $config, Configurable $setter = null ) {
+	public function init( Configurable $environmentSetter, Configurable $projectSetter = null ) {
 
-		if($setter === null)
-			$setter = $config;
+		if($projectSetter === null)
+			$projectSetter = $environmentSetter;
 
-		$publishConfigurable = new PrefixConfigurableDecorator($config, 'publish.');
-		$publishSetterConfigurable = new PrefixConfigurableDecorator($setter, 'publish.');
+		$publishEnvironmentConfigurable = new PrefixConfigurableDecorator($environmentSetter, 'publish.');
+		$publishProjectConfigurable = new PrefixConfigurableDecorator($projectSetter, 'publish.');
 
-		$this->initializer->init($publishConfigurable, 'publish.enable', false, $publishSetterConfigurable);
-		$this->initializer->init($publishConfigurable, 'publish.url', 'https://www.example.com/path', $publishSetterConfigurable);
+		$this->initializer->init($publishEnvironmentConfigurable, 'publish.enable', false, $publishProjectConfigurable);
+		$this->initializer->init($publishEnvironmentConfigurable, 'publish.url', 'https://www.example.com/');
 
 	}
 
