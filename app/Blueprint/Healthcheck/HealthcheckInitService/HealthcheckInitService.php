@@ -30,7 +30,7 @@ class HealthcheckInitService {
 		$healthcheckConfigurable = new PrefixConfigurableDecorator($configurable, 'healthcheck.');
 
 		$this->initializer->init($healthcheckConfigurable, 'enable', false);
-		$this->initializer->init($healthcheckConfigurable, 'url', false);
+		$this->initializer->init($healthcheckConfigurable, 'url','/');
 
 	}
 

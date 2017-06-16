@@ -44,10 +44,6 @@ class HealthcheckConfigurationToService {
 		$this->defaultInformationSetter->setDefaults( $healthcheckInformation );
 
 		$url = $healthcheckConfig->get('url');
-		if( empty($url) ) {
-			// TODO: Add warning somehwere
-			return;
-		}
 		$healthcheckInformation->setUrl( $url );
 
 		$service->addExtraInformation($healthcheckInformation);
