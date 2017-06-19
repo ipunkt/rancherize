@@ -19,7 +19,7 @@ class PublishUrlsParser {
 	 */
 	public function parseToService( Service $service, Configuration $configuration ) {
 
-		$publishUrlsConfig = new PrefixConfigurationDecorator($configuration, 'publish-urls.');
+		$publishUrlsConfig = new PrefixConfigurationDecorator($configuration, 'publish.');
 
 		$publishUrlsEnabled = $publishUrlsConfig->get( 'enable', true );
 		if( !$publishUrlsEnabled )
