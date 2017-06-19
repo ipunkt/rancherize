@@ -28,13 +28,19 @@ class PublishUrlsParser {
 		$publishUrlsInformation = new PublishUrlsExtraInformation();
 		$publishUrlsInformation->setPort( $publishUrlsConfig->get('port', 80) );
 		$publishUrlsInformation->setType( $publishUrlsConfig->get('type', 'traefik') );
-		$publishUrlsInformation->setPriority( $publishUrlsConfig->get('priority', 5) );
 
-		$urls = $publishUrlsConfig->get( 'urls', [] );
-		if( empty($urls) )
+		$url = $publishUrlsConfig->get( 'url', '' );
+		if( empty($url) )
 			return;
+		$publishUrlsInformation->setUrl( $url );
 
-		$publishUrlsInformation->setUrls( $urls );
+		$pathes = $publishUrlsConfig->get( 'pathes', [] );
+		$publishUrlsInformation->setPathes($pathes);
+
+		$defaultPriority = 5;
+		if( !empty($pathes) )
+			$defaultPriority = 10;
+		$publishUrlsInformation->setPriority( $publishUrlsConfig->get('priority', $defaultPriority) );
 
 		$service->addExtraInformation( $publishUrlsInformation );
 	}
