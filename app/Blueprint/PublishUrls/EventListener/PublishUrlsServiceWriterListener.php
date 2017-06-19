@@ -26,7 +26,7 @@ class PublishUrlsServiceWriterListener {
 	/**
 	 * @param ServiceWriterServicePreparedEvent $event
 	 */
-	public function dockerServicePrepared( ServiceWriterServicePreparedEvent $event ) {
+	public function servicePrepared( ServiceWriterServicePreparedEvent $event ) {
 		$dockerContent = $event->getDockerContent();
 
 		$fileVersion = $event->getFileVersion();
