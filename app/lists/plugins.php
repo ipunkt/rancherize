@@ -2,5 +2,5 @@
 
 return [
 	'Rancherize\Blueprint\Healthcheck\HealthcheckProvider',
-	'Rancherize\Blueprint\PublishUrls\PrublishUrlsProvider',
+	'Rancherize\Blueprint\PublishUrls\PublishUrlsProvider',
 ];
