@@ -16,6 +16,8 @@ use Rancherize\Blueprint\Infrastructure\Service\Services\PmaService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\RedisService;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsIniter\PublishUrlsInitializer;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
+use Rancherize\Blueprint\Scheduler\SchedulerInitializer\SchedulerInitializer;
+use Rancherize\Blueprint\Scheduler\SchedulerParser\SchedulerParser;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Blueprint\Validation\Traits\HasValidatorTrait;
 use Rancherize\Configuration\Configurable;
@@ -95,6 +97,9 @@ class WebserverBlueprint implements Blueprint {
 
 			$publishUrlsInit = new PublishUrlsInitializer($initializer);
 			$publishUrlsInit->init($fallbackConfigurable);
+
+			$schedulerInitializer = new SchedulerInitializer($initializer);
+			$schedulerInitializer->init($fallbackConfigurable, $projectConfigurable);
 		}
 
 		$initializer->init($fallbackConfigurable, 'php', "7.0");
@@ -185,6 +190,12 @@ class WebserverBlueprint implements Blueprint {
 		 */
 		$publishUrlsParser = container('publish-urls-parser');
 		$publishUrlsParser->parseToService( $serverService, $config );
+
+		/**
+		 * @var SchedulerParser $publishUrlsParser
+		 */
+		$publishUrlsParser = container('scheduler-parser');
+		$publishUrlsParser->parse( $serverService, $config );
 
         $infrastructure->addService($serverService);
 
