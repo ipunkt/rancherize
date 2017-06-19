@@ -17,7 +17,7 @@ class TraefikAliasWriter implements PartWriter {
 		$url = $extraInformation->getUrl();
 		$fullPath = parse_url($url, PHP_URL_HOST);
 		$matches = [];
-		if( preg_match('/[^\\.]/', $fullPath, $matches) != 1 )
+		if( preg_match('/[^\\.]*/', $fullPath, $matches) != 1 )
 			return;
 		$hostname = $matches[0];
 
