@@ -35,15 +35,20 @@ class ServiceWriterServicePreparedEvent extends Event {
 	 * @var int
 	 */
 	private $fileVersion = 2;
+	/**
 
 	/**
 	 * ServiceWriterServicePreparedEvent constructor.
 	 * @param Service $service
+	 * @param $dockerContent
+	 * @param $volumes
 	 * @param $rancherContent
 	 */
-	public function __construct( Service $service, &$rancherContent) {
+	public function __construct( Service $service, $dockerContent, $volumes, $rancherContent) {
 		$this->service = $service;
 		$this->rancherContent = $rancherContent;
+		$this->dockerContent = $dockerContent;
+		$this->volumeDefinition = $volumes;
 	}
 
 	/**
