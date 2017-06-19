@@ -34,8 +34,8 @@ class PublishUrlsInitializer {
 		$publishEnvironmentConfigurable = new PrefixConfigurableDecorator($environmentSetter, 'publish.');
 		$publishProjectConfigurable = new PrefixConfigurableDecorator($projectSetter, 'publish.');
 
-		$this->initializer->init($publishEnvironmentConfigurable, 'publish.enable', false, $publishProjectConfigurable);
-		$this->initializer->init($publishEnvironmentConfigurable, 'publish.url', 'https://www.example.com/');
+		$this->initializer->init($publishEnvironmentConfigurable, 'enable', false, $publishProjectConfigurable);
+		$this->initializer->init($publishEnvironmentConfigurable, 'url', 'https://www.example.com/');
 
 	}
 
