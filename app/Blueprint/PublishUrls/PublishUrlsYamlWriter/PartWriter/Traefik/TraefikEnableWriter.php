@@ -12,7 +12,6 @@ class TraefikEnableWriter implements PartWriter {
 	/**
 	 * @param PublishUrlsExtraInformation $extraInformation
 	 * @param array $dockerService
-	 * @return mixed
 	 */
 	public function write( PublishUrlsExtraInformation $extraInformation, array &$dockerService ) {
 		$dockerService['labels']['traefik.enable'] = 'true';

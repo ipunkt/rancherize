@@ -12,7 +12,6 @@ class TraefikPortWriter implements PartWriter {
 	/**
 	 * @param PublishUrlsExtraInformation $extraInformation
 	 * @param array $dockerService
-	 * @return mixed
 	 */
 	public function write( PublishUrlsExtraInformation $extraInformation, array &$dockerService ) {
 		$port = $extraInformation->getPort();

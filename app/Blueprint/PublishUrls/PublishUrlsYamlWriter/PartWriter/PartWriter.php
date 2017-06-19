@@ -11,7 +11,6 @@ interface PartWriter {
 	/**
 	 * @param PublishUrlsExtraInformation $extraInformation
 	 * @param array $dockerService
-	 * @return mixed
 	 */
 	function write( PublishUrlsExtraInformation $extraInformation, array &$dockerService );
 }

@@ -12,7 +12,6 @@ class TraefikPathesWriter implements PartWriter {
 	/**
 	 * @param PublishUrlsExtraInformation $extraInformation
 	 * @param array $dockerService
-	 * @return mixed
 	 */
 	public function write( PublishUrlsExtraInformation $extraInformation, array &$dockerService ) {
 		$pathes = $extraInformation->getPathes();
