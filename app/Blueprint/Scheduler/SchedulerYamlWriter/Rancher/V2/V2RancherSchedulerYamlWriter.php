@@ -30,32 +30,35 @@ class V2RancherSchedulerYamlWriter implements SchedulerWriterVersion {
 		if( !array_key_exists('labels', $dockerContent) )
 			$dockerContent['labels'] = [];
 
+		if( !$information->isAllowSameHost() )
+			$dockerContent['labels']['io.rancher.scheduler.affinity:container_label_ne'] = 'io.rancher.stack_service.name=$${stack_name}/$${service_name}';
+
 		$requiredTags = $information->getRequireTags();
 		if( !empty($requiredTags) ) {
 			$tags = $this->tagService->makeTags($requiredTags);
 
-			$dockerContent['labels']['io.rancher.scheduler.affinity:host_label'] = implode(',', $tags);
+			$dockerContent['labels']['io.rancher.scheduler.affinity:host_label'] = $tags;
 		}
 
 		$forbiddenTags = $information->getForbidTags();
 		if( !empty($forbiddenTags) ) {
 			$tags = $this->tagService->makeTags($forbiddenTags);
 
-			$dockerContent['labels']['io.rancher.scheduler.affinity:host_label_ne'] = implode(',', $tags);
+			$dockerContent['labels']['io.rancher.scheduler.affinity:host_label_ne'] = $tags;
 		}
 
 		$shouldHaveTags = $information->getShouldHaveTags();
 		if( !empty($shouldHaveTags) ) {
 			$tags = $this->tagService->makeTags($shouldHaveTags);
 
-			$dockerContent['labels']['io.rancher.scheduler.affinity:host_label_soft'] = implode(',', $tags);
+			$dockerContent['labels']['io.rancher.scheduler.affinity:host_label_soft'] = $tags;
 		}
 
 		$shouldNotTags = $information->getShouldNotTags();
 		if( !empty($shouldNotTags) ) {
 			$tags = $this->tagService->makeTags($shouldNotTags);
 
-			$dockerContent['labels']['io.rancher.scheduler.affinity:host_label_soft_ne'] = implode(',', $tags);
+			$dockerContent['labels']['io.rancher.scheduler.affinity:host_label_soft_ne'] = $tags;
 		}
 	}
 }
