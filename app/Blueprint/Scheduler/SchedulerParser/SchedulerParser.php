@@ -35,6 +35,16 @@ class SchedulerParser {
 			$forbiddenTags = [];
 		$schedulerInformation->setForbidTags($forbiddenTags);
 
+		$shouldHaveTags = $schedulerConfig->get('should-have-tags', []);
+		if( !is_array($shouldHaveTags) )
+			$shouldHaveTags = [];
+		$schedulerInformation->setShouldHaveTags($shouldHaveTags);
+
+		$shouldNotTags = $schedulerConfig->get('should-not-tags', []);
+		if( !is_array($shouldNotTags) )
+			$shouldNotTags = [];
+		$schedulerInformation->setShouldNotTags($shouldNotTags);
+
 		$allowSameHost = $schedulerConfig->get('same-host', false);
 		$schedulerInformation->setAllowSameHost($allowSameHost);
 

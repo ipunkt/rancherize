@@ -10,7 +10,9 @@ This blueprint creates infrastructures to support apps using php7.
 
 
 ### Recognized Configuration Values
-
+- [Healthcheck Options](../Healthcheck/README.md)
+- [Scheduler Options](../Scheduler/README.md)
+- [Publish Urls Options](../PublishUrls/README.md)
 
 #### Docker options
 | Option | Defaults to | Explanation |

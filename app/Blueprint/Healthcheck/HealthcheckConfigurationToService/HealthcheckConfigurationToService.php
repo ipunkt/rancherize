@@ -46,6 +46,30 @@ class HealthcheckConfigurationToService {
 		$url = $healthcheckConfig->get('url', '');
 		$healthcheckInformation->setUrl( $url );
 
+		$port = $healthcheckConfig->get('port', 80);
+		$healthcheckInformation->setPort( $port );
+
+		$strategy = $healthcheckConfig->get( 'strategy', HealthcheckExtraInformation::STRATEGY_NONE );
+		$healthcheckInformation->setStrategy( $strategy );
+
+		$interval = $healthcheckConfig->get( 'interval', 2000 );
+		$healthcheckInformation->setInterval( $interval );
+
+		$responseTimeout = $healthcheckConfig->get( 'response-timeout', 2000 );
+		$healthcheckInformation->setResponseTimeout( $responseTimeout );
+
+		$initializingTimeout = $healthcheckConfig->get( 'init-timeout', 60000 );
+		$healthcheckInformation->setInitializingTimeout( $initializingTimeout );
+
+		$reinitializingTimeout = $healthcheckConfig->get( 'reinit-timeout', 60000 );
+		$healthcheckInformation->setReinitializingTimeout( $reinitializingTimeout );
+
+		$healthyThreshold = $healthcheckConfig->get( 'healthy-threshold', 2 );
+		$healthcheckInformation->setHealthyThreshold( $healthyThreshold );
+
+		$unhealthyThreshold = $healthcheckConfig->get( 'unhealthy-threshold', 3 );
+		$healthcheckInformation->setUnhealthyThreshold( $unhealthyThreshold );
+
 		$service->addExtraInformation($healthcheckInformation);
 
 	}
