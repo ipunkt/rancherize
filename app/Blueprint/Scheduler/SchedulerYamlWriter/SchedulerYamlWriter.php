@@ -27,7 +27,7 @@ class SchedulerYamlWriter {
 	];
 
 	public function __construct() {
-		$versions['rancher']['2'] = container('v2-rancher-scheduler-yaml-writer');
+		$this->versions['rancher']['2'] = container('v2-rancher-scheduler-yaml-writer');
 	}
 
 	/**
