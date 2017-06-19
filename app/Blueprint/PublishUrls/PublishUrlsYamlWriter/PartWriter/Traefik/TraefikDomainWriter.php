@@ -22,7 +22,7 @@ class TraefikDomainWriter implements PartWriter {
 			return;
 		$hostname = $matches[0];
 
-		$domainName = substr($fullPath, count($hostname) + 2);
+		$domainName = substr($fullPath, strlen($hostname) + 2);
 
 		$dockerService['labels']['traefik.domain'] = $domainName;
 	}
