@@ -1,9 +1,9 @@
 <?php namespace Rancherize\Blueprint\PublishUrls;
 
 use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterServicePreparedEvent;
+use Rancherize\Blueprint\PublishUrls\EventListener\PublishUrlsServiceWriterListener;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\PublishUrlsYamlWriter;
-use Rancherize\Blueprint\PublisUrls\EventListener\PublishUrlsServiceWriterListener;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Symfony\Component\EventDispatcher\EventDispatcher;

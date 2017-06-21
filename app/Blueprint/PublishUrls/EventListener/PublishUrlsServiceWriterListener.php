@@ -1,4 +1,4 @@
-<?php namespace Rancherize\Blueprint\PublisUrls\EventListener;
+<?php namespace Rancherize\Blueprint\PublishUrls\EventListener;
 
 use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterServicePreparedEvent;
 use Rancherize\Blueprint\Infrastructure\Service\ExtraInformationNotFoundException;
