@@ -1,7 +1,7 @@
 <?php namespace Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\PartWriter\Traefik;
 
 use Rancherize\Blueprint\PublishUrls\PublishUrlsExtraInformation\PublishUrlsExtraInformation;
-use Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\Traefik\V2\PartWriter;
+use Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\PartWriter\PartWriter;
 
 /**
  * Class TraefikDomainWriter

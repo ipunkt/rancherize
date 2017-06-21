@@ -1,4 +1,4 @@
-<?php namespace Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\Traefik\V2;
+<?php namespace Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\PartWriter;
 
 use Rancherize\Blueprint\PublishUrls\PublishUrlsExtraInformation\PublishUrlsExtraInformation;
 
