@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsExtraInformation\PublishUrlsExtraInformation;
+use Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\Traefik\V2\V2TraefikPublishUrlsYamlWriterVersion;
 
 /**
  * Class PublishUrlsYamlWriter

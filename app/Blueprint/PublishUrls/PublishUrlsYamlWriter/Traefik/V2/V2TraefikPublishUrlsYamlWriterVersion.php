@@ -1,4 +1,4 @@
-<?php namespace Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter;
+<?php namespace Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\Traefik\V2;
 
 use Rancherize\Blueprint\PublishUrls\PublishUrlsExtraInformation\PublishUrlsExtraInformation;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\PartWriter\Traefik\TraefikAliasWriter;
@@ -6,6 +6,7 @@ use Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\PartWriter\Traefik\Tr
 use Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\PartWriter\Traefik\TraefikEnableWriter;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\PartWriter\Traefik\TraefikPathesWriter;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\PartWriter\Traefik\TraefikPriorityWriter;
+use Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\PublishUrlsYamlWithPartWriters;
 
 /**
  * Class V2TraefikPublishUrlsYamlWriterVersion
