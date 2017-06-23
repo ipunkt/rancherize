@@ -42,7 +42,7 @@ class ExternalServiceParser {
 		foreach($externalServiceNames as $serviceName) {
 			$serviceConfig = new PrefixConfigurationDecorator($configuration, 'external-services.'.$serviceName.'.');
 
-			$this->buildService( $serviceConfig , $infrastructure );
+			$this->buildService( $serviceName, $serviceConfig , $infrastructure );
 		}
 
 	}
@@ -51,9 +51,14 @@ class ExternalServiceParser {
 	 * @param Configuration $serviceConfig
 	 * @param Infrastructure $infrastructure
 	 */
-	private function buildService(  Configuration $serviceConfig, Infrastructure $infrastructure ) {
+	private function buildService( $serviceName , Configuration $serviceConfig, Infrastructure $infrastructure ) {
 		$service = new Service();
 		$service->setImage( 'rancher/external-service' );
+
+		if( is_numeric($serviceName) )
+			$serviceName = 'external-'.$serviceName;
+
+		$service->setName($serviceName);
 
 		$ips = $serviceConfig->get( 'ips', [] );
 		$externalServiceExtraInformation = new ExternalServiceExtraInformation();
