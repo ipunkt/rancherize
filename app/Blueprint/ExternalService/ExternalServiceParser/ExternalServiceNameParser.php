@@ -16,10 +16,20 @@ class ExternalServiceNameParser {
 		if( !$configuration->has('external-services') )
 			return [];
 
-		$externalServices = $configuration->get('external-services', []);
-		if(! is_array($externalServices))
+		$configs = $configuration->get('external-services', []);
+		if(! is_array($configs))
 			return [];
-		$externalServiceNames = array_keys($externalServices);
+		$configNames = array_keys($configs);
+
+		$externalServiceNames = [];
+		foreach($configNames as $externalServiceName) {
+
+			if( is_numeric($externalServiceName) )
+				$externalServiceName = 'external-'.$externalServiceName;
+
+			$externalServiceNames[] = $externalServiceName;
+		}
+
 
 		return $externalServiceNames;
 	}

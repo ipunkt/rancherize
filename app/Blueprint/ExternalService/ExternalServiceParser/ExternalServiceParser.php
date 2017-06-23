@@ -60,10 +60,6 @@ class ExternalServiceParser {
 	private function buildService( $serviceName , Configuration $serviceConfig, Infrastructure $infrastructure ) {
 		$service = new Service();
 		$service->setImage( 'rancher/external-service' );
-
-		if( is_numeric($serviceName) )
-			$serviceName = 'external-'.$serviceName;
-
 		$service->setName($serviceName);
 
 		$ips = $serviceConfig->get( 'ips', [] );
