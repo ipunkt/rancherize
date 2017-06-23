@@ -1,8 +1,10 @@
 <?php namespace Rancherize\Blueprint\ExternalService\ExternalServiceParser;
 
 use Rancherize\Blueprint\ExternalService\ExternalServiceExtraInformation\ExternalServiceExtraInformation;
+use Rancherize\Blueprint\Healthcheck\HealthcheckConfigurationToService\HealthcheckConfigurationToService;
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
+use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\PrefixConfigurationDecorator;
 
@@ -11,6 +13,16 @@ use Rancherize\Configuration\PrefixConfigurationDecorator;
  * @package Rancherize\Blueprint\ExternalService\ExternalServiceParser
  */
 class ExternalServiceParser {
+
+	/**
+	 * @var HealthcheckConfigurationToService
+	 */
+	protected $healthcheckParser;
+
+	/**
+	 * @var PublishUrlsParser
+	 */
+	protected $publishParser;
 
 	/**
 	 * @param Configuration $configuration
@@ -46,10 +58,28 @@ class ExternalServiceParser {
 		$externalServiceExtraInformation->setExternalIps( $ips );
 		$service->addExtraInformation( $externalServiceExtraInformation );
 
-		/**
-		 * TODO: add publish and healthcheck service infos
-		 */
+		if( $this->healthcheckParser !== null )
+			$this->healthcheckParser->parseToService( $service, $serviceConfig );
+
+		if( $this->publishParser !== null )
+			$this->publishParser->parseToService( $service, $serviceConfig );
 
 		$infrastructure->addService( $service );
 	}
+
+	/**
+	 * @param HealthcheckConfigurationToService $healthcheckParser
+	 */
+	public function setHealthcheckParser( HealthcheckConfigurationToService $healthcheckParser ) {
+		$this->healthcheckParser = $healthcheckParser;
+	}
+
+	/**
+	 * @param PublishUrlsParser $publishParser
+	 */
+	public function setPublishParser( PublishUrlsParser $publishParser ) {
+		$this->publishParser = $publishParser;
+	}
+
+
 }
