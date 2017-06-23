@@ -33,7 +33,7 @@ class ExternalServicePushListener {
 
 		$allServicesNames = array_merge($externalServiceNames, $serviceNames);
 		$event->setServiceNames($allServicesNames);
-		$event->setForceUpgrade( true );
+		//$event->setForceUpgrade( true );
 
 	}
 }
