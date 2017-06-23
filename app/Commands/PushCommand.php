@@ -181,7 +181,7 @@ class PushCommand extends Command   {
 		$inServiceUpgradeEvent = new PushCommandInServiceUpgradeEvent();
 		$inServiceUpgradeEvent->setServiceNames( $serviceNames );
 		$inServiceUpgradeEvent->setConfiguration( $config );
-		$inServiceUpgradeEvent->setForce( false );
+		$inServiceUpgradeEvent->setForceUpgrade( false );
 		return $inServiceUpgradeEvent;
 	}
 
