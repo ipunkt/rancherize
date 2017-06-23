@@ -23,11 +23,12 @@ class ExternalServiceNameParser {
 
 		$externalServiceNames = [];
 		foreach($configNames as $externalServiceName) {
+			$serviceKey = $externalServiceName;
 
 			if( is_numeric($externalServiceName) )
 				$externalServiceName = 'external-'.$externalServiceName;
 
-			$externalServiceNames[] = $externalServiceName;
+			$externalServiceNames[$serviceKey] = $externalServiceName;
 		}
 
 

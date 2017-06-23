@@ -42,11 +42,10 @@ class ExternalServiceParser {
 	 */
 	public function parse( Configuration $configuration, Infrastructure $infrastructure ) {
 
-
 		$externalServiceNames = $this->nameParser->parseNames( $configuration );
 
-		foreach($externalServiceNames as $serviceName) {
-			$serviceConfig = new PrefixConfigurationDecorator($configuration, 'external-services.'.$serviceName.'.');
+		foreach($externalServiceNames as $serviceKey => $serviceName) {
+			$serviceConfig = new PrefixConfigurationDecorator($configuration, 'external-services.'.$serviceKey.'.');
 
 			$this->buildService( $serviceName, $serviceConfig , $infrastructure );
 		}
