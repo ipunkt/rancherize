@@ -1,6 +1,7 @@
 <?php namespace Rancherize\Blueprint\Webserver;
 use Closure;
 use Rancherize\Blueprint\Blueprint;
+use Rancherize\Blueprint\ExternalService\ExternalServiceParser\ExternalServiceParser;
 use Rancherize\Blueprint\Flags\HasFlagsTrait;
 use Rancherize\Blueprint\Healthcheck\HealthcheckConfigurationToService\HealthcheckConfigurationToService;
 use Rancherize\Blueprint\Healthcheck\HealthcheckInitService\HealthcheckInitService;
@@ -199,6 +200,11 @@ class WebserverBlueprint implements Blueprint {
 
         $infrastructure->addService($serverService);
 
+		/**
+		 * @var ExternalServiceParser $externalServicesParser
+		 */
+        $externalServicesParser = container('external-service-parser');
+        $externalServicesParser->parse($config, $infrastructure);
 
         return $infrastructure;
 	}
