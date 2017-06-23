@@ -116,8 +116,9 @@ class PushCommand extends Command   {
 				$startEvent = $this->makeInServiceEvent( $serviceNames, $config );
 				$this->getEventDispatcher()->dispatch( PushCommandInServiceUpgradeEvent::NAME, $startEvent);
 				$serviceNames = $startEvent->getServiceNames();
+				$forcedUpgrade = $startEvent->isForceUpgrade();
 
-				$this->getRancher()->start('./.rancherize', $stackName, $serviceNames, true);
+				$this->getRancher()->start('./.rancherize', $stackName, $serviceNames, true, $forcedUpgrade);
 
 				// Use default Matcher
 				$stateMatcher = new SingleStateMatcher('upgraded');
@@ -180,6 +181,7 @@ class PushCommand extends Command   {
 		$inServiceUpgradeEvent = new PushCommandInServiceUpgradeEvent();
 		$inServiceUpgradeEvent->setServiceNames( $serviceNames );
 		$inServiceUpgradeEvent->setConfiguration( $config );
+		$inServiceUpgradeEvent->setForce( false );
 		return $inServiceUpgradeEvent;
 	}
 

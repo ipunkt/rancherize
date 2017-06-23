@@ -22,6 +22,11 @@ class PushCommandInServiceUpgradeEvent extends Event {
 	protected $configuration;
 
 	/**
+	 * @var bool
+	 */
+	protected $forceUpgrade = false;
+
+	/**
 	 * @return \string[]
 	 */
 	public function getServiceNames(): array {
@@ -47,6 +52,20 @@ class PushCommandInServiceUpgradeEvent extends Event {
 	 */
 	public function setConfiguration( Configuration $configuration ) {
 		$this->configuration = $configuration;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isForceUpgrade(): bool {
+		return $this->forceUpgrade;
+	}
+
+	/**
+	 * @param bool $forceUpgrade
+	 */
+	public function setForceUpgrade( bool $forceUpgrade ) {
+		$this->forceUpgrade = $forceUpgrade;
 	}
 
 }

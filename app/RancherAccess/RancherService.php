@@ -198,8 +198,9 @@ class RancherService {
 	 * @param string $stackName
 	 * @param array $serviceNames only start a certain service
 	 * @param bool $upgrade
+	 * @param bool $forcedUpgrade
 	 */
-	public function start(string $directory, string $stackName, array $serviceNames = null, bool $upgrade = false) {
+	public function start(string $directory, string $stackName, array $serviceNames = null, bool $upgrade = false, bool $forcedUpgrade = false) {
 		if($serviceNames === null)
 			$serviceNames = [];
 		if( !is_array($serviceNames) )
@@ -210,6 +211,9 @@ class RancherService {
 
 		if($upgrade)
 			$command = array_merge($command, ['--upgrade']);
+
+		if($forcedUpgrade)
+			$command = array_merge($command, ['--force-upgrade']);
 
 		$command = array_merge($command, $serviceNames);
 
