@@ -1,7 +1,10 @@
 <?php namespace Rancherize\Commands;
 use Rancherize\Blueprint\Traits\BlueprintTrait;
+use Rancherize\Commands\Events\PushCommandInServiceUpgradeEvent;
+use Rancherize\Commands\Events\PushCommandStartEvent;
 use Rancherize\Commands\Traits\BuildsTrait;
 use Rancherize\Commands\Traits\DockerTrait;
+use Rancherize\Commands\Traits\EventTrait;
 use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Commands\Traits\RancherTrait;
 use Rancherize\Configuration\Configuration;
@@ -38,6 +41,7 @@ class PushCommand extends Command   {
 	use EnvironmentConfigurationTrait;
 	use BlueprintTrait;
 	use InServiceCheckerTrait;
+	use EventTrait;
 
 	protected function configure() {
 		$this->setName('push')
@@ -108,7 +112,12 @@ class PushCommand extends Command   {
 
 			if( $activeStack === $versionizedName ) {
 
-				$this->getRancher()->start('./.rancherize', $stackName, [$versionizedName], true);
+				$serviceNames = [$versionizedName];
+				$startEvent = $this->makeInServiceEvent( $serviceNames, $config );
+				$this->getEventDispatcher()->dispatch( PushCommandInServiceUpgradeEvent::NAME, $startEvent);
+				$serviceNames = $startEvent->getServiceNames();
+
+				$this->getRancher()->start('./.rancherize', $stackName, $serviceNames, true);
 
 				// Use default Matcher
 				$stateMatcher = new SingleStateMatcher('upgraded');
@@ -124,7 +133,12 @@ class PushCommand extends Command   {
 				$this->getRancher()->upgrade('./.rancherize', $stackName, $activeStack, $versionizedName);
 		} catch(NoActiveServiceException $e) {
 
-			$this->getRancher()->start('./.rancherize', $stackName, [$versionizedName]);
+			$serviceNames = [$versionizedName];
+			$startEvent = $this->makeStartEvent( $serviceNames, $config );
+			$this->getEventDispatcher()->dispatch( PushCommandStartEvent::NAME, $startEvent);
+			$serviceNames = $startEvent->getServiceNames();
+
+			$this->getRancher()->start('./.rancherize', $stackName, $serviceNames);
 		}
 
 
@@ -155,6 +169,30 @@ class PushCommand extends Command   {
 
 		$dockerService->login($dockerAccount->getUsername(), $dockerAccount->getPassword());
 		$dockerService->push($image);
+	}
+
+	/**
+	 * @param $serviceNames
+	 * @param $config
+	 * @return PushCommandInServiceUpgradeEvent
+	 */
+	protected function makeInServiceEvent( $serviceNames, $config ): PushCommandInServiceUpgradeEvent {
+		$inServiceUpgradeEvent = new PushCommandInServiceUpgradeEvent();
+		$inServiceUpgradeEvent->setServiceNames( $serviceNames );
+		$inServiceUpgradeEvent->setConfiguration( $config );
+		return $inServiceUpgradeEvent;
+	}
+
+	/**
+	 * @param $serviceNames
+	 * @param $config
+	 * @return PushCommandStartEvent
+	 */
+	protected function makeStartEvent( $serviceNames, $config ): PushCommandStartEvent {
+		$inServiceUpgradeEvent = new PushCommandStartEvent();
+		$inServiceUpgradeEvent->setServiceNames( $serviceNames );
+		$inServiceUpgradeEvent->setConfiguration( $config );
+		return $inServiceUpgradeEvent;
 	}
 
 

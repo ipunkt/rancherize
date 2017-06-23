@@ -23,6 +23,18 @@ class ExternalServiceParser {
 	 * @var PublishUrlsParser
 	 */
 	protected $publishParser;
+	/**
+	 * @var ExternalServiceNameParser
+	 */
+	private $nameParser;
+
+	/**
+	 * ExternalServiceParser constructor.
+	 * @param ExternalServiceNameParser $nameParser
+	 */
+	public function __construct( ExternalServiceNameParser $nameParser) {
+		$this->nameParser = $nameParser;
+	}
 
 	/**
 	 * @param Configuration $configuration
@@ -30,14 +42,8 @@ class ExternalServiceParser {
 	 */
 	public function parse( Configuration $configuration, Infrastructure $infrastructure ) {
 
-		if( !$configuration->has('external-services') )
-			return;
 
-		$externalServices = $configuration->get('external-services', []);
-		if(! is_array($externalServices))
-			return;
-		$externalServiceNames = array_keys($externalServices);
-
+		$externalServiceNames = $this->nameParser->parseNames( $configuration );
 
 		foreach($externalServiceNames as $serviceName) {
 			$serviceConfig = new PrefixConfigurationDecorator($configuration, 'external-services.'.$serviceName.'.');
