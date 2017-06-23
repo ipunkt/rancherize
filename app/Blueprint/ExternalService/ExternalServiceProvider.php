@@ -58,6 +58,6 @@ class ExternalServiceProvider implements Provider {
 		$event->addListener(ServiceWriterServicePreparedEvent::NAME, [$listener, 'servicePrepared']);
 
 		$pushListener = $this->container['external-service-push-listener'];
-		$event->addListener(PushCommandInServiceUpgradeEvent::NAME, [$pushListener, 'inService']);
+		$event->addListener(PushCommandInServiceUpgradeEvent::NAME, [$pushListener, 'inServiceUpgrade']);
 	}
 }
