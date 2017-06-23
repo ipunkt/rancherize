@@ -42,7 +42,7 @@ class ExternalServiceProvider implements Provider {
 			return new ExternalServiceEventListener( $c['external-service-yaml-writer'] );
 		};
 
-		$this->container['external-service-service-writer-listener'] = function($c) {
+		$this->container['external-service-push-listener'] = function($c) {
 			return new ExternalServicePushListener( $c['external-service-name-parser'] );
 		};
 	}
