@@ -31,7 +31,12 @@ class ExternalServiceProvider implements Provider {
 		 * @return ExternalServiceParser
 		 */
 		$this->container['external-service-parser'] = function($c) {
-			return new ExternalServiceParser($c['external-service-name-parser']);
+			$externalServiceParser = new ExternalServiceParser($c['external-service-name-parser']);
+
+			$externalServiceParser->setHealthcheckParser($c['healthcheck-parser']);
+			$externalServiceParser->setPublishParser($c['publish-urls-parser']);
+
+			return $externalServiceParser;
 		};
 
 		$this->container['external-service-yaml-writer'] = function() {
