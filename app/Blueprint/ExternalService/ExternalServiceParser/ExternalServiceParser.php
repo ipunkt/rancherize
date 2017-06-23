@@ -33,9 +33,11 @@ class ExternalServiceParser {
 		if( !$configuration->has('external-services') )
 			return;
 
-		$externalServiceNames = $configuration->get('external-services', []);
-		if(! is_array($externalServiceNames))
+		$externalServices = $configuration->get('external-services', []);
+		if(! is_array($externalServices))
 			return;
+		$externalServiceNames = array_keys($externalServices);
+
 
 		foreach($externalServiceNames as $serviceName) {
 			$serviceConfig = new PrefixConfigurationDecorator($configuration, 'external-services.'.$serviceName.'.');
