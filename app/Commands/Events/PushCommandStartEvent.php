@@ -7,9 +7,9 @@ use Symfony\Component\EventDispatcher\Event;
  * Class PushCommandInServiceUpgradeEvent
  * @package Rancherize\Commands\Events
  */
-class PushCommandInServiceUpgradeEvent extends Event {
+class PushCommandStartEvent extends Event {
 
-	const NAME = 'push.write';
+	const NAME = 'push.start';
 
 	/**
 	 * @var string[]
@@ -20,11 +20,6 @@ class PushCommandInServiceUpgradeEvent extends Event {
 	 * @var Configuration
 	 */
 	protected $configuration;
-
-	/**
-	 * @var bool
-	 */
-	protected $forceUpgrade = false;
 
 	/**
 	 * @return \string[]
@@ -52,20 +47,6 @@ class PushCommandInServiceUpgradeEvent extends Event {
 	 */
 	public function setConfiguration( Configuration $configuration ) {
 		$this->configuration = $configuration;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isForceUpgrade(): bool {
-		return $this->forceUpgrade;
-	}
-
-	/**
-	 * @param bool $forceUpgrade
-	 */
-	public function setForceUpgrade( bool $forceUpgrade ) {
-		$this->forceUpgrade = $forceUpgrade;
 	}
 
 }
