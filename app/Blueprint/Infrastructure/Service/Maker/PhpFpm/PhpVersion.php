@@ -30,6 +30,14 @@ interface PhpVersion {
 	function make(Configuration $config, Service $mainService, Infrastructure $infrastructure);
 
 	/**
+	 * @param $commandName
+	 * @param $command
+	 * @param Service $mainService
+	 * @return Service
+	 */
+	function makeCommand($commandName, $command, Service $mainService);
+
+	/**
 	 * @return string
 	 */
 	function getVersion();

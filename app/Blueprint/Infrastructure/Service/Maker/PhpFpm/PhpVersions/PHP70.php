@@ -45,4 +45,14 @@ class PHP70 implements PhpVersion {
 		 */
 		return $this;
 	}
+
+	/**
+	 * @param $commandName
+	 * @param $command
+	 * @param Service $mainService
+	 * @return Service|void
+	 */
+	public function makeCommand( $commandName, $command, Service $mainService) {
+		die('Error: PHP Commands not Yet implemented for PHP7');
+	}
 }
