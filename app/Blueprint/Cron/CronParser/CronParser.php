@@ -38,8 +38,16 @@ class CronParser {
 	 * @param Closure|null $newService
 	 */
 	public function parse(Configuration $config, Infrastructure $infrastructure, Closure $newService = null) {
-		if($newService === null)
-			$newService = function() { return new Service; };
+		if($newService === null) {
+			$newService = function($name, $command) {
+				$service = new Service();
+
+				$service->setName($name);
+				$service->setCommand($command);
+
+				return $service;
+			};
+		}
 
 		$cronjobs = $config->get('cron', []);
 
@@ -59,11 +67,8 @@ class CronParser {
 			/**
 			 * @var Service $service
 			 */
-			$service = $newService();
-			$service->setName($name);
-			$service->setCommand($command);
+			$service = $newService($name, $command);
 			$this->cronService->makeCron($service, $schedule);
-
 
 			$infrastructure->addService( $service );
 		}

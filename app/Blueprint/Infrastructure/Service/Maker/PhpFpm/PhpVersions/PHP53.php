@@ -99,6 +99,7 @@ class PHP53 implements PhpVersion {
 		$phpCommandService->setName('PHP-'.$commandName);
 		$phpCommandService->setImage( self::PHP_IMAGE );
 		$phpCommandService->setRestart(Service::RESTART_START_ONCE);
+		$this->addAppSource($phpCommandService);
 
 		/**
 		 * Copy environment variables because environment variables are expected to be available in php
@@ -107,7 +108,6 @@ class PHP53 implements PhpVersion {
 			$phpCommandService->setEnvironmentVariable($name, $value);
 
 		$mainService->addSidekick($phpCommandService);
-		$mainService->addVolumeFrom($phpCommandService);
 		return $phpCommandService;
 	}
 }
