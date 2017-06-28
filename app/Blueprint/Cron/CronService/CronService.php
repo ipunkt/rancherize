@@ -14,8 +14,6 @@ class CronService {
 	 * @param Schedule $schedule
 	 */
 	public function makeCron( Service $service, Schedule $schedule ) {
-		$labels = $service->getLabels();
-
 		$seconds = $schedule->getSeconds();
 		$minutes = $schedule->getMinute();
 		$hours = $schedule->getHour();
@@ -23,7 +21,9 @@ class CronService {
 		$month = $schedule->getMonth();
 		$dayOfWeek = $schedule->getDayOfWeek();
 
-		$labels['cron.schedule'] = "$seconds $minutes $hours $dayOfMonth $month $dayOfWeek";
+		$label = "$seconds $minutes $hours $dayOfMonth $month $dayOfWeek";
+
+		$service->addLabel('cron.schedule', $label);
 	}
 
 }

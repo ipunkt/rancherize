@@ -54,7 +54,7 @@ class CronParser {
 				$name = 'cron-'.$cronIndex++;
 
 			$command = $serviceConfig->get('command');
-			$schedule = $this->scheduleParser->parseSchedule($config);
+			$schedule = $this->scheduleParser->parseSchedule($serviceConfig);
 
 			/**
 			 * @var Service $service
@@ -62,7 +62,6 @@ class CronParser {
 			$service = $newService();
 			$service->setName($name);
 			$service->setCommand($command);
-
 			$this->cronService->makeCron($service, $schedule);
 
 
