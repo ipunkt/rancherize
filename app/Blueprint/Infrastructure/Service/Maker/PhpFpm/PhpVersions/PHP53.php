@@ -96,6 +96,7 @@ class PHP53 implements PhpVersion {
 	public function makeCommand( $commandName, $command, Service $mainService ) {
 
 		$phpCommandService = new Service();
+		$phpCommandService->setCommand($command);
 		$phpCommandService->setName('PHP-'.$commandName);
 		$phpCommandService->setImage( self::PHP_IMAGE );
 		$phpCommandService->setRestart(Service::RESTART_START_ONCE);
