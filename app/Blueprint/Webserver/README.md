@@ -14,6 +14,7 @@ This blueprint creates infrastructures to support apps using php7.
 - [Scheduler Options](../Scheduler/README.md)
 - [Publish Urls Options](../PublishUrls/README.md)
 - [External Service Options](../ExternalService/README.md)
+- [Cron Options](../Cron/README.md)
 
 #### Docker options
 | Option | Defaults to | Explanation |
