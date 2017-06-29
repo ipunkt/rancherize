@@ -1,6 +1,7 @@
 <?php namespace Rancherize\Blueprint\Cron\Schedule;
 
 use Rancherize\Configuration\Configuration;
+use Rancherize\Configuration\PrefixConfigurationDecorator;
 
 /**
  * Class ScheduleParser
@@ -29,12 +30,13 @@ class ScheduleParser {
 			return $schedule;
 		}
 
-		$schedule->setHour( $configuration->get('hour', '*') );
-		$schedule->setMinute( $configuration->get('minute', '*') );
-		$schedule->setSeconds( $configuration->get('seconds', '*') );
-		$schedule->setMonth( $configuration->get('hour', '*') );
-		$schedule->setDayOfMonth( $configuration->get('dayOfMonth', '*') );
-		$schedule->setDayOfWeek( $configuration->get('dayOfWeek', '*') );
+		$scheduleConfiguration = new PrefixConfigurationDecorator($configuration, 'schedule.');
+		$schedule->setHour( $scheduleConfiguration->get('hour', '*') );
+		$schedule->setMinute( $scheduleConfiguration->get('minute', '*') );
+		$schedule->setSeconds( $scheduleConfiguration->get('seconds', '*') );
+		$schedule->setMonth( $scheduleConfiguration->get('hour', '*') );
+		$schedule->setDayOfMonth( $scheduleConfiguration->get('dayOfMonth', '*') );
+		$schedule->setDayOfWeek( $scheduleConfiguration->get('dayOfWeek', '*') );
 
 		return $schedule;
 	}
