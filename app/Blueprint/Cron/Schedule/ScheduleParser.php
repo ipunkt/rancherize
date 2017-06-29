@@ -9,6 +9,14 @@ use Rancherize\Configuration\PrefixConfigurationDecorator;
  */
 class ScheduleParser {
 
+	public function arrayGet( $array, $key, $defaultValue ) {
+
+		if(!array_key_exists($key, $array))
+			return $defaultValue;
+
+		return $array[$key];
+	}
+
 	/**
 	 * @param Configuration $configuration
 	 * @return Schedule
@@ -20,12 +28,12 @@ class ScheduleParser {
 		if( is_string($scheduleString) ) {
 			$parts = explode(' ', $scheduleString);
 
-			$schedule->setSeconds( $parts[0] );
-			$schedule->setMinute( $parts[1] );
-			$schedule->setHour( $parts[2] );
-			$schedule->setMonth( $parts[3] );
-			$schedule->setDayOfMonth( $parts[4] );
-			$schedule->setDayOfWeek( $parts[5] );
+			$schedule->setSeconds( $this->arrayGet($parts, 0, '*') );
+			$schedule->setMinute( $this->arrayGet($parts, 1, '*') );
+			$schedule->setHour( $this->arrayGet($parts, 2, '*') );
+			$schedule->setMonth( $this->arrayGet($parts, 3, '*') );
+			$schedule->setDayOfMonth( $this->arrayGet($parts, 4, '*') );
+			$schedule->setDayOfWeek( $this->arrayGet($parts, 5, '*') );
 
 			return $schedule;
 		}
