@@ -5,23 +5,31 @@ to easily support adding cronjob sidekicks
 ## Use-case
 (Re-)Create sitemap data every night.
 
+## Options
+- command: The command given to the entrypoint of your image
+- schedule: When to run the command. This has a cron-like syntax meaning `*` stands for `any`. `*/XX` means every XX
+  - String: `second minute hour month dayOfMonth dayOfWeek` e.g. `* 0 * * * *`: run every full hour.
+  - Object: Object with the following attributes. Any attribute that is not given will default to `*`
+    - hour
+    - minute
+    - second
+    - month
+    - dayOfMonth
+    - dayOfWeek
+
 ## Example
 ```json
-{
-	"environments":{
-		"staging":{
-			"cron":{
-				"sitemap":{
-					"command":"php /var/www/app/artisan sitemap:make",
-					"schedule":{
-						"hour": 2,
-						"minute": 30
-					}
-				}
+{ "environments":{ "staging":{
+	"cron":{
+		"sitemap":{
+			"command":"php /var/www/app/artisan sitemap:make",
+			"schedule":{
+				"hour": 2,
+				"minute": 30
 			}
 		}
 	}
-}
+} } }
 ```
 
 ## Use in Blueprint
