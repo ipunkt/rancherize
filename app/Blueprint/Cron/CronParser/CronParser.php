@@ -49,10 +49,16 @@ class CronParser {
 			};
 		}
 
+		if( !$config->get('cron.enable', true) )
+			return;
+
 		$cronjobs = $config->get('cron', []);
+
 
 		if( !is_array($cronjobs) )
 			$cronjobs = [];
+		if(array_key_exists('enable', $cronjobs))
+			unset($cronjobs['enable']);
 
 		$cronIndex = 1;
 		foreach ($cronjobs as $name => $cronjob) {
