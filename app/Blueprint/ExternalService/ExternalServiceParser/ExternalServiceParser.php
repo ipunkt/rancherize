@@ -42,6 +42,12 @@ class ExternalServiceParser {
 	 */
 	public function parse( Configuration $configuration, Infrastructure $infrastructure ) {
 
+		/**
+		 * Allow setting enable to false to disable all services without having to delete the definition
+		 */
+		if( !$configuration->get('external-services.enable', true) )
+			return;
+
 		$externalServiceNames = $this->nameParser->parseNames( $configuration );
 
 		foreach($externalServiceNames as $serviceKey => $serviceName) {
