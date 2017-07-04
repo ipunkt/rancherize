@@ -17,19 +17,39 @@ to easily support adding cronjob sidekicks
     - dayOfMonth
     - dayOfWeek
 
-## Example
-```json
-{ "environments":{ "staging":{
-	"cron":{
-		"sitemap":{
-			"command":"php /var/www/app/artisan sitemap:make",
-			"schedule":{
-				"hour": 2,
-				"minute": 30
+## Examples
+- Run the PHP Command `php /var/www/app/artisan sitemap:make` every day at 2:30 am for every environment
+{ 
+	"default":{ 
+		"cron":{
+			"sitemap":{
+				"command":"php /var/www/app/artisan sitemap:make",
+				"schedule":{
+					"hour": 2,
+					"minute": 30
+				}
 			}
 		}
-	}
-} } }
+	} 
+}
+
+- Run the PHP Command `php /var/www/app/artisan sitemap:make` every day at 2:30 am for the environment `staging`
+```json
+{ 
+	"environments":{ 
+		"staging":{
+			"cron":{
+				"sitemap":{
+					"command":"php /var/www/app/artisan sitemap:make",
+					"schedule":{
+						"hour": 2,
+						"minute": 30
+					}
+				}
+			}
+		} 
+	} 
+}
 ```
 
 ## Use in Blueprint
