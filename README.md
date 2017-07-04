@@ -45,7 +45,7 @@ environment. Environments are configured by editing the file `rancherize.json` i
 
 Note that all configuration values can also be set in the `defaults` section. Values in this section will be used if the
 configuration value does not appear in the `environment`
-See [Environments and Defaults]([1]) for a longer explanation on how to best use environments
+See [Environments and Defaults](#environments-and-defaults) for a longer explanation on how to best use environments
  
 The command `init` can be used to create an initial configuration for an environment.  
 It will prompt the blueprint to create a sensible default production configuration. If the `--dev` Flag is used then
@@ -174,7 +174,7 @@ To
 - I wish to use add a database
 - The database also starts a pma unless I disable it
 
-## [1] Environments and Defaults
+## Environments and Defaults
 The configuration for an app can be roughly split in two parts:
 - app specific configuration
   - database access
