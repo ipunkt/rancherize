@@ -12,12 +12,13 @@ If you know a way to achieve this please open an issue on [github](https://githu
 ## Options
 - external services are read from bellow the json array or object `external-services`
   - An array or numeric object variable name will result in the external service name `external-$NUMBER`
-  - An non-numeric object vairable name will be used as external service name
+  - An non-numeric object variable name will be used as external service name
 - `ips`: array of ip addresses to point to
 - `publish`: see [Publish Urls](../PublishUrls/README.md)
 - `healthcheck`: see [Healthcheck](../Healthcheck/README.md)
 
 ## Example
+### external-1, external-2 ...
 ```json
 {
 	"environments": {
@@ -27,8 +28,58 @@ If you know a way to achieve this please open an issue on [github](https://githu
 					"ips":["192.168.2.1"],
 					"publish":{ "url":"https:\/\/www.example.com\/" },
 					"healthcheck":{ "url":"\/" }
+				},
+				{
+					"ips":["192.168.2.1"],
+					"publish":{ "url":"https:\/\/www.example2.com\/" },
+					"healthcheck":{ "url":"\/" }
 				}
 			]
+		}
+	}
+}
+```
+
+### external-example, external-test ...
+```json
+{
+	"environments": {
+		"envname": {
+			"external-services":{
+				"example":{
+					"ips":["192.168.2.1"],
+					"publish":{ "url":"https:\/\/www.example.com\/" },
+					"healthcheck":{ "url":"\/" }
+				},
+				"test":{
+					"ips":["192.168.2.1"],
+					"publish":{ "url":"https:\/\/www.example2.com\/" },
+					"healthcheck":{ "url":"\/" }
+				}
+			}
+		}
+	}
+}
+```
+
+### externals disabled
+```json
+{
+	"environments": {
+		"envname": {
+			"external-services":{
+				"enable":false,
+				"example":{
+					"ips":["192.168.2.1"],
+					"publish":{ "url":"https:\/\/www.example.com\/" },
+					"healthcheck":{ "url":"\/" }
+				},
+				"test":{
+					"ips":["192.168.2.1"],
+					"publish":{ "url":"https:\/\/www.example2.com\/" },
+					"healthcheck":{ "url":"\/" }
+				}
+			}
 		}
 	}
 }
