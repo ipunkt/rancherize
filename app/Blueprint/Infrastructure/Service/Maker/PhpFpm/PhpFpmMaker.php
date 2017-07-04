@@ -46,19 +46,23 @@ class PhpFpmMaker {
 	 */
 	public function make(Configuration $config, Service $mainService, Infrastructure $infrastructure) {
 
-		if( empty($this->phpVersions) )
-			throw new NoPhpVersionsAvailableException;
-
-		$phpVersionString = $config->get('php', '7.0');
-
-		if( !array_key_exists($phpVersionString, $this->phpVersions) )
-			throw new PhpVersionNotAvailableException($phpVersionString);
-
-		$phpVersion= $this->phpVersions[$phpVersionString];
-
-		$this->setAppSource($phpVersion);
+		$phpVersion = $this->getPhpVersion( $config );
 
 		$phpVersion->make($config, $mainService, $infrastructure);
+	}
+
+	/**
+	 * @param $commandName
+	 * @param $command
+	 * @param Service $mainService
+	 * @param Configuration $configuration
+	 * @return Service
+	 */
+	public function makeCommand( $commandName, $command, Service $mainService, Configuration $configuration ) {
+
+		$phpVersion = $this->getPhpVersion( $configuration );
+
+		return $phpVersion->makeCommand( $commandName, $command, $mainService);
 	}
 
 	/**
@@ -89,5 +93,24 @@ class PhpFpmMaker {
 
 		list($hostDirectory, $containerDirectory) = $appTarget;
 		$phpVersion->setAppMount($hostDirectory, $containerDirectory);
+	}
+
+	/**
+	 * @param Configuration $config
+	 * @return PhpVersion
+	 */
+	protected function getPhpVersion( Configuration $config ): PhpVersion {
+		if ( empty( $this->phpVersions ) )
+			throw new NoPhpVersionsAvailableException;
+
+		$phpVersionString = $config->get( 'php', '7.0' );
+
+		if ( !array_key_exists( $phpVersionString, $this->phpVersions ) )
+			throw new PhpVersionNotAvailableException( $phpVersionString );
+
+		$phpVersion = $this->phpVersions[$phpVersionString];
+
+		$this->setAppSource( $phpVersion );
+		return $phpVersion;
 	}
 }

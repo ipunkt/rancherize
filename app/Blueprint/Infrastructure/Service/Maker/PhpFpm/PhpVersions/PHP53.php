@@ -10,6 +10,8 @@ use Rancherize\Configuration\Configuration;
  */
 class PHP53 implements PhpVersion {
 
+	const PHP_IMAGE = 'ipunktbs/php-fpm:53-1.0.7';
+
 	/**
 	 * @var string|Service
 	 */
@@ -28,7 +30,7 @@ class PHP53 implements PhpVersion {
 
 		$phpFpmService = new Service();
 		$phpFpmService->setName('PHP-FPM');
-		$phpFpmService->setImage('ipunktbs/php-fpm:53-1.0.7');
+		$phpFpmService->setImage( self::PHP_IMAGE );
 		$phpFpmService->setRestart(Service::RESTART_UNLESS_STOPPED);
 
 		$this->addAppSource($phpFpmService);
@@ -83,5 +85,30 @@ class PHP53 implements PhpVersion {
 
 		list($hostDirectory, $containerDirectory) = $appTarget;
 		$phpFpmService->addVolume($hostDirectory, $containerDirectory);
+	}
+
+	/**
+	 * @param $commandName
+	 * @param Service $command
+	 * @param Service $mainService
+	 * @return Service
+	 */
+	public function makeCommand( $commandName, $command, Service $mainService ) {
+
+		$phpCommandService = new Service();
+		$phpCommandService->setCommand($command);
+		$phpCommandService->setName('PHP-'.$commandName);
+		$phpCommandService->setImage( self::PHP_IMAGE );
+		$phpCommandService->setRestart(Service::RESTART_START_ONCE);
+		$this->addAppSource($phpCommandService);
+
+		/**
+		 * Copy environment variables because environment variables are expected to be available in php
+		 */
+		foreach( $mainService->getEnvironmentVariables() as $name => $value )
+			$phpCommandService->setEnvironmentVariable($name, $value);
+
+		$mainService->addSidekick($phpCommandService);
+		return $phpCommandService;
 	}
 }
