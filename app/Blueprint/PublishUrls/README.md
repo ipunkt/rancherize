@@ -16,24 +16,57 @@ The rancher traefik loadbalancer publishes service ports based on a list of labe
 - traefik.path.prefix - traefik.priority
 
 ## Example
+- Publish all environments to `www.example.com`
+```json
+{
+	"default":{
+		"healthcheck":{ 
+			"url":"\/" 
+		},
+		"publish":{
+			"url":"https:\/\/www.example.com"
+		}
+	}
+}
+```
+
+- Publish only environment `test` to `www.example.com`
+```json
+{
+	"environments":{
+		"test":{
+		
+			"healthcheck":{ 
+				"url":"\/" 
+			},
+			"publish":{
+				"url":"https:\/\/www.example.com"
+			}
+		
+		}
+	}
+}
+```
+- Combined. Enable publishing `/sitemaps` and `/sitemap.xml` for all environments. Set `www.example.com` as the domainj for
+  the environment `test`
 ```json
 {
 	"default":{
 		"healthcheck":{
-			"enable":true
+			"url":"\/sitemap.xml"
 		},
 		"publish":{
 			"enable": true,
-			"url": "https:\/\/www.example.com"
+			"pathes": [
+				"\/sitemaps\/",
+				"\/sitemap.xml"
+			]
 		}
 	},
 	"environments":{
 		"test": {
 			"publish": {
-				"pathes": [
-					"\/sitemaps\/",
-					"\/sitemap.xml"
-				]
+				"url": "https:\/\/www.example.com"
 			}
 		}
 	}
