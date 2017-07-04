@@ -15,12 +15,50 @@ All options lie in the `healthcheck` json object.
 - `healthy-threshold`: Number of successful requests before the service counts as being healthy. Defaults to `2`
 - `unhealthy-threshold`: Number of failed requests before the service counts as being unhealthy. Defaults to `3`
 
-## Example
+## Examples
+- HTTP1.0 Healthcheck to `/` on port 80 for all environments
 ```json
 {
 	"default": {
 		"healthcheck":{
 			"url":"\/"
+		}
+	}
+}
+```
+
+- TCP Healthcheck to port 80 for all environments
+```json
+{
+	"default": {
+		"healthcheck":{
+			"url":"\/"
+		}
+	}
+}
+```
+
+- HTTP1.0 Healthcheck to `/` on port 80 for single envionment `production`
+```json
+{
+	"environments": {
+		"production":{
+			"healthcheck":{
+				"url":"\/"
+			}
+		}
+	}
+}
+```
+
+- TCP Healthcheck to port 80 for single envionment `production`
+```json
+{
+	"environments": {
+		"production":{
+			"healthcheck":{
+				"url":"\/"
+			}
 		}
 	}
 }
