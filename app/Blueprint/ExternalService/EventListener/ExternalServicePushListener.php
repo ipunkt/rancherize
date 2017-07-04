@@ -41,7 +41,7 @@ class ExternalServicePushListener {
 	/**
 	 * @param PushCommandStartEvent $event
 	 */
-	public function start( PushCommandStartEvent $event ) {
+	public function startService( PushCommandStartEvent $event ) {
 
 		$configuration = $event->getConfiguration();
 
