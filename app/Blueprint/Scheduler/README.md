@@ -17,6 +17,7 @@ All options life inside the `scheduler` json object.
 
 
 ## Example
+- Schedule all environments on hosts which have the tag `apps=true` and prefer hosts which do not have `fallback=true`
 ```json
 {
 	"defaults":{
@@ -27,6 +28,23 @@ All options life inside the `scheduler` json object.
 			"should-not-have-tags":[
 				"fallback"
 			]
+		}
+	}
+}
+```
+- Schedule the single environment `test` on hosts which have the tag `apps=true` and prefer hosts which do not have `fallback=true`
+```json
+{
+	"environments":{
+		"test":{
+			"scheduler":{
+				"tags":[
+					"apps",
+				],
+				"should-not-have-tags":[
+					"fallback"
+				]
+			}
 		}
 	}
 }
