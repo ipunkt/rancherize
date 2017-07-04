@@ -7,6 +7,7 @@ use Rancherize\Blueprint\ExternalService\ExternalServiceParser\ExternalServicePa
 use Rancherize\Blueprint\ExternalService\ExternalServiceYamlWriter\ExternalServiceYamlWriter;
 use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterServicePreparedEvent;
 use Rancherize\Commands\Events\PushCommandInServiceUpgradeEvent;
+use Rancherize\Commands\Events\PushCommandStartEvent;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -64,5 +65,6 @@ class ExternalServiceProvider implements Provider {
 
 		$pushListener = $this->container['external-service-push-listener'];
 		$event->addListener(PushCommandInServiceUpgradeEvent::NAME, [$pushListener, 'inServiceUpgrade']);
+		$event->addListener(PushCommandStartEvent::NAME, [$pushListener, 'startService']);
 	}
 }

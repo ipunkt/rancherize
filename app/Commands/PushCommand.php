@@ -110,38 +110,17 @@ class PushCommand extends Command   {
 		try {
 			$activeStack = $this->getRancher()->getActiveService($stackName, $name);
 
-			if( $activeStack === $versionizedName ) {
+			$isInServiceUpgrade = $activeStack === $versionizedName;
+			if( $isInServiceUpgrade ) {
+				$this->inServiceUpgrade( $stackName, $versionizedName, $config );
+				return 0;
+			}
 
-				$serviceNames = [$versionizedName];
-				$startEvent = $this->makeInServiceEvent( $serviceNames, $config );
-				$this->getEventDispatcher()->dispatch( PushCommandInServiceUpgradeEvent::NAME, $startEvent);
-				$serviceNames = $startEvent->getServiceNames();
-				$forcedUpgrade = $startEvent->isForceUpgrade();
-
-				$this->getRancher()->start('./.rancherize', $stackName, $serviceNames, true, $forcedUpgrade);
-
-				// Use default Matcher
-				$stateMatcher = new SingleStateMatcher('upgraded');
-				if( $config->get('rancher.upgrade-healthcheck', false) )
-					$stateMatcher = new HealthStateMatcher('healthy');
-
-				$this->getRancher()->wait($stackName, $versionizedName, $stateMatcher);
-				// TODO: set timeout and roll back the upgrade if the timeout is reached without health confirmation.
-
-				$this->getRancher()->confirm('./.rancherize', $stackName, [$versionizedName]);
-
-			} else
-				$this->getRancher()->upgrade('./.rancherize', $stackName, $activeStack, $versionizedName);
+			$this->rollingUpgrade( $stackName, $activeStack, $versionizedName );
 		} catch(NoActiveServiceException $e) {
 
-			$serviceNames = [$versionizedName];
-			$startEvent = $this->makeStartEvent( $serviceNames, $config );
-			$this->getEventDispatcher()->dispatch( PushCommandStartEvent::NAME, $startEvent);
-			$serviceNames = $startEvent->getServiceNames();
-
-			$this->getRancher()->start('./.rancherize', $stackName, $serviceNames);
+			$this->createNewService( $stackName, $versionizedName, $config);
 		}
-
 
 		return 0;
 	}
@@ -195,6 +174,56 @@ class PushCommand extends Command   {
 		$inServiceUpgradeEvent->setServiceNames( $serviceNames );
 		$inServiceUpgradeEvent->setConfiguration( $config );
 		return $inServiceUpgradeEvent;
+	}
+
+	/**
+	 * @param $versionizedName
+	 * @param $config
+	 * @param $stackName
+	 * @return array
+	 */
+	protected function inServiceUpgrade( $stackName, $versionizedName, Configuration $config ): array {
+		$serviceNames = [$versionizedName];
+		$startEvent = $this->makeInServiceEvent( $serviceNames, $config );
+		$this->getEventDispatcher()->dispatch( PushCommandInServiceUpgradeEvent::NAME, $startEvent );
+		$serviceNames = $startEvent->getServiceNames();
+		$forcedUpgrade = $startEvent->isForceUpgrade();
+
+		$this->getRancher()->start( './.rancherize', $stackName, $serviceNames, true, $forcedUpgrade );
+
+		// Use default Matcher
+		$stateMatcher = new SingleStateMatcher( 'upgraded' );
+		if ( $config->get( 'rancher.upgrade-healthcheck', false ) )
+			$stateMatcher = new HealthStateMatcher( 'healthy' );
+
+		$this->getRancher()->wait( $stackName, $versionizedName, $stateMatcher );
+		// TODO: set timeout and roll back the upgrade if the timeout is reached without health confirmation.
+
+		$this->getRancher()->confirm( './.rancherize', $stackName, [$versionizedName] );
+		return array($serviceNames, $startEvent);
+	}
+
+	/**
+	 * @param $stackName
+	 * @param $activeStack
+	 * @param $versionizedName
+	 */
+	protected function rollingUpgrade( $stackName, $activeStack, $versionizedName ) {
+		$this->getRancher()->upgrade( './.rancherize', $stackName, $activeStack, $versionizedName );
+	}
+
+	/**
+	 * @param string $stackName
+	 * @param string $versionizedName
+	 * @param Configuration $config
+	 */
+	protected function createNewService( $stackName, $versionizedName, Configuration $config ) {
+		$serviceNames = [$versionizedName];
+		$startEvent = $this->makeStartEvent( $serviceNames, $config );
+		$this->getEventDispatcher()->dispatch( PushCommandStartEvent::NAME, $startEvent );
+		$serviceNames = $startEvent->getServiceNames();
+
+		$this->getRancher()->start( './.rancherize', $stackName, $serviceNames );
 	}
 
 
