@@ -17,6 +17,7 @@ use Rancherize\Blueprint\Infrastructure\Service\Services\DatabaseService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\LaravelQueueWorker;
 use Rancherize\Blueprint\Infrastructure\Service\Services\PmaService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\RedisService;
+use Rancherize\Blueprint\NginxSnippets\NginxSnippetParser\NginxSnippetParser;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsIniter\PublishUrlsInitializer;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
 use Rancherize\Blueprint\Scheduler\SchedulerInitializer\SchedulerInitializer;
@@ -214,6 +215,12 @@ class WebserverBlueprint implements Blueprint {
 		 */
         $externalServicesParser = container('external-service-parser');
         $externalServicesParser->parse($config, $infrastructure);
+
+		/**
+		 * @var NginxSnippetParser $nginxSnippetParser
+		 */
+        $nginxSnippetParser = container('nginx-snippets-parser');
+        $nginxSnippetParser->parse( $serverService, $config );
 
 		/**
 		 * @var CronParser $cronParser

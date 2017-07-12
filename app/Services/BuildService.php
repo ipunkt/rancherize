@@ -5,7 +5,8 @@ use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\File\FileWriter;
-use Symfony\Component\Console\Input\InputInterface;
+use Rancherize\Services\BuildServiceEvent\InfrastructureBuiltEvent;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class BuildService
@@ -30,15 +31,22 @@ class BuildService {
 	 * @var InfrastructureWriter
 	 */
 	private $infrastructureWriter;
+	/**
+	 * @var EventDispatcher
+	 */
+	private $eventDispatcher;
 
 	/**
 	 * BuildService constructor.
 	 * @param ValidateService $validateService
 	 * @param InfrastructureWriter $infrastructureWriter
+	 * @param EventDispatcher $eventDispatcher
 	 */
-	public function __construct(ValidateService $validateService, InfrastructureWriter $infrastructureWriter) {
+	public function __construct(ValidateService $validateService, InfrastructureWriter $infrastructureWriter,
+		EventDispatcher $eventDispatcher) {
 		$this->validateService = $validateService;
 		$this->infrastructureWriter = $infrastructureWriter;
+		$this->eventDispatcher = $eventDispatcher;
 	}
 
 	/**
@@ -54,6 +62,10 @@ class BuildService {
 
 		$this->validateService->validate($blueprint, $configuration, $environment);
 		$infrastructure = $blueprint->build($configuration, $environment, $this->version);
+
+		$infrastructureBuiltEvent = new InfrastructureBuiltEvent($infrastructure);
+		$this->eventDispatcher->dispatch(InfrastructureBuiltEvent::NAME, $infrastructureBuiltEvent);
+		$infrastructure = $infrastructureBuiltEvent->getInfrastructure();
 
 		$infrastructureWriter = $this->infrastructureWriter;
 		$infrastructureWriter->setPath($directory);
