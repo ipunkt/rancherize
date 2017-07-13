@@ -35,6 +35,13 @@ class ArrayDockerAccount implements DockerAccount {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getServer() {
+		return $this->get('server');
+	}
+
+	/**
 	 *
 	 */
 	private function get($key) {

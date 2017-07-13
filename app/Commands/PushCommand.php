@@ -147,7 +147,7 @@ class PushCommand extends Command   {
 		$dockerAccount = $dockerConfiguration->getAccount( $config->get('docker.account') );
 
 
-		$dockerService->login($dockerAccount->getUsername(), $dockerAccount->getPassword());
+		$dockerService->login($dockerAccount->getUsername(), $dockerAccount->getPassword(), $dockerAccount->getServer());
 		$dockerService->push($image);
 	}
 

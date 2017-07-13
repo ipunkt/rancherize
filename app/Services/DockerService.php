@@ -46,14 +46,18 @@ class DockerService {
 	 *
 	 * @param $username
 	 * @param $password
+	 * @param string|null $server
 	 */
-	public function login($username, $password) {
+	public function login($username, $password, $server = null) {
 
 		$this->requireProcess();
 
-		$process = ProcessBuilder::create([
+		$commandArguments = [
 			'docker', 'login', '-u', $username, '-p', $password
-		])
+		];
+		if( !empty($server) )
+			$commandArguments[] = $server;
+		$process = ProcessBuilder::create( $commandArguments )
 			->setTimeout(null)->getProcess();
 
 		$this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_VERY_VERBOSE);
