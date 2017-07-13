@@ -1,7 +1,7 @@
 <?php namespace Rancherize\Docker\Events;
 
 use Rancherize\Configuration\Configuration;
-use Rancherize\Docker\ArrayDockerAccount;
+use Rancherize\Docker\DockerAccount;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -23,7 +23,7 @@ class DockerRetrievingAccountEvent extends Event {
 	protected $account;
 
 	/**
-	 * @var ArrayDockerAccount
+	 * @var DockerAccount
 	 */
 	private $dockerAccount;
 
@@ -31,10 +31,10 @@ class DockerRetrievingAccountEvent extends Event {
 	 * DockerRetrievingAccountEvent constructor.
 	 * @param $name
 	 * @param array $account
-	 * @param ArrayDockerAccount $dockerAccount
+	 * @param DockerAccount $dockerAccount
 	 * @internal param array $allAccounts
 	 */
-	public function __construct( $name, array $account, ArrayDockerAccount $dockerAccount) {
+	public function __construct( $name, array $account, DockerAccount $dockerAccount) {
 		$this->name = $name;
 		$this->account = $account;
 		$this->dockerAccount = $dockerAccount;
@@ -55,9 +55,9 @@ class DockerRetrievingAccountEvent extends Event {
 	}
 
 	/**
-	 * @return ArrayDockerAccount
+	 * @return DockerAccount
 	 */
-	public function getDockerAccount(): ArrayDockerAccount {
+	public function getDockerAccount(): DockerAccount {
 		return $this->dockerAccount;
 	}
 
