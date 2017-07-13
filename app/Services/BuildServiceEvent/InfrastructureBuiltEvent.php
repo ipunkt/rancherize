@@ -1,12 +1,13 @@
 <?php namespace Rancherize\Services\BuildServiceEvent;
 
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
+use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class InfrastructureBuiltEvent
  * @package Rancherize\Services\BuildServiceEvent
  */
-class InfrastructureBuiltEvent {
+class InfrastructureBuiltEvent extends Event {
 
 	const NAME = 'build-service.infrastructure-built';
 
