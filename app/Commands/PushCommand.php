@@ -144,6 +144,7 @@ class PushCommand extends Command   {
 		$dockerService->build($image, './.rancherize/Dockerfile');
 
 		$dockerConfiguration = new DockerAccessService($configuration);
+		$dockerConfiguration->parse($configuration);
 		$dockerAccount = $dockerConfiguration->getAccount( $config->get('docker.account') );
 
 

@@ -7,4 +7,5 @@ return [
 	'Rancherize\Blueprint\ExternalService\ExternalServiceProvider',
 	'Rancherize\Blueprint\Cron\CronProvider',
 	'Rancherize\Blueprint\NginxSnippets\NginxSnippetsProvider',
+	\Rancherize\Docker\DockerProvider::class,
 ];
