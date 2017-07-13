@@ -61,4 +61,13 @@ class DockerRetrievingAccountEvent extends Event {
 		return $this->dockerAccount;
 	}
 
+	/**
+	 * @param DockerAccount $dockerAccount
+	 * @return $this
+	 */
+	public function setDockerAccount( DockerAccount $dockerAccount ) {
+		$this->dockerAccount = $dockerAccount;
+		return $this;
+	}
+
 }
