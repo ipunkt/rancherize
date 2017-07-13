@@ -42,6 +42,8 @@ This blueprint creates infrastructures to support apps using php7.
 |`work-sub-directory` | '' | Appended to `.` / `getcwd()` as source directory for mounting / copying to the image |
 |`target-sub-directory` | '' | Appended to `/var/www/app` as target directory for mounting / copying to the image |
 |`extra-files` | [] | A list of pathes relative to the project root. All files will be added to /opt/custom/ |
+|`nginx.enable` | true | Can be set to `false` to disable adding the config snippets without removing their configuration  |
+|`nginx.snippets` | [] | List of files relative to the project root to be added to /etc/nginx/server.d. File ending with `.conf` will be included by the default nginx server config |
 
 #### Additional services
 

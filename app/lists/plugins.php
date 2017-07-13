@@ -6,4 +6,5 @@ return [
 	'Rancherize\Blueprint\Scheduler\SchedulerProvider',
 	'Rancherize\Blueprint\ExternalService\ExternalServiceProvider',
 	'Rancherize\Blueprint\Cron\CronProvider',
+	'Rancherize\Blueprint\NginxSnippets\NginxSnippetsProvider',
 ];

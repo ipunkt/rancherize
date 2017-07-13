@@ -17,6 +17,7 @@ use Rancherize\Blueprint\Infrastructure\Service\Services\DatabaseService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\LaravelQueueWorker;
 use Rancherize\Blueprint\Infrastructure\Service\Services\PmaService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\RedisService;
+use Rancherize\Blueprint\NginxSnippets\NginxSnippetParser\NginxSnippetParser;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsIniter\PublishUrlsInitializer;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
 use Rancherize\Blueprint\Scheduler\SchedulerInitializer\SchedulerInitializer;
@@ -216,6 +217,12 @@ class WebserverBlueprint implements Blueprint {
         $externalServicesParser->parse($config, $infrastructure);
 
 		/**
+		 * @var NginxSnippetParser $nginxSnippetParser
+		 */
+        $nginxSnippetParser = container('nginx-snippets-parser');
+        $nginxSnippetParser->parse( $serverService, $config );
+
+		/**
 		 * @var CronParser $cronParser
 		 */
         $cronParser = container('cron-parser');
@@ -296,9 +303,9 @@ class WebserverBlueprint implements Blueprint {
 	protected function makeServerService(Configuration $config, Configuration $default) : Service {
 		$serverService = new Service();
 		$serverService->setName($config->get('service-name'));
-		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.9.7-7-1.2.11'));
+		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.10.2-7-1.3.0'));
 		if( $config->get('debug-image', false) )
-			$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx-debug:debug-1.2.11'));
+			$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx-debug:debug-1.3.0'));
 
 		if( $config->get('sync-user-into-container', false) ) {
 			$serverService->setEnvironmentVariable('USER_ID', getmyuid());
