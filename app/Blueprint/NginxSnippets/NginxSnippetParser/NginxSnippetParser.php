@@ -26,6 +26,9 @@ class NginxSnippetParser {
 		if( empty($snippets) )
 			return;
 
+		if( $configuration->get('mount-workdir', false) )
+			$extraInformation->setMountWorkdir(true);
+
 		foreach( $snippets as $snippet )
 			$extraInformation->addSnippet($snippet);
 

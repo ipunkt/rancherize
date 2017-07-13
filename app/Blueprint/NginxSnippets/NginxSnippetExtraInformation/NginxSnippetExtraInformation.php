@@ -10,7 +10,15 @@ class NginxSnippetExtraInformation implements ServiceExtraInformation {
 
 	const IDENTIFIER = 'nginx-snippet';
 
+	/**
+	 * @var array
+	 */
 	protected $snippets = [];
+
+	/**
+	 * @var bool
+	 */
+	protected $mountWorkdir = false;
 
 	/**
 	 * @return mixed
@@ -31,5 +39,19 @@ class NginxSnippetExtraInformation implements ServiceExtraInformation {
 	 */
 	public function getSnippets(): array {
 		return $this->snippets;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isMountWorkdir(): bool {
+		return $this->mountWorkdir;
+	}
+
+	/**
+	 * @param bool $mountWorkdir
+	 */
+	public function setMountWorkdir( bool $mountWorkdir ) {
+		$this->mountWorkdir = $mountWorkdir;
 	}
 }
