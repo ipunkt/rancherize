@@ -11,10 +11,15 @@ interface DockerAccount {
 	/**
 	 * @return string
 	 */
-	public function getUsername() : string;
+	function getUsername() : string;
 
 	/**
 	 * @return string
 	 */
-	public function getPassword() : string;
+	function getPassword() : string;
+
+	/**
+	 * @return string|null
+	 */
+	function getServer();
 }
