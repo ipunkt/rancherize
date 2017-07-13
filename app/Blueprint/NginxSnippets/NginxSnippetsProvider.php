@@ -2,6 +2,7 @@
 
 use Rancherize\Blueprint\NginxSnippets\NginxSnippetInfrastructureEventHandler\NginxSnippetInfrastructureEventHandler;
 use Rancherize\Blueprint\NginxSnippets\NginxSnippetParser\NginxSnippetParser;
+use Rancherize\Blueprint\NginxSnippets\NginxSnippetService\NginxSnippetService;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Rancherize\Services\BuildServiceEvent\InfrastructureBuiltEvent;
@@ -21,8 +22,11 @@ class NginxSnippetsProvider implements Provider {
 		$this->container['nginx-snippets-parser'] = function($c) {
 			return new NginxSnippetParser();
 		};
+		$this->container['nginx-snippet-service'] = function($c) {
+			return new NginxSnippetService();
+		};
 		$this->container['nginx-infrastructure-built-listener'] = function($c) {
-			return new NginxSnippetInfrastructureEventHandler();
+			return new NginxSnippetInfrastructureEventHandler($c['nginx-snippet-service']);
 		};
 	}
 
