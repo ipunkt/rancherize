@@ -40,5 +40,25 @@ class DockerRetrievingAccountEvent extends Event {
 		$this->dockerAccount = $dockerAccount;
 	}
 
+	/**
+	 * @return Configuration
+	 */
+	public function getName(): Configuration {
+		return $this->name;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getAccount(): array {
+		return $this->account;
+	}
+
+	/**
+	 * @return ArrayDockerAccount
+	 */
+	public function getDockerAccount(): ArrayDockerAccount {
+		return $this->dockerAccount;
+	}
 
 }
