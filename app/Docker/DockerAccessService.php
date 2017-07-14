@@ -46,9 +46,9 @@ class DockerAccessService {
 
 		$dockerAccount = new ArrayDockerAccount($this->accounts[$name]);
 		$retrievingEvent = new DockerRetrievingAccountEvent($name, $this->accounts[$name], $dockerAccount);
-		$dockerAccount = $retrievingEvent->getDockerAccount();
 
 		$this->eventDispatcher->dispatch(DockerRetrievingAccountEvent::NAME, $retrievingEvent);
+		$dockerAccount = $retrievingEvent->getDockerAccount();
 
 		return $dockerAccount;
 	}
