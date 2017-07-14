@@ -31,6 +31,7 @@ use Rancherize\Configuration\PrefixConfigurationDecorator;
 use Rancherize\Configuration\Services\ConfigurableFallback;
 use Rancherize\Configuration\Services\ConfigurationFallback;
 use Rancherize\Configuration\Services\ConfigurationInitializer;
+use Rancherize\Docker\DockerAccount;
 use Rancherize\RancherAccess\InServiceCheckerTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -52,6 +53,11 @@ class WebserverBlueprint implements Blueprint {
 	use CustomFilesTrait;
 
 	use InServiceCheckerTrait;
+
+	/**
+	 * @var DockerAccount
+	 */
+	protected $dockerAccount = null;
 
 	/**
 	 * @param Configurable $configurable
@@ -464,8 +470,11 @@ class WebserverBlueprint implements Blueprint {
 	protected function addAppContainer($version, Configuration $config, Service $serverService, Infrastructure $infrastructure) {
 		if ($config->get('use-app-container', true)) {
 
+
 			$imageName = $config->get('docker.repository') . ':' . $config->get('docker.version-prefix') . $version;
-			$appService = new AppService($imageName);
+			$imageNameWithServer = $this->applyServer($imageName);
+
+			$appService = new AppService($imageNameWithServer);
 			$appService->setName($config->get('service-name') . 'App');
 
 			$serverService->addSidekick($appService);
@@ -473,6 +482,20 @@ class WebserverBlueprint implements Blueprint {
 			$infrastructure->addService($appService);
 			$this->getPhpFpmMaker()->setAppService($appService);
 		}
+	}
+
+	protected function applyServer(string $imageName) {
+		if( $this->dockerAccount === null)
+			return $imageName;
+
+		$server = $this->dockerAccount->getServer();
+		if( empty($server) )
+			return $imageName;
+
+		$serverHost = parse_url($server, PHP_URL_HOST);
+		$imageNameWithServer = $server.'/'.$imageName;
+
+		return $imageNameWithServer;
 	}
 
 	/**
@@ -531,6 +554,15 @@ class WebserverBlueprint implements Blueprint {
 		$serverService->setName($serverService->getName() . $versionSuffix);
 		foreach ($serverService->getSidekicks() as $sidekick)
 			$sidekick->setName($sidekick->getName() . $versionSuffix);
+	}
+
+	/**
+	 * @param DockerAccount $dockerAccount
+	 * @return $this
+	 */
+	public function setDockerAccount( DockerAccount $dockerAccount ) {
+		$this->dockerAccount = $dockerAccount;
+		return $this;
 	}
 
 }

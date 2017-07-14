@@ -11,6 +11,7 @@ use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\Docker\DockerAccessService;
+use Rancherize\Docker\DockerAccount;
 use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
 use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
 use Rancherize\RancherAccess\HealthStateMatcher;
@@ -90,16 +91,19 @@ class PushCommand extends Command   {
 
 		$image = $repository.':'.$versionPrefix.$version;
 
+		$dockerAccount = $this->login($configuration, $config);
+
 		$blueprint = $this->getBlueprintService()->byConfiguration($configuration, $input->getArguments());
 		$this->getBuildService()
 			->setVersion($version)
+			->setDockerAccount($dockerAccount)
 			->build($blueprint, $configuration, $environment, true);
 
 		$dockerService = $this->getDocker();
 		$dockerService->setOutput($output)
 			->setProcessHelper($this->getHelper('process'));
 
-		$this->buildImage($dockerService, $configuration, $config, $image);
+		$this->buildImage($dockerService, $configuration, $config, $image, $dockerAccount);
 
 		$name = $config->get('service-name');
 
@@ -125,6 +129,19 @@ class PushCommand extends Command   {
 		return 0;
 	}
 
+	protected function login(Configuration $configuration, Configuration $config) {
+
+		/**
+		 * @var DockerAccessService $dockerAccessService
+		 */
+		$dockerAccessService = container('docker-access-service');
+		$dockerAccessService->parse($configuration);
+		$dockerAccount = $dockerAccessService->getAccount( $config->get('docker.account') );
+
+		return $dockerAccount;
+
+	}
+
 	/**
 	 * @param InputInterface $input
 	 * @param DockerService $dockerService
@@ -133,7 +150,7 @@ class PushCommand extends Command   {
 	 * @param $image
 	 * @internal param $dockerAccount
 	 */
-	protected function buildImage(DockerService $dockerService, Configuration $configuration, Configuration $config, $image) {
+	protected function buildImage(DockerService $dockerService, Configuration $configuration, Configuration $config, $image, DockerAccount $dockerAccount) {
 
 		if ( $this->getInput()->getOption('image-exists') ) {
 			$this->getOutput()->writeln("Option image-exists was set, skipping build.", OutputInterface::VERBOSITY_VERBOSE);
@@ -141,13 +158,6 @@ class PushCommand extends Command   {
 			return;
 		}
 
-
-		/**
-		 * @var DockerAccessService $dockerAccessService
-		 */
-		$dockerAccessService = container('docker-access-service');
-		$dockerAccessService->parse($configuration);
-		$dockerAccount = $dockerAccessService->getAccount( $config->get('docker.account') );
 
 		$server = $dockerAccount->getServer();
 		if( !empty($server) ) {
