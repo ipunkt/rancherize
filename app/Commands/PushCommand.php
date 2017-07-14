@@ -141,7 +141,6 @@ class PushCommand extends Command   {
 			return;
 		}
 
-		$dockerService->build($image, './.rancherize/Dockerfile');
 
 		/**
 		 * @var DockerAccessService $dockerAccessService
@@ -150,7 +149,13 @@ class PushCommand extends Command   {
 		$dockerAccessService->parse($configuration);
 		$dockerAccount = $dockerAccessService->getAccount( $config->get('docker.account') );
 
+		$server = $dockerAccount->getServer();
+		if( !empty($server) ) {
+			$serverHost = parse_url($server, PHP_URL_HOST);
+			$image = $serverHost.'/'.$image;
+		}
 
+		$dockerService->build($image, './.rancherize/Dockerfile');
 		$dockerService->login($dockerAccount->getUsername(), $dockerAccount->getPassword(), $dockerAccount->getServer());
 		$dockerService->push($image);
 	}
