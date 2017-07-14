@@ -22,6 +22,7 @@ use Rancherize\Blueprint\PublishUrls\PublishUrlsIniter\PublishUrlsInitializer;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
 use Rancherize\Blueprint\Scheduler\SchedulerInitializer\SchedulerInitializer;
 use Rancherize\Blueprint\Scheduler\SchedulerParser\SchedulerParser;
+use Rancherize\Blueprint\TakesDockerAccount;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Blueprint\Validation\Traits\HasValidatorTrait;
 use Rancherize\Configuration\Configurable;
@@ -42,7 +43,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * This blueprint builds docker and rancher configuration for ipunktbs/nginx and ipunktbs/nginx-debug
  */
-class WebserverBlueprint implements Blueprint {
+class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 
 	use HasFlagsTrait;
 
@@ -493,7 +494,7 @@ class WebserverBlueprint implements Blueprint {
 			return $imageName;
 
 		$serverHost = parse_url($server, PHP_URL_HOST);
-		$imageNameWithServer = $server.'/'.$imageName;
+		$imageNameWithServer = $serverHost.'/'.$imageName;
 
 		return $imageNameWithServer;
 	}
