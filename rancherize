@@ -64,6 +64,8 @@ $dispatcher->addListener(ConsoleEvents::COMMAND, function (ConsoleCommandEvent $
 	$c['input'] = function() use ($input) { return $input; };
 	$c['app'] = function() use ($application) { return $application; };
 	$c['application'] = function() use ($application) { return $application; };
+	$c['command'] = function() use ($command) { return $command; };
+	$c['process-helper'] = function() use ($command) { return $command->getHelper('process'); };
 });
 
 // ... register commands
