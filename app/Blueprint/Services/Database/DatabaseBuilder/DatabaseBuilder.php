@@ -30,6 +30,8 @@ class DatabaseBuilder {
 		if ($config->has('database.password'))
 			$databaseService->setDatabasePassword($config->get('database.password'));
 
+		$this->addDumps($databaseService, $config);
+
 		$serverService->addLink($databaseService, 'database-master');
 		$serverService->setEnvironmentVariable('DATABASE_NAME', $databaseService->getDatabaseName());
 		$serverService->setEnvironmentVariable('DATABASE_USER', $databaseService->getDatabaseUser());
@@ -77,7 +79,7 @@ class DatabaseBuilder {
 	 * @param Configuration $config
 	 * @param DatabaseService $databaseService
 	 */
-	protected function addDumps(Configuration $config, DatabaseService $databaseService) {
+	protected function addDumps(DatabaseService $databaseService, Configuration $config) {
 		$dumpKey = 'database.init-dumps';
 		if (!$config->has( $dumpKey ))
 			return;
