@@ -3,7 +3,7 @@ use Pimple\Container;
 use Symfony\Component\Console\Application;
 
 /**
- * Interface Provider
+ * Interface DatabaseProvider
  * @package Rancherize\Plugin
  */
 interface Provider {

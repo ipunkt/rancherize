@@ -1,10 +1,14 @@
 <?php namespace Rancherize\Blueprint\Infrastructure\Service\Services;
 
 use Rancherize\Blueprint\Infrastructure\Service\Service;
+use Rancherize\Services\PathService\Exceptions\PathException;
+use Rancherize\Services\PathService\PathService;
 
 /**
  * Class DatabaseService
  * @package Rancherize\Blueprint\Infrastructure\Service\Services
+ *
+ * @TODO: Move to Blueprint/Services/Database/Services
  */
 class DatabaseService extends Service {
 
@@ -67,5 +71,24 @@ class DatabaseService extends Service {
 	 */
 	public function getDatabasePassword() {
 		return $this->getEnvironmentVariable('PASSWORD', '');
+	}
+
+	/**
+	 * @param string $path
+	 */
+	public function addInitDumpVolume($path) {
+
+		/**
+		 * @var PathService $pathService
+		 */
+		$pathService = container('path-service');
+
+		try {
+			$pathInfo = $pathService->parsePath($path);
+		} catch(PathException $p) {
+			return;
+		}
+
+		$this->addVolume(getcwd().$pathInfo->getPath(), '/docker-entrypoint-initdb.d/'.$pathInfo->getFilename());
 	}
 }

@@ -8,4 +8,7 @@ return [
 	'Rancherize\Blueprint\Cron\CronProvider',
 	'Rancherize\Blueprint\NginxSnippets\NginxSnippetsProvider',
 	\Rancherize\Docker\DockerProvider::class,
+	\Rancherize\Blueprint\Services\Database\DatabaseProvider::class,
+	\Rancherize\Services\PathService\PathProvider::class,
+
 ];
