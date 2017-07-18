@@ -52,10 +52,15 @@ This blueprint creates infrastructures to support apps using php7.
 |`php`| `7.0` | Add php fpm to the nginx. The default version `7.0` does not start an extra service. Other fpm versions are run in their own container and will be a sidekick inside the nginx service. Available Versions: `7.0`, `5.3` |
 |`queues`| [] | Add Laravel Queue Worker, providing their name and connection in `name` and `connection`. Example: `"queues":[{"connection": "redis","name": "default"}],` |
 |`add-redis`| false | Add a Redis server and link it to the main app, providing its name and port in `REDIS_HOST` and `REDIS_PORT` |
+
+#### Services for local development
+| Option | Defaults to | Explanation |
 |`add-database`| false | If set to true then a database server will be started as part of the stack and linked to the main app. Database name, user and password can be found in `DATABASE_NAME`, `DATABASE_USER` and `DATABASE_PORT` |
+|`database.name`| db | Sets the name of the default database created by the database container |
 |`database.name`| db | Sets the name of the default database created by the database container |
 |`database.user`| user | Sets the name of the default user created by the database container |
 |`database.password`| pw | Sets the default password created by the database container |
+|`database.init-dumps`| [] | A list of local .sql files, relative to the project root from which rancherize is called, that will be mounted into the database container as volumes and imported on the first start. |
 |`database.pma` OR `database.pma.enable`| true | !Only effective if add-database is true! If set to true then a phpmyadmin container is started and connected to the database container |
 |`database.pma.require-login`| false | !Only effective if database.pma is true! `true` requires login to pma. `false` logs pma into the database with the database user and password.|
 |`database.pma-expose` OR `database.pma.expose`| true | Can be set to false to prevent exposing the internal pma port 80 to a host port. |

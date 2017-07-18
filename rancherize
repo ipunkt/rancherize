@@ -6,6 +6,8 @@ require __DIR__.'/app/bootstrap.php';
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Configuration\Services\ProjectConfiguration;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -35,9 +37,35 @@ $dispatcher->addListener(\Symfony\Component\Console\ConsoleEvents::EXCEPTION, fu
 			"",
 		]);
 
-		container('validate-service')->print($e, $output);
+		/**
+		 * @var \Rancherize\Services\ValidateService $validateService
+		 */
+		$validateService = container('validate-service');
+		$validateService->print($e, $output);
 	}
 
+});
+
+$dispatcher->addListener(ConsoleEvents::COMMAND, function (ConsoleCommandEvent $event) {
+    // get the input instance
+    $input = $event->getInput();
+
+    // get the output instance
+    $output = $event->getOutput();
+
+    // get the command to be executed
+    $command = $event->getCommand();
+
+    // get the application
+    $application = $command->getApplication();
+
+    $c = container();
+    $c['output'] = function() use ($output) { return $output; };
+	$c['input'] = function() use ($input) { return $input; };
+	$c['app'] = function() use ($application) { return $application; };
+	$c['application'] = function() use ($application) { return $application; };
+	$c['command'] = function() use ($command) { return $command; };
+	$c['process-helper'] = function() use ($command) { return $command->getHelper('process'); };
 });
 
 // ... register commands
@@ -48,8 +76,13 @@ foreach($commands as $commandName) {
 }
 
 $internalPlugins = require_once __DIR__.'/app/lists/plugins.php';
-foreach($internalPlugins as $internalPlugin)
-    container('plugin-loader-extra')->registerExtra($internalPlugin);
+foreach($internalPlugins as $internalPlugin) {
+	/**
+	 * @var \Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator $pluginLoaderExtra
+	 */
+    $pluginLoaderExtra = container('plugin-loader-extra');
+    $pluginLoaderExtra->registerExtra($internalPlugin);
+}
 
 try {
 
@@ -58,6 +91,9 @@ try {
 	 */
 	$projectConfig = container('project-config-service');
 
+	/**
+	 * @var \Rancherize\Configuration\Configurable $configuration
+	 */
 	$configuration = container('configuration');
 	$configuration = $projectConfig->load($configuration);
 	container()->offsetSet('project-config', $configuration);

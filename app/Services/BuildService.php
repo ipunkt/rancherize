@@ -1,9 +1,11 @@
 <?php namespace Rancherize\Services;
 use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Infrastructure\InfrastructureWriter;
+use Rancherize\Blueprint\TakesDockerAccount;
 use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
+use Rancherize\Docker\DockerAccount;
 use Rancherize\File\FileWriter;
 use Rancherize\Services\BuildServiceEvent\InfrastructureBuiltEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -37,6 +39,11 @@ class BuildService {
 	private $eventDispatcher;
 
 	/**
+	 * @var DockerAccount
+	 */
+	protected $dockerAccount;
+
+	/**
 	 * BuildService constructor.
 	 * @param ValidateService $validateService
 	 * @param InfrastructureWriter $infrastructureWriter
@@ -59,6 +66,10 @@ class BuildService {
 	public function build(Blueprint $blueprint, Configuration $configuration, string $environment, $skipClear = false) {
 
 		$directory = $this->createTemporaryDirectory();
+
+		$dockerAccount = $this->dockerAccount;
+		if( $this->dockerAccount !== null && $blueprint instanceof TakesDockerAccount )
+			$blueprint->setDockerAccount($dockerAccount);
 
 		$this->validateService->validate($blueprint, $configuration, $environment);
 		$infrastructure = $blueprint->build($configuration, $environment, $this->version);
@@ -117,5 +128,14 @@ class BuildService {
 			mkdir($directory);
 
 		return $directory;
+	}
+
+	/**
+	 * @param DockerAccount $dockerAccount
+	 * @return BuildService
+	 */
+	public function setDockerAccount( DockerAccount $dockerAccount ): BuildService {
+		$this->dockerAccount = $dockerAccount;
+		return $this;
 	}
 }

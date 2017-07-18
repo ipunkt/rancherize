@@ -70,8 +70,9 @@ class DockerService {
 	 * Push the given image to dockerhub. You will most likely need to login before using this
 	 *
 	 * @param string $imageName
+	 * @param string|null $server
 	 */
-	public function push(string $imageName) {
+	public function push(string $imageName, string $server = null) {
 
 		$this->requireProcess();
 
