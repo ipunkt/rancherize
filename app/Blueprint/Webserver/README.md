@@ -59,7 +59,6 @@ This blueprint creates infrastructures to support apps using php7.
 | ------- |:-----------:| ------------ |
 |`add-database`| false | If set to true then a database server will be started as part of the stack and linked to the main app. Database name, user and password can be found in `DATABASE_NAME`, `DATABASE_USER` and `DATABASE_PORT` |
 |`database.name`| db | Sets the name of the default database created by the database container |
-|`database.name`| db | Sets the name of the default database created by the database container |
 |`database.user`| user | Sets the name of the default user created by the database container |
 |`database.password`| pw | Sets the default password created by the database container |
 |`database.init-dumps`| [] | A list of local .sql files, relative to the project root from which rancherize is called, that will be mounted into the database container as volumes and imported on the first start. |
