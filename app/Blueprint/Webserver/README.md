@@ -54,7 +54,9 @@ This blueprint creates infrastructures to support apps using php7.
 |`add-redis`| false | Add a Redis server and link it to the main app, providing its name and port in `REDIS_HOST` and `REDIS_PORT` |
 
 #### Services for local development
+
 | Option | Defaults to | Explanation |
+| ------- |:-----------:| ------------ |
 |`add-database`| false | If set to true then a database server will be started as part of the stack and linked to the main app. Database name, user and password can be found in `DATABASE_NAME`, `DATABASE_USER` and `DATABASE_PORT` |
 |`database.name`| db | Sets the name of the default database created by the database container |
 |`database.name`| db | Sets the name of the default database created by the database container |
