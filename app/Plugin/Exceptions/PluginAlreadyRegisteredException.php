@@ -1,6 +1,4 @@
-<?php namespace Rancherize\Plugin\Loader;
-
-use Rancherize\Exceptions\Exception;
+<?php namespace Rancherize\Exceptions;
 
 /**
  * Class PluginAlreadyRegisteredException
