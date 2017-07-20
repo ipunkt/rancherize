@@ -42,7 +42,7 @@ class PublishUrlsYamlWriter {
 	 */
 	public function write( $version, PublishUrlsExtraInformation $extraInformation, array &$dockerService ) {
 		$type = $extraInformation->getType();
-		if($type === null)
+		if( empty($type) )
 			$type = $this->defaultType;
 
 		try {
