@@ -3,6 +3,7 @@
 use Pimple\Container;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Services\ProjectConfiguration;
+use Rancherize\Exceptions\PluginAlreadyRegisteredException;
 use Rancherize\Plugin\Provider;
 use Symfony\Component\Console\Application;
 
