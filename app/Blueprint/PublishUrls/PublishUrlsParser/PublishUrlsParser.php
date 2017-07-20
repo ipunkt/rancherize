@@ -27,7 +27,7 @@ class PublishUrlsParser {
 
 		$publishUrlsInformation = new PublishUrlsExtraInformation();
 		$publishUrlsInformation->setPort( $publishUrlsConfig->get('port', 80) );
-		$publishUrlsInformation->setType( $publishUrlsConfig->get('type', 'traefik') );
+		$publishUrlsInformation->setType( $publishUrlsConfig->get('type', '') );
 
 		$url = $publishUrlsConfig->get( 'url', '' );
 		if( empty($url) )

@@ -1,12 +1,16 @@
 <?php namespace Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter;
+use Pimple\Container;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsExtraInformation\PublishUrlsExtraInformation;
-use Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\Traefik\V2\V2TraefikPublishUrlsYamlWriterVersion;
 
 /**
  * Class PublishUrlsYamlWriter
  * @package Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter
+ *
+ * Instantiates a PublishUrlsYamlWriterVersion from the container to write a services publish information to a docker file
  */
 class PublishUrlsYamlWriter {
+
+	const CONTAINER_PREFIX = 'publish-urls-yaml-writer';
 
 	/**
 	 * @var string
@@ -19,16 +23,16 @@ class PublishUrlsYamlWriter {
 	protected  $defaultVersion = 2;
 
 	/**
-	 * @var PublishUrlsYamlWriterVersion[][]
+	 * @var Container
 	 */
-	protected $versions = [
-		'traefik' => [
+	protected $container;
 
-		],
-	];
-
-	public function __construct() {
-		$this->versions['traefik'][2] = new V2TraefikPublishUrlsYamlWriterVersion();
+	/**
+	 * PublishUrlsYamlWriter constructor.
+	 * @param Container $container
+	 */
+	public function __construct( Container $container) {
+		$this->container = $container;
 	}
 
 	/**
@@ -38,24 +42,32 @@ class PublishUrlsYamlWriter {
 	 */
 	public function write( $version, PublishUrlsExtraInformation $extraInformation, array &$dockerService ) {
 		$type = $extraInformation->getType();
-		if($type === null)
+		if( empty($type) )
 			$type = $this->defaultType;
 
-		$writerTypeExists = array_key_exists( $type, $this->versions );
-		if($type !== null && !$writerTypeExists )
-			$type = $this->defaultType;
-
-		if( !array_key_exists($version, $this->versions[$type]) ) {
+		try {
+			$key = implode('.', [self::CONTAINER_PREFIX, $type, $version]);
 			/**
-			 * TODO: Warning
+			 * @var PublishUrlsYamlWriterVersion $version
 			 */
-			$version = $this->defaultVersion;
+			$version = $this->container[$key];
+		} catch(\InvalidArgumentException $e) {
+			$key = implode('.', [self::CONTAINER_PREFIX, $type, $this->defaultVersion]);
+
+			/**
+			 * @var PublishUrlsYamlWriterVersion $version
+			 */
+			$version = $this->container[$key];
 		}
 
-
-		$version = $this->versions[$type][$version];
-
 		$version->write($extraInformation, $dockerService);
+	}
+
+	/**
+	 * @param $defaultType
+	 */
+	public function setDefaultType($defaultType) {
+		$this->defaultType = $defaultType;
 	}
 
 }
