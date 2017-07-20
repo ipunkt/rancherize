@@ -4,6 +4,7 @@ use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterServicePrepa
 use Rancherize\Blueprint\PublishUrls\EventListener\PublishUrlsServiceWriterListener;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\PublishUrlsYamlWriter;
+use Rancherize\Blueprint\PublishUrls\PublishUrlsYamlWriter\Traefik\V2\V2TraefikPublishUrlsYamlWriterVersion;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -20,11 +21,15 @@ class PublishUrlsProvider implements Provider {
 	 */
 	public function register() {
 		$this->container['publish-urls-yaml-writer'] = function($c) {
-			return new PublishUrlsYamlWriter();
+			return new PublishUrlsYamlWriter($c);
 		};
 
 		$this->container['publish-urls-service-writer-listener'] = function($c) {
 			return new PublishUrlsServiceWriterListener( $c['publish-urls-yaml-writer'] );
+		};
+
+		$this->container['publish-urls-yaml-writer.traefik.2'] = function($c) {
+			return new V2TraefikPublishUrlsYamlWriterVersion();
 		};
 
 		$this->container['publish-urls-parser'] = function($c) {

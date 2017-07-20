@@ -57,7 +57,12 @@ class InitCommand extends Command {
 		if (!$configuration->has('project.default.rancher.account'))
 			$configuration->set('project.default.rancher.account', reset($accounts));
 
-		$dockerAccessService = new DockerAccessService($configuration);
+
+		/**
+		 * @var DockerAccessService $dockerAccessService
+		 */
+		$dockerAccessService = container('docker-access-service');
+		$dockerAccessService->parse($configuration);
 		$dockerAccounts = $dockerAccessService->availableAccounts();
 		if (!$configuration->has('project.default.docker.account'))
 			$configuration->set('project.default.docker.account', reset($dockerAccounts));

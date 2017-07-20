@@ -13,15 +13,15 @@ use Rancherize\Blueprint\Infrastructure\Service\Maker\CustomFiles\CustomFilesTra
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMakerTrait;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\Infrastructure\Service\Services\AppService;
-use Rancherize\Blueprint\Infrastructure\Service\Services\DatabaseService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\LaravelQueueWorker;
-use Rancherize\Blueprint\Infrastructure\Service\Services\PmaService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\RedisService;
 use Rancherize\Blueprint\NginxSnippets\NginxSnippetParser\NginxSnippetParser;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsIniter\PublishUrlsInitializer;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
 use Rancherize\Blueprint\Scheduler\SchedulerInitializer\SchedulerInitializer;
 use Rancherize\Blueprint\Scheduler\SchedulerParser\SchedulerParser;
+use Rancherize\Blueprint\Services\Database\DatabaseBuilder\DatabaseBuilder;
+use Rancherize\Blueprint\TakesDockerAccount;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Blueprint\Validation\Traits\HasValidatorTrait;
 use Rancherize\Configuration\Configurable;
@@ -31,6 +31,7 @@ use Rancherize\Configuration\PrefixConfigurationDecorator;
 use Rancherize\Configuration\Services\ConfigurableFallback;
 use Rancherize\Configuration\Services\ConfigurationFallback;
 use Rancherize\Configuration\Services\ConfigurationInitializer;
+use Rancherize\Docker\DockerAccount;
 use Rancherize\RancherAccess\InServiceCheckerTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -41,7 +42,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * This blueprint builds docker and rancher configuration for ipunktbs/nginx and ipunktbs/nginx-debug
  */
-class WebserverBlueprint implements Blueprint {
+class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 
 	use HasFlagsTrait;
 
@@ -52,6 +53,11 @@ class WebserverBlueprint implements Blueprint {
 	use CustomFilesTrait;
 
 	use InServiceCheckerTrait;
+
+	/**
+	 * @var DockerAccount
+	 */
+	protected $dockerAccount = null;
 
 	/**
 	 * @param Configurable $configurable
@@ -172,7 +178,12 @@ class WebserverBlueprint implements Blueprint {
         $this->addVersionEnvironment($version, $config, $serverService);
         $this->addVersionLabel($version, $config, $serverService);
 
-        $this->addDatabaseService($config, $serverService, $infrastructure);
+
+		/**
+		 * @var DatabaseBuilder $databaseBuilder
+		 */
+        $databaseBuilder = container('database-builder');
+        $databaseBuilder->addDatabaseService($config, $serverService, $infrastructure);
 
         $this->getCustomFilesMaker()->make($config, $serverService, $infrastructure);
 
@@ -394,66 +405,6 @@ class WebserverBlueprint implements Blueprint {
 		$serverService->addLabel('version', $labelVersion);
 	}
 
-	/**
-	 * @param Configuration $config
-	 * @param Service $serverService
-	 * @param Infrastructure $infrastructure
-	 */
-	protected function addDatabaseService(Configuration $config, Service $serverService, Infrastructure $infrastructure) {
-		if ($config->get('add-database', false)) {
-			$databaseService = new DatabaseService();
-
-
-			if ($config->has('database.name'))
-				$databaseService->setDatabaseName($config->get('database.name'));
-			if ($config->has('database.user'))
-				$databaseService->setDatabaseUser($config->get('database.user'));
-			if ($config->has('database.password'))
-				$databaseService->setDatabasePassword($config->get('database.password'));
-
-			$serverService->addLink($databaseService, 'database-master');
-			$serverService->setEnvironmentVariable('DATABASE_NAME', $databaseService->getDatabaseName());
-			$serverService->setEnvironmentVariable('DATABASE_USER', $databaseService->getDatabaseUser());
-			$serverService->setEnvironmentVariable('DATABASE_PASSWORD', $databaseService->getDatabasePassword());
-
-			/**
-			 * Laravel 5.3 compatibility env vars https://ipunkt-intern.demobereich.de/trac/ticket/217#comment:1
-			 */
-			$serverService->setEnvironmentVariable('DB_HOST', 'database-master');
-			$serverService->setEnvironmentVariable('DB_PORT', 3306);
-			$serverService->setEnvironmentVariable('DB_DATABASE', $databaseService->getDatabaseName());
-			$serverService->setEnvironmentVariable('DB_USERNAME', $databaseService->getDatabaseUser());
-			$serverService->setEnvironmentVariable('DB_PASSWORD', $databaseService->getDatabasePassword());
-
-			$infrastructure->addService($databaseService);
-
-
-			/**
-			 * PMA
-			 */
-			$pma = $config->get('database.pma', true);
-			$isPmaEnabledDirectly = ( !is_array($pma) && $pma == true );
-			$isPmaEnabledInArray = ( is_array($pma) && $config->get('database.pma.enable', true) );
-			if ( $isPmaEnabledInArray ||  $isPmaEnabledDirectly ) {
-				$pmaService = new PmaService();
-				$pmaService->addLink($databaseService, 'db');
-
-				if ( !$config->get('database.pma.require-login', false) ) {
-					$pmaService->setLogin(
-						$databaseService->getDatabaseUser(),
-						$databaseService->getDatabasePassword()
-					);
-				}
-				if ($config->get('database.pma-expose', true) || $config->get('database.pma.expose', true)) {
-					$legacyPort = $config->get('database.pma-port', 8082);
-					$pmaService->expose(80, $config->get('database.pma.port', $legacyPort));
-
-				}
-
-				$infrastructure->addService($pmaService);
-			}
-		}
-	}
 
 	/**
 	 * @param string $version
@@ -464,8 +415,11 @@ class WebserverBlueprint implements Blueprint {
 	protected function addAppContainer($version, Configuration $config, Service $serverService, Infrastructure $infrastructure) {
 		if ($config->get('use-app-container', true)) {
 
+
 			$imageName = $config->get('docker.repository') . ':' . $config->get('docker.version-prefix') . $version;
-			$appService = new AppService($imageName);
+			$imageNameWithServer = $this->applyServer($imageName);
+
+			$appService = new AppService($imageNameWithServer);
 			$appService->setName($config->get('service-name') . 'App');
 
 			$serverService->addSidekick($appService);
@@ -473,6 +427,20 @@ class WebserverBlueprint implements Blueprint {
 			$infrastructure->addService($appService);
 			$this->getPhpFpmMaker()->setAppService($appService);
 		}
+	}
+
+	protected function applyServer(string $imageName) {
+		if( $this->dockerAccount === null)
+			return $imageName;
+
+		$server = $this->dockerAccount->getServer();
+		if( empty($server) )
+			return $imageName;
+
+		$serverHost = parse_url($server, PHP_URL_HOST);
+		$imageNameWithServer = $serverHost.'/'.$imageName;
+
+		return $imageNameWithServer;
 	}
 
 	/**
@@ -531,6 +499,15 @@ class WebserverBlueprint implements Blueprint {
 		$serverService->setName($serverService->getName() . $versionSuffix);
 		foreach ($serverService->getSidekicks() as $sidekick)
 			$sidekick->setName($sidekick->getName() . $versionSuffix);
+	}
+
+	/**
+	 * @param DockerAccount $dockerAccount
+	 * @return $this
+	 */
+	public function setDockerAccount( DockerAccount $dockerAccount ) {
+		$this->dockerAccount = $dockerAccount;
+		return $this;
 	}
 
 }
