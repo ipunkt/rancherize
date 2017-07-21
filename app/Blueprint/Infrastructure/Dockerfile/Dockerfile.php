@@ -17,6 +17,11 @@ class Dockerfile {
 	 * @var string
 	 */
 	protected $command = '';
+	
+	/**
+	 * @var string
+	 */
+	protected $workdir = '';
 
 	/**
 	 * @var string
@@ -64,6 +69,20 @@ class Dockerfile {
 	 */
 	public function setCommand(string $command) {
 		$this->command = $command;
+	}
+	
+	/**
+	 * @return string
+	 */
+	public function getWorkdir(): string {
+		return $this->workdir;
+	}
+
+	/**
+	 * @param string $workdir
+	 */
+	public function setWorkdir(string $workdir) {
+		$this->workdir = $workdir;
 	}
 
 	/**
