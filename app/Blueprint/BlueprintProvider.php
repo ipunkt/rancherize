@@ -15,7 +15,7 @@ class BlueprintProvider implements Provider {
 	/**
 	 */
 	public function register() {
-		$container['blueprint-factory'] = function($c) {
+		$this->container['blueprint-factory'] = function($c) {
 			return new ContainerBlueprintFactory($c);
 		};
 	}
