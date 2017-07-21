@@ -28,6 +28,10 @@ class DockerfileWriter {
 
 		foreach($dockerfile->getCopies() as $from => $target)
 			$lines[] = "COPY [\"$from\", \"$target\"]";
+		
+		$workdir = $dockerfile->getWorkdir();
+		if( !empty($workdir) )
+			$lines[] = "WORKDIR ". $workdir;
 
 		foreach($dockerfile->getRunCommands() as $command)
 			$lines[] = "RUN $command";
