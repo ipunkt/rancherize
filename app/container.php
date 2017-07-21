@@ -53,10 +53,6 @@ $container['project-config-service'] = function($c) {
 	);
 };
 
-$container['blueprint-factory'] = function($c) {
-	return new \Rancherize\Blueprint\Factory\ConfigurationBlueprintFactory($c['configuration']);
-};
-
 $container['config-wrapper'] = function($c) {
 	return new \Rancherize\Configuration\Services\ConfigWrapper(
 		$c['global-config-service'],
