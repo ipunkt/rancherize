@@ -2,6 +2,9 @@
 
 use Rancherize\Blueprint\ExternalService\EventListener\ExternalServiceEventListener;
 use Rancherize\Blueprint\ExternalService\EventListener\ExternalServicePushListener;
+use Rancherize\Blueprint\ExternalService\ExternalServiceBuilder\ContainerExternalServiceFactory;
+use Rancherize\Blueprint\ExternalService\ExternalServiceBuilder\RancherExternalServiceBuilder\RancherExternalServiceBuilder;
+use Rancherize\Blueprint\ExternalService\ExternalServiceBuilder\TcpProxyExternalServiceBuilder\TcpProxyExternalServiceBuilder;
 use Rancherize\Blueprint\ExternalService\ExternalServiceParser\ExternalServiceNameParser;
 use Rancherize\Blueprint\ExternalService\ExternalServiceParser\ExternalServiceParser;
 use Rancherize\Blueprint\ExternalService\ExternalServiceYamlWriter\ExternalServiceYamlWriter;
@@ -24,6 +27,29 @@ class ExternalServiceProvider implements Provider {
 	 */
 	public function register() {
 
+		$this->container['external-service-builder.builder-types.rancher-external'] = function($c) {
+
+			$rancherBuilder = new RancherExternalServiceBuilder();
+
+			$rancherBuilder->setHealthcheckParser($c['healthcheck-parser']);
+			$rancherBuilder->setPublishParser($c['publish-urls-parser']);
+
+			return ;
+		};
+
+		$this->container['external-service-builder.builder-types.tcp-proxy'] = function($c) {
+			$tcpBuilder = new TcpProxyExternalServiceBuilder();
+
+			$tcpBuilder->setHealthcheckParser($c['healthcheck-parser']);
+			$tcpBuilder->setPublishParser($c['publish-urls-parser']);
+
+			return $tcpBuilder;
+		};
+
+		$this->container['external-service-builder-factory'] = function($c) {
+			return new ContainerExternalServiceFactory($c);
+		};
+
 		$this->container['external-service-name-parser'] = function () {
 			return new ExternalServiceNameParser();
 		};
@@ -32,10 +58,7 @@ class ExternalServiceProvider implements Provider {
 		 * @return ExternalServiceParser
 		 */
 		$this->container['external-service-parser'] = function($c) {
-			$externalServiceParser = new ExternalServiceParser($c['external-service-name-parser']);
-
-			$externalServiceParser->setHealthcheckParser($c['healthcheck-parser']);
-			$externalServiceParser->setPublishParser($c['publish-urls-parser']);
+			$externalServiceParser = new ExternalServiceParser($c['external-service-name-parser'], $c['external-service-builder-factory']);
 
 			return $externalServiceParser;
 		};
