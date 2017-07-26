@@ -31,6 +31,7 @@ class TcpProxyExternalServiceBuilder implements ExternalServiceBuilder {
 	public function build( $serviceName, Configuration $serviceConfig, Infrastructure $infrastructure ) {
 		$service = new Service();
 
+		$service->setName($serviceName);
 		$service->setImage( 'demandbase/docker-tcp-proxy' );
 		$ip = $serviceConfig->get( 'ip' );
 		$port = $serviceConfig->get( 'port', 80 );
@@ -43,6 +44,7 @@ class TcpProxyExternalServiceBuilder implements ExternalServiceBuilder {
 
 		$service->setEnvironmentVariable('BACKEND_HOST', $ip);
 		$service->setEnvironmentVariable('BACKEND_PORT', $port);
+		$infrastructure->addService($service);
 	}
 
 	/**
