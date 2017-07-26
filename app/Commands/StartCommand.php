@@ -31,6 +31,23 @@ class StartCommand extends Command   {
 		;
 	}
 
+	/**
+     * Executes the current command.
+     *
+     * This method is not abstract because you can use this class
+     * as a concrete class. In this case, instead of defining the
+     * execute() method, you set the code to execute by passing
+     * a Closure to the setCode() method.
+     *
+     * @param InputInterface  $input  An InputInterface instance
+     * @param OutputInterface $output An OutputInterface instance
+     *
+     * @return null|int null or 0 if everything went fine, or an error code
+     *
+     * @throws LogicException When this abstract method is not implemented
+     *
+     * @see setCode()
+     */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 
 		$environment = $input->getArgument('environment');
@@ -45,8 +62,6 @@ class StartCommand extends Command   {
 			->setOutput($output)
 			->setProcessHelper($this->getHelper('process'));
 
-
-
 		$this->getDocker()->start('./.rancherize', $config->get('service-name') );
 
 		foreach( $infrastructure->getServices() as $service ) {
@@ -56,15 +71,14 @@ class StartCommand extends Command   {
 
 			$serviceName = $service->getName();
 			$ports = implode(', ', $exposedPorts);
-			$output->writeln("Service $serviceName was exposed to the ports $ports");
-			foreach($exposedPorts as $port)
-				$output->writeln("Link for convenience: http://localhost:$port");
+
+			$firstLink = (count($exposedPorts) > 0)
+				? ' (http://localhost:' . current($exposedPorts) . ')'
+				: '';
+
+			$output->writeln("Service $serviceName was exposed to the ports ${ports}${firstLink}");
 		}
-
-
 
 		return 0;
 	}
-
-
 }
