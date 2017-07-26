@@ -1,10 +1,7 @@
 <?php namespace Rancherize\Blueprint\ExternalService\ExternalServiceParser;
 
-use Rancherize\Blueprint\ExternalService\ExternalServiceExtraInformation\ExternalServiceExtraInformation;
-use Rancherize\Blueprint\Healthcheck\HealthcheckConfigurationToService\HealthcheckConfigurationToService;
+use Rancherize\Blueprint\ExternalService\ExternalServiceBuilder\ExternalServiceBuilderFactory;
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
-use Rancherize\Blueprint\Infrastructure\Service\Service;
-use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\PrefixConfigurationDecorator;
 
@@ -15,24 +12,26 @@ use Rancherize\Configuration\PrefixConfigurationDecorator;
 class ExternalServiceParser {
 
 	/**
-	 * @var HealthcheckConfigurationToService
-	 */
-	protected $healthcheckParser;
-
-	/**
-	 * @var PublishUrlsParser
-	 */
-	protected $publishParser;
-	/**
 	 * @var ExternalServiceNameParser
 	 */
 	private $nameParser;
+	/**
+	 * @var ExternalServiceBuilderFactory
+	 */
+	private $builderFactory;
+
+	/**
+	 * @var string
+	 */
+	private $defaultBuilder = 'rancher-external';
 
 	/**
 	 * ExternalServiceParser constructor.
 	 * @param ExternalServiceNameParser $nameParser
+	 * @param ExternalServiceBuilderFactory $builderFactory
 	 */
-	public function __construct( ExternalServiceNameParser $nameParser) {
+	public function __construct( ExternalServiceNameParser $nameParser, ExternalServiceBuilderFactory $builderFactory) {
+		$this->builderFactory = $builderFactory;
 		$this->nameParser = $nameParser;
 	}
 
@@ -63,37 +62,18 @@ class ExternalServiceParser {
 	 * @param Infrastructure $infrastructure
 	 */
 	private function buildService( $serviceName , Configuration $serviceConfig, Infrastructure $infrastructure ) {
-		$service = new Service();
-		$service->setImage( 'rancher/external-service' );
-		$service->setName($serviceName);
+		$type = $serviceConfig->get( 'type', $this->defaultBuilder );
 
-		$ips = $serviceConfig->get( 'ips', [] );
-		$externalServiceExtraInformation = new ExternalServiceExtraInformation();
-		$externalServiceExtraInformation->setExternalIps( $ips );
-		$service->addExtraInformation( $externalServiceExtraInformation );
+		$builder = $this->builderFactory->make( $type );
+		$builder->build($serviceName, $serviceConfig, $infrastructure);
 
-		if( $this->healthcheckParser !== null )
-			$this->healthcheckParser->parseToService( $service, $serviceConfig );
-
-		if( $this->publishParser !== null )
-			$this->publishParser->parseToService( $service, $serviceConfig );
-
-		$infrastructure->addService( $service );
 	}
 
 	/**
-	 * @param HealthcheckConfigurationToService $healthcheckParser
+	 * @param string $defaultBuilder
 	 */
-	public function setHealthcheckParser( HealthcheckConfigurationToService $healthcheckParser ) {
-		$this->healthcheckParser = $healthcheckParser;
+	public function setDefaultBuilder( string $defaultBuilder ) {
+		$this->defaultBuilder = $defaultBuilder;
 	}
-
-	/**
-	 * @param PublishUrlsParser $publishParser
-	 */
-	public function setPublishParser( PublishUrlsParser $publishParser ) {
-		$this->publishParser = $publishParser;
-	}
-
 
 }
