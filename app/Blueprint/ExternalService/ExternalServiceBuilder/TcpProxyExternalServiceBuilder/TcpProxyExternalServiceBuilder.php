@@ -5,6 +5,7 @@ use Rancherize\Blueprint\Healthcheck\HealthcheckConfigurationToService\Healthche
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
+use Rancherize\Blueprint\Scheduler\SchedulerParser\SchedulerParser;
 use Rancherize\Configuration\Configuration;
 
 /**
@@ -21,6 +22,11 @@ class TcpProxyExternalServiceBuilder implements ExternalServiceBuilder {
 	 * @var PublishUrlsParser
 	 */
 	private $publishParser;
+
+	/**
+	 * @var SchedulerParser
+	 */
+	private $schedulerParser;
 
 	/**
 	 * @param $serviceName
@@ -42,6 +48,9 @@ class TcpProxyExternalServiceBuilder implements ExternalServiceBuilder {
 		if( $this->publishParser !== null )
 			$this->publishParser->parseToService( $service, $serviceConfig );
 
+		if( $this->schedulerParser !== null )
+			$this->schedulerParser->parse($service, $serviceConfig);
+
 		$service->setEnvironmentVariable('BACKEND_HOST', $ip);
 		$service->setEnvironmentVariable('BACKEND_PORT', $port);
 		$infrastructure->addService($service);
@@ -59,6 +68,13 @@ class TcpProxyExternalServiceBuilder implements ExternalServiceBuilder {
 	 */
 	public function setPublishParser( PublishUrlsParser $publishParser ) {
 		$this->publishParser = $publishParser;
+	}
+
+	/**
+	 * @param SchedulerParser $schedulerParser
+	 */
+	public function setSchedulerParser( SchedulerParser $schedulerParser ) {
+		$this->schedulerParser = $schedulerParser;
 	}
 
 }
