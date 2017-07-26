@@ -54,7 +54,7 @@ class ContainerBlueprintFactory implements BlueprintFactory  {
 	public function get(string $name) : Blueprint {
 		$key = $this->buildKey($name);
 
-		if(array_key_exists($name, $this->blueprintNames) )
+		if(!array_key_exists($name, $this->blueprintNames) )
 			throw new BlueprintNotFoundException($name);
 
 		$blueprint = $this->container[$key];
