@@ -1,6 +1,9 @@
 <?php namespace Rancherize\Blueprint\Services\Database;
 
 use Rancherize\Blueprint\Services\Database\DatabaseBuilder\DatabaseBuilder;
+use Rancherize\Blueprint\Services\Database\EventHandler\DatabasePushEventListener;
+use Rancherize\Blueprint\Services\Database\HasDatabase\HasDatabase;
+use Rancherize\Commands\Events\PushCommandInServiceUpgradeEvent;
 use Rancherize\Plugin\ProviderTrait;
 
 /**
@@ -14,14 +17,24 @@ class DatabaseProvider implements \Rancherize\Plugin\Provider {
 	/**
 	 */
 	public function register() {
-		$this->container['database-builder'] = function() {
-			return new DatabaseBuilder();
+		$this->container['database-has-database'] = function() {
+			return new HasDatabase();
+		};
+
+		$this->container['database-builder'] = function($c) {
+			return new DatabaseBuilder( $c['database-has-database'] );
+		};
+
+		$this->container['database-push-listener'] = function($c) {
+			return new DatabasePushEventListener( $c['database-has-database'] );
 		};
 	}
 
 	/**
 	 */
 	public function boot() {
-		// TODO: Implement boot() method.
+		$event = $this->container['event'];
+		$pushListener = $this->container['database-push-listener'];
+		$event->addListener(PushCommandInServiceUpgradeEvent::NAME, [$pushListener, 'inServiceUpgrade']);
 	}
 }
