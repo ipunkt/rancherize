@@ -189,6 +189,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		 */
         $databaseBuilder = container('database-builder');
         $databaseBuilder->setAppService( $this->appContainer );
+        $databaseBuilder->setServerService($serverService);
         $databaseBuilder->addDatabaseService($config, $serverService, $infrastructure);
 
         $this->getCustomFilesMaker()->make($config, $serverService, $infrastructure);

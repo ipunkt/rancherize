@@ -4,6 +4,7 @@ use Rancherize\Blueprint\Services\Database\DatabaseBuilder\DatabaseBuilder;
 use Rancherize\Blueprint\Services\Database\EventHandler\DatabasePushEventListener;
 use Rancherize\Blueprint\Services\Database\HasDatabase\HasDatabase;
 use Rancherize\Commands\Events\PushCommandInServiceUpgradeEvent;
+use Rancherize\Commands\Events\PushCommandStartEvent;
 use Rancherize\Plugin\ProviderTrait;
 
 /**
@@ -36,5 +37,6 @@ class DatabaseProvider implements \Rancherize\Plugin\Provider {
 		$event = $this->container['event'];
 		$pushListener = $this->container['database-push-listener'];
 		$event->addListener(PushCommandInServiceUpgradeEvent::NAME, [$pushListener, 'inServiceUpgrade']);
+		$event->addListener(PushCommandStartEvent::NAME, [$pushListener, 'startNewService']);
 	}
 }

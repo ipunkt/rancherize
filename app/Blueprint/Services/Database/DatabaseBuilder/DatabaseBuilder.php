@@ -25,6 +25,11 @@ class DatabaseBuilder {
 	private $appService;
 
 	/**
+	 * @var Service
+	 */
+	private $serverService;
+
+	/**
 	 * DatabaseBuilder constructor.
 	 * @param HasDatabase $hasDatabase
 	 */
@@ -104,6 +109,13 @@ class DatabaseBuilder {
 	}
 
 	/**
+	 * @param Service $serverService
+	 */
+	public function setServerService( Service $serverService ) {
+		$this->serverService = $serverService;
+	}
+
+	/**
 	 * @param Dockerfile $dockerfile
 	 * @param DatabaseService $databaseService
 	 * @param Configuration $config
@@ -142,6 +154,9 @@ class DatabaseBuilder {
 		$infrastructure->addService($databaseAppService);
 		$databaseService->addSidekick($databaseAppService);
 		$databaseAppService->addVolumeFrom($databaseService);
+
+		$linkName = $config->get('database.link', 'database-master');
+		$this->serverService->addLink($databaseService, $linkName);
 
 		return;
 	}
