@@ -31,7 +31,8 @@ class DatabasePushEventListener {
 		if( !$this->hasDatabase->hasDatabase($configuration) )
 			return;
 
-		$serviceNames = $event->getServiceNames() + [ 'Database' ];
+		$serviceNames = $event->getServiceNames();
+		$serviceNames[] = 'Database';
 		$event->setServiceNames( $serviceNames );
 	}
 
@@ -44,7 +45,8 @@ class DatabasePushEventListener {
 		if( !$this->hasDatabase->hasDatabase($configuration) )
 			return;
 
-		$serviceNames = $event->getServiceNames() + [ 'Database' ];
+		$serviceNames = $event->getServiceNames();
+		$serviceNames[] = 'Database';
 		$event->setServiceNames( $serviceNames );
 	}
 }

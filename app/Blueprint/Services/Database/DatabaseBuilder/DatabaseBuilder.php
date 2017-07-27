@@ -153,7 +153,7 @@ class DatabaseBuilder {
 
 		$infrastructure->addService($databaseAppService);
 		$databaseService->addSidekick($databaseAppService);
-		$databaseAppService->addVolumeFrom($databaseService);
+		$databaseService->addVolumeFrom($databaseAppService);
 
 		$linkName = $config->get('database.link', 'database-master');
 		$this->serverService->addLink($databaseService, $linkName);
