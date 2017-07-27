@@ -60,6 +60,11 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	protected $dockerAccount = null;
 
 	/**
+	 * @var Service
+	 */
+	private $appContainer;
+
+	/**
 	 * @param Configurable $configurable
 	 * @param string $environment
 	 * @param InputInterface $input
@@ -183,6 +188,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		 * @var DatabaseBuilder $databaseBuilder
 		 */
         $databaseBuilder = container('database-builder');
+        $databaseBuilder->setAppService( $this->appContainer );
+        $databaseBuilder->setServerService($serverService);
         $databaseBuilder->addDatabaseService($config, $serverService, $infrastructure);
 
         $this->getCustomFilesMaker()->make($config, $serverService, $infrastructure);
@@ -415,7 +422,6 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	protected function addAppContainer($version, Configuration $config, Service $serverService, Infrastructure $infrastructure) {
 		if ($config->get('use-app-container', true)) {
 
-
 			$imageName = $config->get('docker.repository') . ':' . $config->get('docker.version-prefix') . $version;
 			$imageNameWithServer = $this->applyServer($imageName);
 
@@ -426,6 +432,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$serverService->addVolumeFrom($appService);
 			$infrastructure->addService($appService);
 			$this->getPhpFpmMaker()->setAppService($appService);
+
+			$this->appContainer = $appService;
 		}
 	}
 
