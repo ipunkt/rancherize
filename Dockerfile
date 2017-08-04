@@ -18,7 +18,7 @@ RUN ["chmod", "777", "$RANCHERIZE_HOME"]
 ENV HOME=$RANCHERIZE_HOME
 
 # default editor
-ENV EDITOR=DEFAULT_EDITOR
+ENV EDITOR=$DEFAULT_EDITOR
 
 # install packages
 RUN apk update \
