@@ -11,12 +11,19 @@ For a concrete example on how the configuration becomes easier through this see 
 
 # Usage as docker container (preferred)
 Rancherize comes bundled as Docker Container `ipunktbs/rancherize`.
+## Requirements
+Rancherize creates configuration to be used with external docker tools. Thus it is necessary to have the following tools
+installed to use Rancherize:
 
-To use it, just make an Shell alias:
+- `docker` https://docs.docker.com/engine/installation/
+## Install on linux
+No need to separately install it. To use it, just make a shell alias:
 ```
-alias rancherize='docker run -it -v $HOME/.rancherize:/home/rancherize/.rancherize -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/home/rancherize/project ipunktbs/rancherize'
+alias rancherize='docker run -it -v $HOME/.rancherize:/home/rancherize/.rancherize -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) -e "USER_ID=$(id -u)" -e "GROUP_ID=$(id -g)" ipunktbs/rancherize'
 ```
-From now on just use Rancherize without any dependencies for your local environment.
+or use the provided script `script/rancherize.sh`.
+
+From now on use rancherize without other dependencies for your local environment than docker.
 
 # Usage in project
 ## Requirements

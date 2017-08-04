@@ -3,7 +3,7 @@ FROM php:${PHP_VERSION}-alpine
 
 ARG PHP_VERSION
 ARG DOCKER_COMPOSE_VERSION=1.15.0
-ARG RANCHER_COMPOSE_VERSION=v0.12.5
+ARG RANCHER_COMPOSE_VERSION=0.12.5
 ARG RANCHERIZE_HOME=/home/rancherize
 ARG DEFAULT_EDITOR=vi
 
@@ -15,8 +15,6 @@ LABEL maintainer="b.rang@ipunkt.biz" \
 # prepare pseudo project directory for npm_modules install
 RUN ["mkdir", "$RANCHERIZE_HOME"]
 RUN ["chmod", "777", "$RANCHERIZE_HOME"]
-
-VOLUME $RANCHERIZE_HOME
 
 # there lies the home
 ENV HOME=$RANCHERIZE_HOME
@@ -35,9 +33,9 @@ COPY [".", "/opt/rancherize"]
 WORKDIR /opt/rancherize
 
 # load rancher-compose
-RUN curl -SL "https://github.com/rancher/rancher-compose/releases/download/$RANCHER_COMPOSE_VERSION/rancher-compose-linux-amd64-$RANCHER_COMPOSE_VERSION.tar.gz" \
+RUN curl -SL "https://github.com/rancher/rancher-compose/releases/download/v$RANCHER_COMPOSE_VERSION/rancher-compose-linux-amd64-v$RANCHER_COMPOSE_VERSION.tar.gz" \
 	| tar xz \
-	&& mv rancher-compose-$RANCHER_COMPOSE_VERSION/rancher-compose .
+	&& mv rancher-compose-*/rancher-compose /usr/local/bin/ && cp /usr/local/bin/rancher-compose /usr/local/bin/rancher-compose-$RANCHER_COMPOSE_VERSION
 
 # install composer packages
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
@@ -49,7 +47,5 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 # install docker-compose
 RUN pip install docker-compose==$DOCKER_COMPOSE_VERSION
 
-# change workdir to project
-WORKDIR $RANCHERIZE_HOME/project
 ENTRYPOINT ["/opt/rancherize/rancherize"]
 #ENTRYPOINT ["/bin/sh"]

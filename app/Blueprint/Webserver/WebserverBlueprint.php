@@ -326,8 +326,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx-debug:debug-1.3.0'));
 
 		if( $config->get('sync-user-into-container', false) ) {
-			$serverService->setEnvironmentVariable('USER_ID', getmyuid());
-			$serverService->setEnvironmentVariable('GROUP_ID', getmygid());
+			$serverService->setEnvironmentVariable('USER_ID',empty($_ENV['USER_ID']) ? getmyuid() : $_ENV['USER_ID'] );
+			$serverService->setEnvironmentVariable('GROUP_ID', empty($_ENV['GROUP_ID']) ? getmygid() : $_ENV['GROUP_ID'] );
 		}
 
 		if ($config->has('expose-port'))
