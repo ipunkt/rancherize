@@ -351,11 +351,11 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$serverService->addVolume( $volume );
 		}
 
-		$this->addAll([$default, $config], 'environment', function(string $name, $value) use ($serverService) {
+		$this->arrayAdder->addAll([$default, $config], 'environment', function(string $name, $value) use ($serverService) {
 			$serverService->setEnvironmentVariable($name, $value);
 		});
 
-		$this->addAll([$default, $config], 'labels', function(string $name, $value) use ($serverService) {
+		$this->arrayAdder->addAll([$default, $config], 'labels', function(string $name, $value) use ($serverService) {
 			$serverService->addLabel($name, $value);
 		});
 
