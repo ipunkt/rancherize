@@ -2,6 +2,7 @@
 
 use Closure;
 use Rancherize\Blueprint\Cron\CronService\CronService;
+use Rancherize\Blueprint\Cron\Schedule\Exceptions\NoScheduleConfiguredException;
 use Rancherize\Blueprint\Cron\Schedule\ScheduleParser;
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
@@ -68,7 +69,11 @@ class CronParser {
 				$name = 'cron-'.$cronIndex++;
 
 			$command = $serviceConfig->get('command');
-			$schedule = $this->scheduleParser->parseSchedule($serviceConfig);
+			try {
+				$schedule = $this->scheduleParser->parseSchedule($serviceConfig);
+			} catch(NoScheduleConfiguredException $e) {
+				continue;
+			}
 
 			/**
 			 * @var Service $service
