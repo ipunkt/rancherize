@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Blueprint\Webserver;
 
+use Pimple\Container;
 use Rancherize\Blueprint\Factory\BlueprintFactory;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
@@ -24,6 +25,12 @@ class WebserverProvider implements Provider {
 		 * @var BlueprintFactory $blueprintFactory
 		 */
 		$blueprintFactory = container('blueprint-factory');
-		$blueprintFactory->add('webserver', 'Rancherize\Blueprint\Webserver\WebserverBlueprint');
+		$blueprintFactory->add('webserver', function(Container $c) {
+			$webserverBlueprint = new WebserverBlueprint();
+
+			$webserverBlueprint->setArrayAdder( $c['config-array-adder'] );
+
+			return $webserverBlueprint;
+		});
 	}
 }
