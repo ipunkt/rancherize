@@ -1,5 +1,4 @@
 <?php namespace Rancherize\Blueprint\Webserver;
-use Closure;
 use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Cron\CronInit\CronInit;
 use Rancherize\Blueprint\Cron\CronParser\CronParser;
@@ -24,6 +23,7 @@ use Rancherize\Blueprint\Services\Database\DatabaseBuilder\DatabaseBuilder;
 use Rancherize\Blueprint\TakesDockerAccount;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Blueprint\Validation\Traits\HasValidatorTrait;
+use Rancherize\Configuration\ArrayAdder\ArrayAdder;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\PrefixConfigurableDecorator;
@@ -53,6 +53,11 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	use CustomFilesTrait;
 
 	use InServiceCheckerTrait;
+
+	/**
+	 * @var ArrayAdder
+	 */
+	protected $arrayAdder;
 
 	/**
 	 * @var DockerAccount
@@ -297,23 +302,6 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	}
 
 	/**
-	 * @param Configuration[] $configs
-	 * @param string $label
-	 * @param Closure $closure
-	 *
-	 * TODO: make service object
-	 */
-	private function addAll(array $configs, string $label, Closure $closure) {
-		foreach($configs as $c) {
-			if(!$c->has($label))
-				continue;
-
-			foreach ($c->get($label) as $name => $value)
-				$closure($name, $value);
-		}
-	}
-
-	/**
 	 * @param Configuration $config
 	 * @param Configuration $default
 	 * @return Service
@@ -363,11 +351,11 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$serverService->addVolume( $volume );
 		}
 
-		$this->addAll([$default, $config], 'environment', function(string $name, $value) use ($serverService) {
+		$this->arrayAdder->addAll([$default, $config], 'environment', function(string $name, $value) use ($serverService) {
 			$serverService->setEnvironmentVariable($name, $value);
 		});
 
-		$this->addAll([$default, $config], 'labels', function(string $name, $value) use ($serverService) {
+		$this->arrayAdder->addAll([$default, $config], 'labels', function(string $name, $value) use ($serverService) {
 			$serverService->addLabel($name, $value);
 		});
 
@@ -516,6 +504,13 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	public function setDockerAccount( DockerAccount $dockerAccount ) {
 		$this->dockerAccount = $dockerAccount;
 		return $this;
+	}
+
+	/**
+	 * @param ArrayAdder $arrayAdder
+	 */
+	public function setArrayAdder( ArrayAdder $arrayAdder ) {
+		$this->arrayAdder = $arrayAdder;
 	}
 
 }

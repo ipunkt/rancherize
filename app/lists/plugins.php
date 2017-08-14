@@ -12,5 +12,6 @@ return [
 	Rancherize\Services\PathService\PathProvider::class,
 	Rancherize\Blueprint\BlueprintProvider::class,
 	Rancherize\Blueprint\Webserver\WebserverProvider::class,
+	\Rancherize\Configuration\ConfigurationProvider::class,
 
 ];

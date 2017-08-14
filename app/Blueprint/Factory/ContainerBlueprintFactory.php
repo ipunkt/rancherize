@@ -34,16 +34,22 @@ class ContainerBlueprintFactory implements BlueprintFactory  {
 
 	/**
 	 * @param string $name
-	 * @param string $classpath
+	 * @param string $classpathOrClosure
 	 */
-	public function add(string $name, string $classpath) {
+	public function add( string $name, $classpathOrClosure) {
 		$key = $this->buildKey($name);
 
-		$this->container[$key] = function() use ($classpath) {
-			return new $classpath;
+		$this->blueprintNames[$name] = $name;
+
+		if( $classpathOrClosure instanceof \Closure ) {
+			$this->container[$key] = $classpathOrClosure;
+			return;
+		}
+
+		$this->container[$key] = function() use ($classpathOrClosure) {
+			return new $classpathOrClosure;
 		};
 
-		$this->blueprintNames[$name] = $name;
 	}
 
 	/**

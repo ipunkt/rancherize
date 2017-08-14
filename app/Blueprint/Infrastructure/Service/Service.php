@@ -59,6 +59,11 @@ class Service {
 	 */
 	protected $extraInformation = [];
 
+	/**
+	 * @var string
+	 */
+	protected $workDir = '';
+
 	const RESTART_UNLESS_STOPPED = 0;
 	const RESTART_NEVER = 1;
 	const RESTART_AWAYS = 2;
@@ -433,6 +438,20 @@ class Service {
 		$identifier = $extraInformation->getIdentifier();
 
 		$this->extraInformation[ $identifier ] = $extraInformation;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getWorkDir(): string {
+		return $this->workDir;
+	}
+
+	/**
+	 * @param string $workDir
+	 */
+	public function setWorkDir( string $workDir ) {
+		$this->workDir = $workDir;
 	}
 
 
