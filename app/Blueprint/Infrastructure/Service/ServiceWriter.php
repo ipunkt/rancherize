@@ -84,6 +84,10 @@ class ServiceWriter {
 		}
 		$this->addNonEmpty('links', $links, $content);
 
+		$workDir = $service->getWorkDir();
+		if( !empty($workDir) )
+			$content['working_dir'] = $workDir;
+
 		$labels = [];
 		foreach($service->getLabels() as $name => $value)
 			$labels[$name] = $value;

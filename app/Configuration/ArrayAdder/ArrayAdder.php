@@ -17,7 +17,7 @@ class ArrayAdder {
 	 * @param string $label
 	 * @param Closure $closure
 	 */
-	private function addAll(array $configs, string $label, Closure $closure) {
+	public function addAll(array $configs, string $label, Closure $closure) {
 		foreach($configs as $c) {
 			if(!$c->has($label))
 				continue;
