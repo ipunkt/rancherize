@@ -130,13 +130,17 @@ $container['plugin-loader-extra'] = function($c) {
 	return new \Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator($c['loader-interface']);
 };
 
+$container['package-name-parser'] = function($c) {
+	return new \Rancherize\Composer\PackageNameParser();
+};
+
 $container['plugin-loader'] = function($c) {
 
 	/*
 	 * project-config is not set in this file - it is set in the rancherize.php once the project config was loaded for
 	 * use with the plugin system
 	 */
-	return new \Rancherize\Plugin\Loader\ComposerPluginLoader($c['project-config'], $c['project-config-service']);
+	return new \Rancherize\Plugin\Loader\ComposerPluginLoader($c['project-config'], $c['project-config-service'], $c['package-name-parser']);
 };
 
 $container->extend('plugin-loader', function($pluginLoader, $c) {
