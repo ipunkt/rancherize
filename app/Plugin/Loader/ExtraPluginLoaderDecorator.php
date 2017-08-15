@@ -46,12 +46,12 @@ class ExtraPluginLoaderDecorator implements PluginLoader {
 	}
 
 	/**
-	 * @param string $plugin
+	 * @param string $pluginName
 	 * @param string $classpath
 	 * @return
 	 */
-	public function register( string $plugin, string $classpath ) {
-		return $this->pluginLoader->register( $plugin, $classpath );
+	public function register( string $pluginName, string $classpath ) {
+		return $this->pluginLoader->register( $pluginName, $classpath );
 	}
 
 	/**

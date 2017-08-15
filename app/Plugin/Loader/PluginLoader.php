@@ -10,11 +10,11 @@ use Symfony\Component\Console\Application;
 interface PluginLoader {
 
 	/**
-	 * @param string $plugin
+	 * @param string $pluginName
 	 * @param string $classpath
 	 * @return
 	 */
-	function register(string $plugin, string $classpath);
+	function register( string $pluginName, string $classpath);
 
 	/**
 	 * @param Configuration $configuration
