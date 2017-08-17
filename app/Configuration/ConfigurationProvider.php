@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Configuration;
 
+use Rancherize\Configuration\ArrayAdder\ArrayAdder;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 
@@ -15,7 +16,7 @@ class ConfigurationProvider implements Provider {
 	 */
 	public function register() {
 		$this->container['config-array-adder'] = function() {
-			return new ArrayConfiguration();
+			return new ArrayAdder();
 		};
 	}
 
