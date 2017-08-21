@@ -256,12 +256,18 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
         return $infrastructure;
 	}
 
+	const WWW_DATA_USER_ID = 33;
+	const WWW_DATA_GROUP_ID = 33;
+
 	/**
 	 * @param $config
 	 * @return Dockerfile
 	 */
 	protected function makeDockerfile(Configuration $config):Dockerfile {
 		$dockerfile = new Dockerfile();
+
+		$dockerfile->setUser( self::WWW_DATA_USER_ID );
+		$dockerfile->setGroup( self::WWW_DATA_GROUP_ID );
 
 		$dockerfile->setFrom($config->get('docker.base-image'));
 

@@ -26,9 +26,20 @@ class DockerfileWriter {
 		foreach($dockerfile->getVolumes() as $volume)
 			$lines[] = "VOLUME $volume";
 
+		$user = $dockerfile->getUser();
+		$group = $dockerfile->getGroup();
+
+		if( !empty($user) ) {
+			$groupPart = ':'.$group;
+			if( empty($group) )
+				$groupPart = '';
+
+			$lines[] = 'USER '.$user.$groupPart;
+		}
+
 		foreach($dockerfile->getCopies() as $from => $target)
 			$lines[] = "COPY [\"$from\", \"$target\"]";
-		
+
 		$workdir = $dockerfile->getWorkdir();
 		if( !empty($workdir) )
 			$lines[] = "WORKDIR ". $workdir;
