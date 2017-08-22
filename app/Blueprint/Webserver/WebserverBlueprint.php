@@ -266,9 +266,6 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	protected function makeDockerfile(Configuration $config):Dockerfile {
 		$dockerfile = new Dockerfile();
 
-		$dockerfile->setUser( self::WWW_DATA_USER_ID );
-		$dockerfile->setGroup( self::WWW_DATA_GROUP_ID );
-
 		$dockerfile->setFrom($config->get('docker.base-image'));
 
 		$dockerfile->addVolume('/var/www/app');
@@ -277,6 +274,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		$targetSuffix = $config->get('target-sub-directory', '');
 
 		$dockerfile->copy('.'.$copySuffix, '/var/www/app'.$targetSuffix);
+
+		$dockerfile->run('chown -R '.self::WWW_DATA_USER_ID.':'.self::WWW_DATA_GROUP_ID.' /var/www/app');
 
 		$nginxConfig = $config->get('nginx-config');
 		if (!empty($nginxConfig)) {
