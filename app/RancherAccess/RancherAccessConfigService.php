@@ -18,14 +18,6 @@ class RancherAccessConfigService implements RancherAccessService
 	private $accounts = [];
 
 	/**
-	 * RancherAccessConfigService constructor.
-	 * @param Configuration $configuration
-	 */
-	public function __construct(Configuration $configuration) {
-		$this->accounts = $configuration->get('global.rancher');
-	}
-
-	/**
 	 * @return string[]
 	 */
 	public function availableAccounts() {
@@ -41,5 +33,9 @@ class RancherAccessConfigService implements RancherAccessService
 			throw new AccountNotFoundException($name);
 
 		return new ArrayRancherAccount($this->accounts[$name]);
+	}
+
+	public function parse(Configuration $configuration) {
+		$this->accounts = $configuration->get('global.rancher');
 	}
 }

@@ -27,4 +27,9 @@ interface RancherAccessService
      * @return ArrayRancherAccount
      */
     public function getAccount(string $name) : ArrayRancherAccount;
+
+	/**
+	 * @param Configuration $config
+	 */
+    public function parse(\Rancherize\Configuration\Configuration $config);
 }

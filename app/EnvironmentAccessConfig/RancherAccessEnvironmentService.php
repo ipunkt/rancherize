@@ -19,18 +19,6 @@ class RancherAccessEnvironmentService implements RancherAccessService
 	private $account = [];
 
 	/**
-	 * RancherAccessConfigService constructor.
-	 * @param Configuration $configuration
-	 */
-	public function __construct(Configuration $configuration) {
-		$this->account = [
-		    'url' => getenv('RANCHER_URL'),
-            'key' => getenv('RANCHER_KEY'),
-            'secret' => getenv('RANCHER_SECRET')
-        ];
-	}
-
-	/**
 	 * @return string[]
 	 */
 	public function availableAccounts() {
@@ -43,5 +31,13 @@ class RancherAccessEnvironmentService implements RancherAccessService
      */
 	public function getAccount(string $name) : ArrayRancherAccount {
 		return new ArrayRancherAccount($this->account);
+	}
+
+	public function parse(\Rancherize\Configuration\Configuration $configuration) {
+		$this->account = [
+			'url' => getenv('RANCHER_URL'),
+			'key' => getenv('RANCHER_KEY'),
+			'secret' => getenv('RANCHER_SECRET')
+		];
 	}
 }

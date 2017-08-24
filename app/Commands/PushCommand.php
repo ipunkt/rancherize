@@ -17,6 +17,7 @@ use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
 use Rancherize\RancherAccess\HealthStateMatcher;
 use Rancherize\RancherAccess\InServiceCheckerTrait;
 use Rancherize\RancherAccess\RancherAccessConfigService;
+use Rancherize\RancherAccess\RancherAccessService;
 use Rancherize\RancherAccess\SingleStateMatcher;
 use Rancherize\Services\DockerService;
 use Symfony\Component\Console\Command\Command;
@@ -64,7 +65,11 @@ class PushCommand extends Command   {
 		$configuration = $this->loadConfiguration();
 		$config = $this->environmentConfig($configuration, $environment);
 
-		$rancherConfiguration = new RancherAccessConfigService($configuration);
+		/**
+		 * @var RancherAccessService $rancherConfiguration
+		 */
+		$rancherConfiguration = container('rancher-access-service');
+		$rancherConfiguration->parse($configuration);
 		$account = $rancherConfiguration->getAccount( $config->get('rancher.account') );
 
 		$rancher = $this->getRancher();
