@@ -1,4 +1,4 @@
-<?php namespace Rancherize\Docker;
+<?php namespace Rancherize\RancherAccess;
 
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
@@ -7,15 +7,15 @@ use Rancherize\Plugin\ProviderTrait;
  * Class DockerProvider
  * @package Rancherize\Docker
  */
-class DockerProvider implements Provider {
+class RancherAccessProvider implements Provider {
 
 	use ProviderTrait;
 
 	/**
 	 */
 	public function register() {
-		$this->container['docker-access-service'] = function($c) {
-			return new DockerAccessConfigService($c['event']);
+		$this->container['rancher-access-service'] = function($c) {
+			return new RancherAccessConfigService();
 		};
 	}
 
