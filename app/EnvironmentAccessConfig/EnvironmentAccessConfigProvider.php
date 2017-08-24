@@ -18,7 +18,7 @@ class EnvironmentAccessConfigProvider implements Provider
      */
     function register()
     {
-        if (getenv('DOCKER_USER') && getenv('RANCHER_USER')) {
+        if (getenv('DOCKER_USER') && getenv('RANCHER_KEY')) {
             /**
              * Replace DockerAccessService
              * @param $c
