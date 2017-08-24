@@ -15,7 +15,7 @@ class DockerProvider implements Provider {
 	 */
 	public function register() {
 		$this->container['docker-access-service'] = function($c) {
-			return new DockerAccessService($c['event']);
+			return new DockerAccessConfigService($c['event']);
 		};
 	}
 

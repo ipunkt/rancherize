@@ -6,8 +6,8 @@ use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Services\ConfigWrapper;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
-use Rancherize\Docker\DockerAccessService;
-use Rancherize\RancherAccess\RancherAccessService;
+use Rancherize\Docker\DockerAccessConfigService;
+use Rancherize\RancherAccess\RancherAccessConfigService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -51,7 +51,7 @@ class InitCommand extends Command {
 		$blueprint = $this->getBlueprintService()->load($blueprintName, $input->getOptions());
 
 		$configuration->set('project.blueprint', $blueprintName);
-		$rancherAccessService = new RancherAccessService($configuration);
+		$rancherAccessService = new RancherAccessConfigService($configuration);
 
 		$accounts = $rancherAccessService->availableAccounts();
 		if (!$configuration->has('project.default.rancher.account'))
@@ -59,7 +59,7 @@ class InitCommand extends Command {
 
 
 		/**
-		 * @var DockerAccessService $dockerAccessService
+		 * @var DockerAccessConfigService $dockerAccessService
 		 */
 		$dockerAccessService = container('docker-access-service');
 		$dockerAccessService->parse($configuration);
