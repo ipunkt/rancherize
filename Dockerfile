@@ -47,4 +47,4 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && ./composer.phar install --no-dev && rm composer.phar
 
 #ENTRYPOINT ["/opt/rancherize/rancherize"]
-ENTRYPOINT ["/bin/sh"]
+#ENTRYPOINT ["/bin/sh"]
