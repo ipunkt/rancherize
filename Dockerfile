@@ -42,5 +42,5 @@ WORKDIR /opt/rancherize
 RUN curl -sSL "https://gist.githubusercontent.com/justb81/1006b89e41e41e1c848fe91969af7a0b/raw/c12faf968e659356ec1cb53f313e7f8383836be3/getcomposer.sh" | sh \
     && ./composer.phar install --no-dev && rm composer.phar
 
-ENTRYPOINT ["/opt/rancherize/rancherize"]
-#ENTRYPOINT ["/bin/sh"]
+#ENTRYPOINT ["/opt/rancherize/rancherize"]
+ENTRYPOINT ["/bin/sh"]
