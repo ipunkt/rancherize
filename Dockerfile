@@ -27,8 +27,7 @@ RUN apk update \
 		docker \
 		py-pip \
 # install docker-compose
-	&& pip install docker-compose==$DOCKER_COMPOSE_VERSION \
-	&& apk del py-pip
+	&& pip install docker-compose==$DOCKER_COMPOSE_VERSION
 
 # load rancher-compose
 RUN curl -SL "https://github.com/rancher/rancher-compose/releases/download/v$RANCHER_COMPOSE_VERSION/rancher-compose-linux-amd64-v$RANCHER_COMPOSE_VERSION.tar.gz" \
