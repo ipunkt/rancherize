@@ -43,4 +43,4 @@ RUN curl -sSL "https://gist.githubusercontent.com/justb81/1006b89e41e41e1c848fe9
     && ./composer.phar install --no-dev && rm composer.phar
 
 #ENTRYPOINT ["/opt/rancherize/rancherize"]
-ENTRYPOINT ["/bin/sh"]
+#ENTRYPOINT ["/bin/sh"]
