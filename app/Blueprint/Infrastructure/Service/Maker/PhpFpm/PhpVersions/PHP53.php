@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions;
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
+use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\DefaultTimezone;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\MemoryLimit;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersion;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PostLimit;
@@ -11,9 +12,9 @@ use Rancherize\Configuration\Configuration;
  * Class PHP53
  * @package Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions
  */
-class PHP53 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
+class PHP53 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, DefaultTimezone {
 
-	const PHP_IMAGE = 'ipunktbs/php-fpm:53-1.1.0';
+	const PHP_IMAGE = 'ipunktbs/php-fpm:latest';
 
 	/**
 	 * @var string|Service
@@ -34,6 +35,11 @@ class PHP53 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
 	 * @var string
 	 */
 	protected $uploadFileLimit = self::DEFAULT_UPLOAD_FILE_LIMIT;
+
+	/**
+	 * @var string
+	 */
+	protected $defaultTimezone = self::DEFAULT_TIMEZONE;
 
 	/**
 	 * @param Configuration $config
@@ -60,6 +66,9 @@ class PHP53 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
 		$uploadFileLimit = $this->uploadFileLimit;
 		if( $uploadFileLimit !== self::DEFAULT_UPLOAD_FILE_LIMIT )
 			$phpFpmService->setEnvironmentVariable('PHP_UPLOAD_MAX_FILESIZE', $uploadFileLimit);
+		$defaultTimezone = $this->defaultTimezone;
+		if( $defaultTimezone !== self::DEFAULT_TIMEZONE)
+			$phpFpmService->setEnvironmentVariable('PHP_DEFAULT_TIMEZONE', $defaultTimezone);
 
 		$this->addAppSource($phpFpmService);
 
@@ -166,6 +175,17 @@ class PHP53 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
 	 */
 	public function setUploadFileLimit( $limit ) {
 		$this->uploadFileLimit = $limit;
+		return $this;
+	}
+
+	/**
+	 * Set the default php timezone
+	 *
+	 * @param $defaultTimezone
+	 * @return $this
+	 */
+	public function setDefaultTimezone( $defaultTimezone ) {
+		$this->defaultTimezone = $defaultTimezone;
 		return $this;
 	}
 }
