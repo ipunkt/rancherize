@@ -14,7 +14,7 @@ use Rancherize\Configuration\Configuration;
  */
 class PHP53 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, DefaultTimezone {
 
-	const PHP_IMAGE = 'ipunktbs/php-fpm:latest';
+	const PHP_IMAGE = 'ipunktbs/php-fpm:1.2.0';
 
 	/**
 	 * @var string|Service
@@ -68,7 +68,7 @@ class PHP53 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 			$phpFpmService->setEnvironmentVariable('PHP_UPLOAD_MAX_FILESIZE', $uploadFileLimit);
 		$defaultTimezone = $this->defaultTimezone;
 		if( $defaultTimezone !== self::DEFAULT_TIMEZONE)
-			$phpFpmService->setEnvironmentVariable('PHP_DEFAULT_TIMEZONE', $defaultTimezone);
+			$phpFpmService->setEnvironmentVariable('DEFAULT_TIMEZONE', $defaultTimezone);
 
 		$this->addAppSource($phpFpmService);
 
