@@ -49,7 +49,12 @@ This blueprint creates infrastructures to support apps using php7.
 
 | Option | Defaults to | Explanation |
 | ------- |:-----------:| ------------ |
-|`php`| `7.0` | Add php fpm to the nginx. The default version `7.0` does not start an extra service. Other fpm versions are run in their own container and will be a sidekick inside the nginx service. Available Versions: `7.0`, `5.3` |
+|`php`| `7.0` | Legacy version of php.version |
+|`php.version`| `7.0` | Add php fpm to the nginx. The default version `7.0` does not start an extra service. Other fpm versions are run in their own container and will be a sidekick inside the nginx service. Available Versions: `7.0`, `5.3` |
+|`php.memory-limit`| `1024M` | |
+|`php.post-limit`| `8M` | PHP memory limit option |
+|`php.upload-file-limit`| `2M` | PHP post_max_size option |
+|`php.default-timezone`| `UTC` | PHP date.timezone option |
 |`queues`| [] | Add Laravel Queue Worker, providing their name and connection in `name` and `connection`. Example: `"queues":[{"connection": "redis","name": "default"}],` |
 |`add-redis`| false | Add a Redis server and link it to the main app, providing its name and port in `REDIS_HOST` and `REDIS_PORT` |
 

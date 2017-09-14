@@ -2,6 +2,7 @@
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Configuration\Configuration;
+use Rancherize\Configuration\PrefixConfigurationDecorator;
 
 /**
  * Class PhpFpmMaker
@@ -105,12 +106,41 @@ class PhpFpmMaker {
 
 		$phpVersionString = $config->get( 'php', '7.0' );
 
+		$advancedConfig = is_array($phpVersionString);
+		if( $advancedConfig )
+			$phpVersionString = $config->get('php.version', '7.0');
+
 		if ( !array_key_exists( $phpVersionString, $this->phpVersions ) )
 			throw new PhpVersionNotAvailableException( $phpVersionString );
 
 		$phpVersion = $this->phpVersions[$phpVersionString];
 
 		$this->setAppSource( $phpVersion );
+		$this->setConfig($phpVersion, $config);
+
 		return $phpVersion;
+	}
+
+	/**
+	 * @param PhpVersion $phpVersion
+	 * @param $config
+	 */
+	private function setConfig( PhpVersion $phpVersion, Configuration $config ) {
+
+		if( !is_array($config->get('php') ) )
+			return;
+
+		$phpConfig = new PrefixConfigurationDecorator($config, 'php.');
+		if( $phpVersion instanceof MemoryLimit && $phpConfig->has('memory-limit')  )
+			$phpVersion->setMemoryLimit( $phpConfig->get('memory-limit') );
+
+		if( $phpVersion instanceof PostLimit && $phpConfig->has('post-limit')  )
+			$phpVersion->setPostLimit( $phpConfig->get('post-limit') );
+
+		if( $phpVersion instanceof UploadFileLimit && $phpConfig->has('upload-file-limit')  )
+			$phpVersion->setUploadFileLimit( $phpConfig->get('upload-file-limit') );
+
+		if( $phpVersion instanceof DefaultTimezone && $phpConfig->has('default-timezone')  )
+			$phpVersion->setDefaultTimezone( $phpConfig->get('default-timezone') );
 	}
 }

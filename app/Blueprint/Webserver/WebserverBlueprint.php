@@ -128,7 +128,9 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$cronInitializer->init( $fallbackConfigurable, $initializer );
 		}
 
-		$initializer->init($fallbackConfigurable, 'php', "7.0");
+		$initializer->init($fallbackConfigurable, 'php', [
+			'version' => "7.0"
+		]);
 		$initializer->init($fallbackConfigurable, 'queues', []);
 		$initializer->init($fallbackConfigurable, 'docker.repository', 'repo/name', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'docker.version-prefix', '', $projectConfigurable);
