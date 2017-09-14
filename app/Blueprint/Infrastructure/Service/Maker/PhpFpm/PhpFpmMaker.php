@@ -139,5 +139,8 @@ class PhpFpmMaker {
 
 		if( $phpVersion instanceof UploadFileLimit && $phpConfig->has('upload-file-limit')  )
 			$phpVersion->setUploadFileLimit( $phpConfig->get('upload-file-limit') );
+
+		if( $phpVersion instanceof DefaultTimezone && $phpConfig->has('default-timezone')  )
+			$phpVersion->setDefaultTimezone( $phpConfig->get('default-timezone') );
 	}
 }
