@@ -9,13 +9,6 @@ use Rancherize\Configuration\Configuration;
  */
 interface PhpVersion {
 
-
-
-	/**
-	 * @return $this
-	 */
-	function setMemoryLimit($limit);
-
 	/**
 	 * @param string $hostDirectory
 	 * @param string $containerContainerDirectory
