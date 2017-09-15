@@ -4,7 +4,7 @@ use Rancherize\Commands\Traits\RancherTrait;
 use Rancherize\Commands\Traits\ValidateTrait;
 use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
-use Rancherize\RancherAccess\RancherAccessConfigService;
+use Rancherize\RancherAccess\RancherAccessService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,7 +39,11 @@ class EnvironmentVersionCommand extends Command   {
 		$configuration = $this->loadConfiguration();
 		$config = $this->environmentConfig($configuration, $environment);
 
-		$rancherConfiguration = new RancherAccessConfigService($configuration);
+		/**
+		 * @var RancherAccessService $rancherConfiguration
+		 */
+		$rancherConfiguration = container('rancher-access-service');
+		$rancherConfiguration->parse($configuration);
 		$account = $rancherConfiguration->getAccount( $config->get('rancher.account') );
 
 		$rancher = $this->getRancher();
