@@ -13,7 +13,8 @@ return [
 	Rancherize\Services\PathService\PathProvider::class,
 	Rancherize\Blueprint\BlueprintProvider::class,
 	Rancherize\Blueprint\Webserver\WebserverProvider::class,
-	\Rancherize\Configuration\ConfigurationProvider::class,
-    \Rancherize\EnvironmentAccessConfig\EnvironmentAccessConfigProvider::class,
+	Rancherize\Configuration\ConfigurationProvider::class,
+    Rancherize\EnvironmentAccessConfig\EnvironmentAccessConfigProvider::class,
+	Rancherize\Blueprint\Volumes\VolumesProvider::class,
 
 ];
