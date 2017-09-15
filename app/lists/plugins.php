@@ -15,5 +15,6 @@ return [
 	Rancherize\Blueprint\Webserver\WebserverProvider::class,
 	\Rancherize\Configuration\ConfigurationProvider::class,
     \Rancherize\EnvironmentAccessConfig\EnvironmentAccessConfigProvider::class,
+	Rancherize\Blueprint\ProjectName\ProjectNameProvider::class,
 
 ];

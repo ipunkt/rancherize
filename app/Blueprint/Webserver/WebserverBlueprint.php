@@ -15,6 +15,7 @@ use Rancherize\Blueprint\Infrastructure\Service\Services\AppService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\LaravelQueueWorker;
 use Rancherize\Blueprint\Infrastructure\Service\Services\RedisService;
 use Rancherize\Blueprint\NginxSnippets\NginxSnippetParser\NginxSnippetParser;
+use Rancherize\Blueprint\ProjectName\ProjectNameTrait;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsIniter\PublishUrlsInitializer;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
 use Rancherize\Blueprint\Scheduler\SchedulerInitializer\SchedulerInitializer;
@@ -53,6 +54,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	use CustomFilesTrait;
 
 	use InServiceCheckerTrait;
+
+	use ProjectNameTrait;
 
 	/**
 	 * @var ArrayAdder
@@ -110,7 +113,9 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$initializer->init($fallbackConfigurable, 'external_links', [
 				'Frontend/mysql-tunnel',
 			]);
-			$initializer->init($fallbackConfigurable, 'rancher.stack', 'Project');
+
+			$projectName = $this->projectNameService->getProjectName( $configurable );
+			$initializer->init($fallbackConfigurable, 'rancher.stack', $projectName);
 
 			$healthcheckInit = new HealthcheckInitService($initializer);
 			$healthcheckInit->init($fallbackConfigurable);

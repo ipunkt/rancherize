@@ -1,6 +1,6 @@
 <?php namespace Rancherize\Blueprint\ProjectName;
 
-use Rancherize\Blueprint\ProjectName\ProjectNameService\ProjectNameService;
+use Rancherize\Blueprint\ProjectName\ProjectNameService\ComposerProjectNameService;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 
@@ -15,8 +15,8 @@ class ProjectNameProvider implements Provider {
 	/**
 	 */
 	public function register() {
-		$this->container['project-name-service'] = function() {
-			return new ProjectNameService;
+		$this->container['project-name-service'] = function($c) {
+			return new ComposerProjectNameService($c['file-loader'], $c['composer-packet-name-parser']);
 		};
 	}
 

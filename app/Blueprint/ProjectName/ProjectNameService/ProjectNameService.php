@@ -5,13 +5,13 @@ use Rancherize\Configuration\Configuration;
 /**
  * Class ProjectNameService
  * @package Rancherize\Blueprint\ProjectName\ProjectNameService
+ *
+ * Find the project name for initializing the configuration
  */
-class ProjectNameService {
+interface ProjectNameService {
 
 	/**
 	 * @param Configuration $configuration
 	 */
-	public function getProjectName( Configuration $configuration ) {
-
-	}
+	function getProjectName( Configuration $configuration );
 }
