@@ -12,6 +12,8 @@ interface ProjectNameService {
 
 	/**
 	 * @param Configuration $configuration
+	 * @param string $default Defaults to ''
+	 * @return
 	 */
-	function getProjectName( Configuration $configuration );
+	function getProjectName( Configuration $configuration, $default = null );
 }

@@ -44,14 +44,20 @@ class ComposerProjectNameService implements ProjectNameService {
 
 	/**
 	 * @param Configuration $configuration
+	 * @param string $default
+	 * @return string
 	 */
-	public function getProjectName( Configuration $configuration ) {
+	public function getProjectName( Configuration $configuration, $default = null ) {
+
+		if($default === null)
+			$default = '';
+
 		$composerString = $this->fileLoader->get( $this->composerPath );
 
 		$composerData = json_decode($composerString, true);
 
 		if( !array_key_exists('name', $composerData) )
-			throw new ComposerProjectParseException("composer.json does not have attribute `name`");
+			return $default;
 
 		$fullName = $composerData['name'];
 		$composerPacket = $this->nameParser->parse($fullName);
