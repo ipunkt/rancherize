@@ -53,7 +53,7 @@ class PHP53 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 		$mainService->setEnvironmentVariable('NO_FPM', 'true');
 
 		$phpFpmService = new Service();
-		$phpFpmService->setName('PHP-FPM');
+		$phpFpmService->setName($mainService->getName().'-PHP-FPM');
 		$phpFpmService->setImage( self::PHP_IMAGE );
 		$phpFpmService->setRestart(Service::RESTART_UNLESS_STOPPED);
 
