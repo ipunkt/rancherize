@@ -23,6 +23,7 @@ use Rancherize\Blueprint\Services\Database\DatabaseBuilder\DatabaseBuilder;
 use Rancherize\Blueprint\TakesDockerAccount;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Blueprint\Validation\Traits\HasValidatorTrait;
+use Rancherize\Blueprint\Volumes\VolumeService\VolumeService;
 use Rancherize\Configuration\ArrayAdder\ArrayAdder;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Configuration;
@@ -236,6 +237,12 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
         $infrastructure->addService($serverService);
 
 		/**
+		 * @var VolumeService $volumesService
+		 */
+		$volumesService = container('volume-service');
+		$volumesService->parse($config, $serverService);
+
+		/**
 		 * @var ExternalServiceParser $externalServicesParser
 		 */
         $externalServicesParser = container('external-service-parser');
@@ -254,6 +261,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
         $cronParser->parse($config, $infrastructure, function($name, $command) use ($phpFpmMaker, $serverService, $config) {
         	return $phpFpmMaker->makeCommand($name, $command, $serverService, $config);
         });
+
 
         return $infrastructure;
 	}
