@@ -15,6 +15,7 @@ use Rancherize\Blueprint\Infrastructure\Service\Services\AppService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\LaravelQueueWorker;
 use Rancherize\Blueprint\Infrastructure\Service\Services\RedisService;
 use Rancherize\Blueprint\NginxSnippets\NginxSnippetParser\NginxSnippetParser;
+use Rancherize\Blueprint\ProjectName\ProjectNameTrait;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsIniter\PublishUrlsInitializer;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
 use Rancherize\Blueprint\Scheduler\SchedulerInitializer\SchedulerInitializer;
@@ -54,6 +55,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 
 	use InServiceCheckerTrait;
 
+	use ProjectNameTrait;
+
 	/**
 	 * @var ArrayAdder
 	 */
@@ -82,6 +85,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		$fallbackConfigurable = new ConfigurableFallback($environmentConfigurable, $projectConfigurable);
 
 		$initializer = new ConfigurationInitializer($output);
+		$projectName = $this->projectNameService->getProjectName( $configurable, 'Project' );
 
 		if( $this->getFlag('dev', false) ) {
 			//$initializer->init($fallbackConfigurable, 'docker.image', 'ipunktbs/nginx-debug:debug-1.2.5');
@@ -110,7 +114,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$initializer->init($fallbackConfigurable, 'external_links', [
 				'Frontend/mysql-tunnel',
 			]);
-			$initializer->init($fallbackConfigurable, 'rancher.stack', 'Project');
+
+			$initializer->init($fallbackConfigurable, 'rancher.stack', $projectName);
 
 			$healthcheckInit = new HealthcheckInitService($initializer);
 			$healthcheckInit->init($fallbackConfigurable);
@@ -136,7 +141,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		$initializer->init($fallbackConfigurable, 'docker.version-prefix', '', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'nginx-config', '', $projectConfigurable);
         $initializer->init($fallbackConfigurable, 'add-redis', false);
-		$initializer->init($fallbackConfigurable, 'service-name', 'Project', $projectConfigurable);
+		$initializer->init($fallbackConfigurable, 'service-name', $projectName, $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'docker.base-image', 'busybox', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'environment', ["EXAMPLE" => 'value']);
 

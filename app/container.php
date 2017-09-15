@@ -105,14 +105,22 @@ $container['blueprint-service'] = function($c) {
 	return new \Rancherize\Services\BlueprintService($c['blueprint-factory']);
 };
 
+$container['composer-packet-name-parser'] = function() {
+	return new \Rancherize\Plugin\Composer\ComposerPacketNameParser();
+};
+
+$container['composer-packet-path-maker'] = function() {
+	return new \Rancherize\Plugin\Composer\ComposerPacketNameParser();
+};
+
 /**
  * Plugins
  */
 $container['plugin-installer'] = function($c) {
 	global $application;
 
-	$nameParser = new \Rancherize\Plugin\Composer\ComposerPacketNameParser();
-	$pathMaker = new \Rancherize\Plugin\Composer\ComposerPacketPathMaker();
+	$nameParser = $c['composer-packet-name-parser'];
+	$pathMaker = $c['composer-packet-path-maker'];
 
 	$installer = new \Rancherize\Plugin\Installer\ComposerPluginInstaller($nameParser, $pathMaker);
 
