@@ -27,7 +27,7 @@ class ConfigurationEventHandler {
 	public function configurationLoaded( ConfigurationLoadedEvent $event ) {
 		$configuration = $event->getConfiguration();
 
-		$version = $configuration->get('version', 1);
+		$version = intval( $configuration->get('project.version', 1) );
 
 		$this->staticConfigurationService->setVersion($version);
 	}
