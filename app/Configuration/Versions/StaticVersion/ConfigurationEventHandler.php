@@ -1,5 +1,4 @@
 <?php namespace Rancherize\Configuration\Versions\StaticVersion;
-use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Events\ConfigurationLoadedEvent;
 
 /**
@@ -22,7 +21,7 @@ class ConfigurationEventHandler {
 
 
 	/**
-	 * @param Configuration $configuration
+	 * @param ConfigurationLoadedEvent $event
 	 */
 	public function configurationLoaded( ConfigurationLoadedEvent $event ) {
 		$configuration = $event->getConfiguration();
