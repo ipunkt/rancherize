@@ -1,6 +1,8 @@
 <?php namespace Rancherize\Configuration\Traits;
 use Rancherize\Configuration\Configurable;
+use Rancherize\Configuration\Events\ConfigurationLoadedEvent;
 use Rancherize\Configuration\Services\ConfigWrapper;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Trait LoadsConfigurationTrait
@@ -12,8 +14,11 @@ trait LoadsConfigurationTrait {
 
 	/**
 	 * @return Configurable
+	 *
+	 * @TODO: Move into ConsoleVents::COMMAND Event - if $command instanceOf RequiresConfiguration - load config
 	 */
 	private function loadConfiguration() {
+
 		/**
 		 * @var ConfigWrapper $configWrapper
 		 */
@@ -22,6 +27,14 @@ trait LoadsConfigurationTrait {
 
 		$configWrapper->loadGlobalConfig($config);
 		$configWrapper->loadProjectConfig($config);
+
+		/**
+		 * @var EventDispatcher $eventSystem
+		 */
+		$eventSystem = container('event');
+		$event = new ConfigurationLoadedEvent();
+		$event->setConfiguration($config);
+		$eventSystem->dispatch($event::NAME, $event);
 
 		return $config;
 	}

@@ -16,5 +16,6 @@ return [
 	\Rancherize\Configuration\ConfigurationProvider::class,
     \Rancherize\EnvironmentAccessConfig\EnvironmentAccessConfigProvider::class,
 	Rancherize\Blueprint\ProjectName\ProjectNameProvider::class,
+	Rancherize\Configuration\Versions\VersionsProvider::class,
 
 ];
