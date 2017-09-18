@@ -31,5 +31,11 @@
     "require-dev": {
         "phpunit/phpunit": "^5.6",
         "mockery/mockery": "^0.9.9"
+    },
+    "suggest": {
+        "ipunkt/rancherize-publish-traefik-rancher": "Set rancher labels for the traefik rancher backend",
+        "ipunkt/rancherize-ecr": "Publish docker images to an Amazon ECR repository",
+        "ipunkt/rancherize-blueprint-php-cli": "PHP command line interface blueprint with cron labels and shell execution",
+        "ipunkt/rancherize-backup-storagebox": "Adding backup commands for use with a Hetzner Storagebox service"
     }
 }
