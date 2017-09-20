@@ -19,15 +19,13 @@ class DatabaseService extends Service {
 		$this->setName('Database');
 		$this->setRestart(self::RESTART_UNLESS_STOPPED);
 		$this->setTty(true);
-		$this->setImage('ipunktbs/mysql-master:v1');
+		$this->setImage('mariadb:10.3.0');
 		$this->setKeepStdin(true);
 
 		$this->setEnvironmentVariable('MYSQL_ROOT_PASSWORD', 'root');
-		$this->setEnvironmentVariable('REPLICATION_USER', 'replicationuser');
-		$this->setEnvironmentVariable('REPLICATION_PASSWORD', 'nothing');
-		$this->setEnvironmentVariable('DATABASE', 'db');
-		$this->setEnvironmentVariable('USER', 'user');
-		$this->setEnvironmentVariable('PASSWORD', 'pw');
+		$this->setEnvironmentVariable('MYSQL_DATABASE', 'db');
+		$this->setEnvironmentVariable('MYSQL_USER', 'user');
+		$this->setEnvironmentVariable('MYSQL_PASSWORD', 'pw');
 
 	}
 
@@ -35,42 +33,42 @@ class DatabaseService extends Service {
 	 * @param $name
 	 */
 	public function setDatabaseName(string $name) {
-		$this->setEnvironmentVariable('DATABASE', $name);
+		$this->setEnvironmentVariable('MYSQL_DATABASE', $name);
 	}
 
 	/**
 	 * @param string $user
 	 */
 	public function setDatabaseUser(string $user) {
-		$this->setEnvironmentVariable('USER', $user);
+		$this->setEnvironmentVariable('MYSQL_USER', $user);
 	}
 
 	/**
 	 * @param string $password
 	 */
 	public function setDatabasePassword(string $password) {
-		$this->setEnvironmentVariable('PASSWORD', $password);
+		$this->setEnvironmentVariable('MYSQL_PASSWORD', $password);
 	}
 
 	/**
 	 * @param $name
 	 */
 	public function getDatabaseName() {
-		return $this->getEnvironmentVariable('DATABASE', '');
+		return $this->getEnvironmentVariable('MYSQL_DATABASE', '');
 	}
 
 	/**
 	 * @param string $user
 	 */
 	public function getDatabaseUser() {
-		return $this->getEnvironmentVariable('USER', '');
+		return $this->getEnvironmentVariable('MYSQL_USER', '');
 	}
 
 	/**
 	 * @param string $password
 	 */
 	public function getDatabasePassword() {
-		return $this->getEnvironmentVariable('PASSWORD', '');
+		return $this->getEnvironmentVariable('MYSQL_PASSWORD', '');
 	}
 
 	/**

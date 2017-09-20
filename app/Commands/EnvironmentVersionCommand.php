@@ -39,7 +39,11 @@ class EnvironmentVersionCommand extends Command   {
 		$configuration = $this->loadConfiguration();
 		$config = $this->environmentConfig($configuration, $environment);
 
-		$rancherConfiguration = new RancherAccessService($configuration);
+		/**
+		 * @var RancherAccessService $rancherConfiguration
+		 */
+		$rancherConfiguration = container('rancher-access-service');
+		$rancherConfiguration->parse($configuration);
 		$account = $rancherConfiguration->getAccount( $config->get('rancher.account') );
 
 		$rancher = $this->getRancher();

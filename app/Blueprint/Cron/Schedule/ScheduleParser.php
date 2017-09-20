@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Blueprint\Cron\Schedule;
 
+use Rancherize\Blueprint\Cron\Schedule\Exceptions\NoScheduleConfiguredException;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\PrefixConfigurationDecorator;
 
@@ -24,7 +25,11 @@ class ScheduleParser {
 	public function parseSchedule( Configuration $configuration ) {
 		$schedule = new Schedule();
 
-		$scheduleString = $configuration->get('schedule');
+		$scheduleKey = 'schedule';
+		if( !$configuration->has($scheduleKey) )
+			throw new NoScheduleConfiguredException();
+
+		$scheduleString = $configuration->get( $scheduleKey );
 		if( is_string($scheduleString) ) {
 			$parts = explode(' ', $scheduleString);
 

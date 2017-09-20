@@ -2,6 +2,8 @@
 use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Exceptions\BlueprintNotFoundException;
 use Rancherize\Configuration\Configurable;
+use Rancherize\Exceptions\Exception;
+use Symfony\Component\Debug\Exception\FatalErrorException;
 
 /**
  * Class ConfigurationBlueprintFactory
@@ -26,10 +28,14 @@ class ConfigurationBlueprintFactory implements BlueprintFactory  {
 
 	/**
 	 * @param string $name
-	 * @param string $classpath
+	 * @param string $classpathOrClosure
+	 * @throws FatalErrorException
 	 */
-	public function add(string $name, string $classpath) {
-		$this->configuration->set('project.blueprints.'.$name, $classpath);
+	public function add(string $name, $classpathOrClosure) {
+		if($classpathOrClosure instanceof $classpathOrClosure)
+			throw new Exception("The ConfigurationBlueprintFactory does not support adding Closures");
+
+		$this->configuration->set('project.blueprints.'.$name, $classpathOrClosure);
 	}
 
 	/**

@@ -1,9 +1,12 @@
 <?php namespace Rancherize\Blueprint\Services\Database\DatabaseBuilder;
 
+use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\Infrastructure\Service\Services\DatabaseService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\PmaService;
+use Rancherize\Blueprint\Services\Database\Exceptions\NoMountWorkdirWithoutAppServiceException;
+use Rancherize\Blueprint\Services\Database\HasDatabase\HasDatabase;
 use Rancherize\Configuration\Configuration;
 
 /**
@@ -11,6 +14,35 @@ use Rancherize\Configuration\Configuration;
  * @package Rancherize\Blueprint\Services\Database
  */
 class DatabaseBuilder {
+	/**
+	 * @var HasDatabase
+	 */
+	private $hasDatabase;
+
+	/**
+	 * @var Service
+	 */
+	private $appService;
+
+	/**
+	 * @var Service
+	 */
+	private $serverService;
+
+	/**
+	 * DatabaseBuilder constructor.
+	 * @param HasDatabase $hasDatabase
+	 */
+	public function __construct( HasDatabase $hasDatabase) {
+		$this->hasDatabase = $hasDatabase;
+	}
+
+	/**
+	 * @param $appService
+	 */
+	public function setAppService( Service $appService = null ) {
+		$this->appService = $appService;
+	}
 
 	/**
 	 * @param Configuration $config
@@ -18,7 +50,8 @@ class DatabaseBuilder {
 	 * @param Infrastructure $infrastructure
 	 */
 	public function addDatabaseService(Configuration $config, Service $serverService, Infrastructure $infrastructure) {
-		if (!$config->get('add-database', false))
+
+		if( !$this->hasDatabase->hasDatabase($config) )
 			return;
 
 		$databaseService = new DatabaseService();
@@ -30,7 +63,7 @@ class DatabaseBuilder {
 		if ($config->has('database.password'))
 			$databaseService->setDatabasePassword($config->get('database.password'));
 
-		$this->addDumps($databaseService, $config);
+		$this->addDumps($infrastructure, $databaseService, $config);
 
 		$serverService->addLink($databaseService, 'database-master');
 		$serverService->setEnvironmentVariable('DATABASE_NAME', $databaseService->getDatabaseName());
@@ -76,10 +109,18 @@ class DatabaseBuilder {
 	}
 
 	/**
-	 * @param Configuration $config
-	 * @param DatabaseService $databaseService
+	 * @param Service $serverService
 	 */
-	protected function addDumps(DatabaseService $databaseService, Configuration $config) {
+	public function setServerService( Service $serverService ) {
+		$this->serverService = $serverService;
+	}
+
+	/**
+	 * @param Dockerfile $dockerfile
+	 * @param DatabaseService $databaseService
+	 * @param Configuration $config
+	 */
+	protected function addDumps(Infrastructure $infrastructure, DatabaseService $databaseService, Configuration $config) {
 		$dumpKey = 'database.init-dumps';
 		if (!$config->has( $dumpKey ))
 			return;
@@ -89,9 +130,35 @@ class DatabaseBuilder {
 		if( !is_array($dumpPathes) )
 			return;
 
-		foreach($dumpPathes as $dumpPath) {
-			$databaseService->addInitDumpVolume($dumpPath);
+		if( $config->get('mount-workdir', false) ) {
+
+			foreach($dumpPathes as $dumpPath) {
+				$databaseService->addInitDumpVolume($dumpPath);
+			}
+
+			return;
 		}
+
+		if( !$this->appService )
+			throw new NoMountWorkdirWithoutAppServiceException();
+
+		$dockerfile = $infrastructure->getDockerfile();
+		$dockerfile->addVolume('/docker-entrypoint-initdb.d/');
+		foreach($dumpPathes as $dumpPath)
+			$dockerfile->copy($dumpPath, '/docker-entrypoint-initdb.d/');
+
+		$databaseAppService = clone $this->appService;
+		$databaseAppName = 'Database'.$databaseAppService->getName();
+		$databaseAppService->setName($databaseAppName);
+
+		$infrastructure->addService($databaseAppService);
+		$databaseService->addSidekick($databaseAppService);
+		$databaseService->addVolumeFrom($databaseAppService);
+
+		$linkName = $config->get('database.link', 'database-master');
+		$this->serverService->addLink($databaseService, $linkName);
+
+		return;
 	}
 
 }

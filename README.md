@@ -9,7 +9,24 @@ of of adding and connecting services.
 
 For a concrete example on how the configuration becomes easier through this see the example at the bottom of this page.
 
-# Requirements
+# Usage as docker container (preferred)
+Rancherize comes bundled as Docker Container `ipunktbs/rancherize`.
+## Requirements
+Rancherize creates configuration to be used with external docker tools. Thus it is necessary to have the following tools
+installed to use Rancherize:
+
+- `docker` https://docs.docker.com/engine/installation/
+## Install on linux
+No need to separately install it. To use it, just make a shell alias:
+```
+alias rancherize='docker run -it -v $HOME/.rancherize:/home/rancherize/.rancherize -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) -e "USER_ID=$(id -u)" -e "GROUP_ID=$(id -g)"  ipunktbs/rancherize'
+```
+or use the provided script `script/rancherize.sh`.
+
+From now on use rancherize without other dependencies for your local environment than docker.
+
+# Usage in project
+## Requirements
 Rancherize creates configuration to be used with external docker tools. Thus it is necessary to have the following tools
 installed to use Rancherize:
 
@@ -17,7 +34,7 @@ installed to use Rancherize:
 - `docker-compose` https://docs.docker.com/compose/install/
 - `rancher-compose` https://docs.rancher.com/rancher/v1.2/en/cattle/rancher-compose/#installation
 
-# Installation
+## Installation
 Rancherize is installed using composer
 
 	composer require 'ipunkt/rancherize:^2.5.0'
@@ -205,7 +222,7 @@ in a single place.
 			"DB_HOST":"database",
 			"DB_USER":"example_user",
 			"DB_PASSWORD":"example_password",
-			"DB_DATABASE":"example_db",
+			"DB_DATABASE":"example_db"
 		}
 	},
 	"environments":{
@@ -216,7 +233,7 @@ in a single place.
 		},
 		"staging":{
 			"environment":{
-				"APP_ENV":"staging",
+				"APP_ENV":"staging"
 			}
 		}
 	}
@@ -232,11 +249,11 @@ in a single place.
 				"database":"DB/MySql"
 			},
 			"environment":{
-				"APP_ENV":"production"
+				"APP_ENV":"production",
 				"DB_HOST":"database",
 				"DB_USER":"example_user",
 				"DB_PASSWORD":"example_password",
-				"DB_DATABASE":"example_db",
+				"DB_DATABASE":"example_db"
 			}
 		},
 		"staging":{
@@ -248,7 +265,7 @@ in a single place.
 				"DB_HOST":"database",
 				"DB_USER":"example_user",
 				"DB_PASSWORD":"example_password",
-				"DB_DATABASE":"example_db",
+				"DB_DATABASE":"example_db"
 			}
 		}
 	}

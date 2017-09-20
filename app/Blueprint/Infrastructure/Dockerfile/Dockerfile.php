@@ -21,6 +21,11 @@ class Dockerfile {
 	/**
 	 * @var string
 	 */
+	protected $workdir = '';
+
+	/**
+	 * @var string
+	 */
 	protected $entrypoint = '';
 
 	/**
@@ -37,6 +42,16 @@ class Dockerfile {
 	 * @var string[]
 	 */
 	protected $runCommands = [];
+
+	/**
+	 * @var string
+	 */
+	protected $user = '';
+
+	/**
+	 * @var string
+	 */
+	protected $group = '';
 
 	/**
 	 * @param string $from
@@ -64,6 +79,20 @@ class Dockerfile {
 	 */
 	public function setCommand(string $command) {
 		$this->command = $command;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getWorkdir(): string {
+		return $this->workdir;
+	}
+
+	/**
+	 * @param string $workdir
+	 */
+	public function setWorkdir(string $workdir) {
+		$this->workdir = $workdir;
 	}
 
 	/**
@@ -124,4 +153,33 @@ class Dockerfile {
 	public function run($command) {
 		$this->runCommands[$command] = $command;
 	}
+
+	/**
+	 * @return string
+	 */
+	public function getUser(): string {
+		return $this->user;
+	}
+
+	/**
+	 * @param string $user
+	 */
+	public function setUser( string $user ) {
+		$this->user = $user;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getGroup(): string {
+		return $this->group;
+	}
+
+	/**
+	 * @param string $group
+	 */
+	public function setGroup( string $group ) {
+		$this->group = $group;
+	}
+
 }

@@ -53,10 +53,6 @@ $container['project-config-service'] = function($c) {
 	);
 };
 
-$container['blueprint-factory'] = function($c) {
-	return new \Rancherize\Blueprint\Factory\ConfigurationBlueprintFactory($c['configuration']);
-};
-
 $container['config-wrapper'] = function($c) {
 	return new \Rancherize\Configuration\Services\ConfigWrapper(
 		$c['global-config-service'],
@@ -109,14 +105,22 @@ $container['blueprint-service'] = function($c) {
 	return new \Rancherize\Services\BlueprintService($c['blueprint-factory']);
 };
 
+$container['composer-packet-name-parser'] = function() {
+	return new \Rancherize\Plugin\Composer\ComposerPacketNameParser();
+};
+
+$container['composer-packet-path-maker'] = function() {
+	return new \Rancherize\Plugin\Composer\ComposerPacketPathMaker();
+};
+
 /**
  * Plugins
  */
 $container['plugin-installer'] = function($c) {
 	global $application;
 
-	$nameParser = new \Rancherize\Plugin\Composer\ComposerPacketNameParser();
-	$pathMaker = new \Rancherize\Plugin\Composer\ComposerPacketPathMaker();
+	$nameParser = $c['composer-packet-name-parser'];
+	$pathMaker = $c['composer-packet-path-maker'];
 
 	$installer = new \Rancherize\Plugin\Installer\ComposerPluginInstaller($nameParser, $pathMaker);
 
@@ -134,13 +138,17 @@ $container['plugin-loader-extra'] = function($c) {
 	return new \Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator($c['loader-interface']);
 };
 
+$container['package-name-parser'] = function($c) {
+	return new \Rancherize\Composer\PackageNameParser();
+};
+
 $container['plugin-loader'] = function($c) {
 
 	/*
 	 * project-config is not set in this file - it is set in the rancherize.php once the project config was loaded for
 	 * use with the plugin system
 	 */
-	return new \Rancherize\Plugin\Loader\ComposerPluginLoader($c['project-config'], $c['project-config-service']);
+	return new \Rancherize\Plugin\Loader\ComposerPluginLoader($c['project-config'], $c['project-config-service'], $c['package-name-parser']);
 };
 
 $container->extend('plugin-loader', function($pluginLoader, $c) {
@@ -156,19 +164,8 @@ $container->extend('plugin-loader', function($pluginLoader, $c) {
 
 });
 
-/**
- * Service Maker
- */
-$container['php-fpm-maker'] = function($c) {
-	$phpFpmMaker = new \Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMaker();
-
-	$phpFpmMaker->addVersion(new \Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions\PHP70());
-	$phpFpmMaker->addVersion(new \Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions\PHP53());
-
-	return $phpFpmMaker;
-};
-
 $container['custom-files-maker'] = function($c) {
+
 	return new \Rancherize\Blueprint\Infrastructure\Service\Maker\CustomFiles\CustomFilesMaker();
 };
 

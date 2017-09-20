@@ -84,3 +84,34 @@ If you know a way to achieve this please open an issue on [github](https://githu
 	}
 }
 ```
+
+### Tcp-Proxy externals
+```json
+{
+	"environments": {
+		"envname": {
+			"external-services":{
+				"example":{
+					"type":"tcp-proxy",
+					"ips":"192.168.2.1",
+					"publish":{ "url":"https:\/\/www.example.com\/" },
+					"healthcheck":{ "url":"\/" }
+				},
+				"test":{
+					"type":"tcp-proxy",
+					"ip":"192.168.2.1",
+					"publish":{ "url":"https:\/\/www.example2.com\/" },
+					"healthcheck":{ "url":"\/" }
+				}
+			}
+		}
+	}
+}
+
+## Types
+The default type is `rancher-external` which builds a rancher external. We are currently working with traefiks rancher api
+backend which does not add externals properly. To offset this the type `tcp-proxy` was added
+
+### Extend types
+Adding a new type is as easy as creating a plugin and implementing the ExternalServiceBuilder interface, then making it
+available in the container under `external-service-builder.builder-types.TYPENAME` from your Plugin-Provider

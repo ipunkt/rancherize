@@ -1,5 +1,4 @@
 <?php namespace Rancherize\Blueprint\Webserver;
-use Closure;
 use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Cron\CronInit\CronInit;
 use Rancherize\Blueprint\Cron\CronParser\CronParser;
@@ -16,14 +15,18 @@ use Rancherize\Blueprint\Infrastructure\Service\Services\AppService;
 use Rancherize\Blueprint\Infrastructure\Service\Services\LaravelQueueWorker;
 use Rancherize\Blueprint\Infrastructure\Service\Services\RedisService;
 use Rancherize\Blueprint\NginxSnippets\NginxSnippetParser\NginxSnippetParser;
+use Rancherize\Blueprint\ProjectName\ProjectNameTrait;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsIniter\PublishUrlsInitializer;
 use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
 use Rancherize\Blueprint\Scheduler\SchedulerInitializer\SchedulerInitializer;
 use Rancherize\Blueprint\Scheduler\SchedulerParser\SchedulerParser;
 use Rancherize\Blueprint\Services\Database\DatabaseBuilder\DatabaseBuilder;
+use Rancherize\Blueprint\Services\Mailtrap\MailtrapService\MailtrapService;
 use Rancherize\Blueprint\TakesDockerAccount;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Blueprint\Validation\Traits\HasValidatorTrait;
+use Rancherize\Blueprint\Volumes\VolumeService\VolumeService;
+use Rancherize\Configuration\ArrayAdder\ArrayAdder;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\PrefixConfigurableDecorator;
@@ -54,10 +57,27 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 
 	use InServiceCheckerTrait;
 
+	use ProjectNameTrait;
+
+	/**
+	 * @var ArrayAdder
+	 */
+	protected $arrayAdder;
+
 	/**
 	 * @var DockerAccount
 	 */
 	protected $dockerAccount = null;
+
+	/**
+	 * @var Service
+	 */
+	private $appContainer;
+
+	/**
+	 * @var MailtrapService
+	 */
+	protected $mailtrapService;
 
 	/**
 	 * @param Configurable $configurable
@@ -72,6 +92,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		$fallbackConfigurable = new ConfigurableFallback($environmentConfigurable, $projectConfigurable);
 
 		$initializer = new ConfigurationInitializer($output);
+		$projectName = $this->projectNameService->getProjectName( $configurable, 'Project' );
 
 		if( $this->getFlag('dev', false) ) {
 			//$initializer->init($fallbackConfigurable, 'docker.image', 'ipunktbs/nginx-debug:debug-1.2.5');
@@ -100,7 +121,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$initializer->init($fallbackConfigurable, 'external_links', [
 				'Frontend/mysql-tunnel',
 			]);
-			$initializer->init($fallbackConfigurable, 'rancher.stack', 'Project');
+
+			$initializer->init($fallbackConfigurable, 'rancher.stack', $projectName);
 
 			$healthcheckInit = new HealthcheckInitService($initializer);
 			$healthcheckInit->init($fallbackConfigurable);
@@ -118,13 +140,15 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$cronInitializer->init( $fallbackConfigurable, $initializer );
 		}
 
-		$initializer->init($fallbackConfigurable, 'php', "7.0");
+		$initializer->init($fallbackConfigurable, 'php', [
+			'version' => "7.0"
+		]);
 		$initializer->init($fallbackConfigurable, 'queues', []);
 		$initializer->init($fallbackConfigurable, 'docker.repository', 'repo/name', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'docker.version-prefix', '', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'nginx-config', '', $projectConfigurable);
         $initializer->init($fallbackConfigurable, 'add-redis', false);
-		$initializer->init($fallbackConfigurable, 'service-name', 'Project', $projectConfigurable);
+		$initializer->init($fallbackConfigurable, 'service-name', $projectName, $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'docker.base-image', 'busybox', $projectConfigurable);
 		$initializer->init($fallbackConfigurable, 'environment', ["EXAMPLE" => 'value']);
 
@@ -171,6 +195,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		$infrastructure->setDockerfile($dockerfile);
 
 		$serverService = $this->makeServerService($config, $projectConfigurable);
+		$this->mailtrapService->parse($config, $serverService, $infrastructure);
+
 		$this->addRedis($config, $serverService, $infrastructure);
 
         $this->addAppContainer($version, $config, $serverService, $infrastructure);
@@ -183,6 +209,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		 * @var DatabaseBuilder $databaseBuilder
 		 */
         $databaseBuilder = container('database-builder');
+        $databaseBuilder->setAppService( $this->appContainer );
+        $databaseBuilder->setServerService($serverService);
         $databaseBuilder->addDatabaseService($config, $serverService, $infrastructure);
 
         $this->getCustomFilesMaker()->make($config, $serverService, $infrastructure);
@@ -222,6 +250,12 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
         $infrastructure->addService($serverService);
 
 		/**
+		 * @var VolumeService $volumesService
+		 */
+		$volumesService = container('volume-service');
+		$volumesService->parse($config, $serverService);
+
+		/**
 		 * @var ExternalServiceParser $externalServicesParser
 		 */
         $externalServicesParser = container('external-service-parser');
@@ -241,8 +275,12 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
         	return $phpFpmMaker->makeCommand($name, $command, $serverService, $config);
         });
 
+
         return $infrastructure;
 	}
+
+	const WWW_DATA_USER_ID = 33;
+	const WWW_DATA_GROUP_ID = 33;
 
 	/**
 	 * @param $config
@@ -259,6 +297,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		$targetSuffix = $config->get('target-sub-directory', '');
 
 		$dockerfile->copy('.'.$copySuffix, '/var/www/app'.$targetSuffix);
+
+		$dockerfile->run('chown -R '.self::WWW_DATA_USER_ID.':'.self::WWW_DATA_GROUP_ID.' /var/www/app');
 
 		$nginxConfig = $config->get('nginx-config');
 		if (!empty($nginxConfig)) {
@@ -290,23 +330,6 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	}
 
 	/**
-	 * @param Configuration[] $configs
-	 * @param string $label
-	 * @param Closure $closure
-	 *
-	 * TODO: make service object
-	 */
-	private function addAll(array $configs, string $label, Closure $closure) {
-		foreach($configs as $c) {
-			if(!$c->has($label))
-				continue;
-
-			foreach ($c->get($label) as $name => $value)
-				$closure($name, $value);
-		}
-	}
-
-	/**
 	 * @param Configuration $config
 	 * @param Configuration $default
 	 * @return Service
@@ -314,13 +337,13 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	protected function makeServerService(Configuration $config, Configuration $default) : Service {
 		$serverService = new Service();
 		$serverService->setName($config->get('service-name'));
-		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.10.2-7-1.3.0'));
+		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.10.2-7-1.4.0'));
 		if( $config->get('debug-image', false) )
-			$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx-debug:debug-1.3.0'));
+			$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx-debug:debug-1.4.0'));
 
 		if( $config->get('sync-user-into-container', false) ) {
-			$serverService->setEnvironmentVariable('USER_ID', getmyuid());
-			$serverService->setEnvironmentVariable('GROUP_ID', getmygid());
+			$serverService->setEnvironmentVariable('USER_ID',empty($_ENV['USER_ID']) ? getmyuid() : $_ENV['USER_ID'] );
+			$serverService->setEnvironmentVariable('GROUP_ID', empty($_ENV['GROUP_ID']) ? getmygid() : $_ENV['GROUP_ID'] );
 		}
 
 		if ($config->has('expose-port'))
@@ -356,11 +379,11 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$serverService->addVolume( $volume );
 		}
 
-		$this->addAll([$default, $config], 'environment', function(string $name, $value) use ($serverService) {
+		$this->arrayAdder->addAll([$default, $config], 'environment', function(string $name, $value) use ($serverService) {
 			$serverService->setEnvironmentVariable($name, $value);
 		});
 
-		$this->addAll([$default, $config], 'labels', function(string $name, $value) use ($serverService) {
+		$this->arrayAdder->addAll([$default, $config], 'labels', function(string $name, $value) use ($serverService) {
 			$serverService->addLabel($name, $value);
 		});
 
@@ -415,7 +438,6 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	protected function addAppContainer($version, Configuration $config, Service $serverService, Infrastructure $infrastructure) {
 		if ($config->get('use-app-container', true)) {
 
-
 			$imageName = $config->get('docker.repository') . ':' . $config->get('docker.version-prefix') . $version;
 			$imageNameWithServer = $this->applyServer($imageName);
 
@@ -426,6 +448,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$serverService->addVolumeFrom($appService);
 			$infrastructure->addService($appService);
 			$this->getPhpFpmMaker()->setAppService($appService);
+
+			$this->appContainer = $appService;
 		}
 	}
 
@@ -508,6 +532,20 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	public function setDockerAccount( DockerAccount $dockerAccount ) {
 		$this->dockerAccount = $dockerAccount;
 		return $this;
+	}
+
+	/**
+	 * @param ArrayAdder $arrayAdder
+	 */
+	public function setArrayAdder( ArrayAdder $arrayAdder ) {
+		$this->arrayAdder = $arrayAdder;
+	}
+
+	/**
+	 * @param MailtrapService $mailtrapService
+	 */
+	public function setMailtrapService( MailtrapService $mailtrapService ) {
+		$this->mailtrapService = $mailtrapService;
 	}
 
 }

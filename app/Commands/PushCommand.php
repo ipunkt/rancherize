@@ -10,12 +10,13 @@ use Rancherize\Commands\Traits\RancherTrait;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
-use Rancherize\Docker\DockerAccessService;
+use Rancherize\Docker\DockerAccessConfigService;
 use Rancherize\Docker\DockerAccount;
 use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
 use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
 use Rancherize\RancherAccess\HealthStateMatcher;
 use Rancherize\RancherAccess\InServiceCheckerTrait;
+use Rancherize\RancherAccess\RancherAccessConfigService;
 use Rancherize\RancherAccess\RancherAccessService;
 use Rancherize\RancherAccess\SingleStateMatcher;
 use Rancherize\Services\DockerService;
@@ -64,7 +65,11 @@ class PushCommand extends Command   {
 		$configuration = $this->loadConfiguration();
 		$config = $this->environmentConfig($configuration, $environment);
 
-		$rancherConfiguration = new RancherAccessService($configuration);
+		/**
+		 * @var RancherAccessService $rancherConfiguration
+		 */
+		$rancherConfiguration = container('rancher-access-service');
+		$rancherConfiguration->parse($configuration);
 		$account = $rancherConfiguration->getAccount( $config->get('rancher.account') );
 
 		$rancher = $this->getRancher();
@@ -132,7 +137,7 @@ class PushCommand extends Command   {
 	protected function login(Configuration $configuration, Configuration $config) {
 
 		/**
-		 * @var DockerAccessService $dockerAccessService
+		 * @var DockerAccessConfigService $dockerAccessService
 		 */
 		$dockerAccessService = container('docker-access-service');
 		$dockerAccessService->parse($configuration);

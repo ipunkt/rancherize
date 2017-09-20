@@ -14,7 +14,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  * @var EventDispatcher $dispatcher
  */
 $dispatcher = container('event');
-$application = new Application();
+$application = new Application('rancherize');
 $application->setDispatcher($dispatcher);
 
 $dispatcher->addListener(\Symfony\Component\Console\ConsoleEvents::EXCEPTION, function(\Symfony\Component\Console\Event\ConsoleExceptionEvent $event) {
