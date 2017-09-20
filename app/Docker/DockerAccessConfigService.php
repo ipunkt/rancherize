@@ -1,7 +1,8 @@
 <?php namespace Rancherize\Docker;
+
 use Rancherize\Configuration\Configuration;
 use Rancherize\Docker\Events\DockerRetrievingAccountEvent;
-use Rancherize\Docker\Exceptions\AccountNotFoundException;
+use Rancherize\Docker\Exceptions\AccountNotFoundInConfigurationException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -43,7 +44,7 @@ class DockerAccessConfigService implements DockerAccessService
 	 */
 	public function getAccount(string $name) : DockerAccount {
 		if(!array_key_exists($name, $this->accounts))
-			throw new AccountNotFoundException($name);
+			throw new AccountNotFoundInConfigurationException($name);
 
 		$dockerAccount = new ArrayDockerAccount($this->accounts[$name]);
 		$retrievingEvent = new DockerRetrievingAccountEvent($name, $this->accounts[$name], $dockerAccount);
