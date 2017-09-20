@@ -18,5 +18,9 @@ return [
 	Rancherize\Blueprint\ProjectName\ProjectNameProvider::class,
 	Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmProvider::class,
 	Rancherize\Blueprint\Services\Mailtrap\MailtrapProvider::class,
+	/**
+	 * TODO: Only here to keep backwards compatibility. Remove with v3
+	 */
+	RancherizePhp53\Php53Provider::class,
 
 ];
