@@ -30,6 +30,10 @@ class WebserverProvider implements Provider {
 
 			$webserverBlueprint->setArrayAdder( $c['config-array-adder'] );
 
+			$webserverBlueprint->setProjectNameService($c['project-name-service']);
+
+			$webserverBlueprint->setMailtrapService($c['mailtrap-service']);
+
 			return $webserverBlueprint;
 		});
 	}
