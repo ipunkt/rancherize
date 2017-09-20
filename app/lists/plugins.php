@@ -17,5 +17,6 @@ return [
     \Rancherize\EnvironmentAccessConfig\EnvironmentAccessConfigProvider::class,
 	Rancherize\Blueprint\ProjectName\ProjectNameProvider::class,
 	Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmProvider::class,
+	Rancherize\Blueprint\Services\Mailtrap\MailtrapProvider::class,
 
 ];

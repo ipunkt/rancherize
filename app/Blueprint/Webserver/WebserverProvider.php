@@ -32,6 +32,8 @@ class WebserverProvider implements Provider {
 
 			$webserverBlueprint->setProjectNameService($c['project-name-service']);
 
+			$webserverBlueprint->setMailtrapService($c['mailtrap-service']);
+
 			return $webserverBlueprint;
 		});
 	}

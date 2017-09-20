@@ -21,6 +21,7 @@ use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
 use Rancherize\Blueprint\Scheduler\SchedulerInitializer\SchedulerInitializer;
 use Rancherize\Blueprint\Scheduler\SchedulerParser\SchedulerParser;
 use Rancherize\Blueprint\Services\Database\DatabaseBuilder\DatabaseBuilder;
+use Rancherize\Blueprint\Services\Mailtrap\MailtrapService\MailtrapService;
 use Rancherize\Blueprint\TakesDockerAccount;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Blueprint\Validation\Traits\HasValidatorTrait;
@@ -71,6 +72,11 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	 * @var Service
 	 */
 	private $appContainer;
+
+	/**
+	 * @var MailtrapService
+	 */
+	protected $mailtrapService;
 
 	/**
 	 * @param Configurable $configurable
@@ -188,6 +194,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		$infrastructure->setDockerfile($dockerfile);
 
 		$serverService = $this->makeServerService($config, $projectConfigurable);
+		$this->mailtrapService->parse($config, $serverService, $infrastructure);
+
 		$this->addRedis($config, $serverService, $infrastructure);
 
         $this->addAppContainer($version, $config, $serverService, $infrastructure);
@@ -523,6 +531,13 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	 */
 	public function setArrayAdder( ArrayAdder $arrayAdder ) {
 		$this->arrayAdder = $arrayAdder;
+	}
+
+	/**
+	 * @param MailtrapService $mailtrapService
+	 */
+	public function setMailtrapService( MailtrapService $mailtrapService ) {
+		$this->mailtrapService = $mailtrapService;
 	}
 
 }
