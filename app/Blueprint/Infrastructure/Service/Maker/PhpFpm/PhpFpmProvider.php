@@ -35,7 +35,6 @@ class PhpFpmProvider implements Provider {
 		$fpmMaker = $this->container['php-fpm-maker'];
 
 		$fpmMaker->addVersion(new \Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions\PHP70());
-		$fpmMaker->addVersion(new \Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions\PHP53());
 
 	}
 }
