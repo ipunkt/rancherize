@@ -1,4 +1,4 @@
-<?php namespace Rancherize\Plugin\Exceptions;
+<?php namespace Rancherize\Exceptions;
 
 use Rancherize\Exceptions\Exception;
 

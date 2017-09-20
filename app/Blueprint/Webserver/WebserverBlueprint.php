@@ -21,9 +21,11 @@ use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
 use Rancherize\Blueprint\Scheduler\SchedulerInitializer\SchedulerInitializer;
 use Rancherize\Blueprint\Scheduler\SchedulerParser\SchedulerParser;
 use Rancherize\Blueprint\Services\Database\DatabaseBuilder\DatabaseBuilder;
+use Rancherize\Blueprint\Services\Mailtrap\MailtrapService\MailtrapService;
 use Rancherize\Blueprint\TakesDockerAccount;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Blueprint\Validation\Traits\HasValidatorTrait;
+use Rancherize\Blueprint\Volumes\VolumeService\VolumeService;
 use Rancherize\Configuration\ArrayAdder\ArrayAdder;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Configuration;
@@ -71,6 +73,11 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	 * @var Service
 	 */
 	private $appContainer;
+
+	/**
+	 * @var MailtrapService
+	 */
+	protected $mailtrapService;
 
 	/**
 	 * @param Configurable $configurable
@@ -188,6 +195,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		$infrastructure->setDockerfile($dockerfile);
 
 		$serverService = $this->makeServerService($config, $projectConfigurable);
+		$this->mailtrapService->parse($config, $serverService, $infrastructure);
+
 		$this->addRedis($config, $serverService, $infrastructure);
 
         $this->addAppContainer($version, $config, $serverService, $infrastructure);
@@ -241,6 +250,12 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
         $infrastructure->addService($serverService);
 
 		/**
+		 * @var VolumeService $volumesService
+		 */
+		$volumesService = container('volume-service');
+		$volumesService->parse($config, $serverService);
+
+		/**
 		 * @var ExternalServiceParser $externalServicesParser
 		 */
         $externalServicesParser = container('external-service-parser');
@@ -259,6 +274,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
         $cronParser->parse($config, $infrastructure, function($name, $command) use ($phpFpmMaker, $serverService, $config) {
         	return $phpFpmMaker->makeCommand($name, $command, $serverService, $config);
         });
+
 
         return $infrastructure;
 	}
@@ -321,9 +337,9 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	protected function makeServerService(Configuration $config, Configuration $default) : Service {
 		$serverService = new Service();
 		$serverService->setName($config->get('service-name'));
-		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.10.2-7-1.3.1'));
+		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.10.2-7-1.4.0'));
 		if( $config->get('debug-image', false) )
-			$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx-debug:debug-1.3.1'));
+			$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx-debug:debug-1.4.0'));
 
 		if( $config->get('sync-user-into-container', false) ) {
 			$serverService->setEnvironmentVariable('USER_ID',empty($_ENV['USER_ID']) ? getmyuid() : $_ENV['USER_ID'] );
@@ -523,6 +539,13 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	 */
 	public function setArrayAdder( ArrayAdder $arrayAdder ) {
 		$this->arrayAdder = $arrayAdder;
+	}
+
+	/**
+	 * @param MailtrapService $mailtrapService
+	 */
+	public function setMailtrapService( MailtrapService $mailtrapService ) {
+		$this->mailtrapService = $mailtrapService;
 	}
 
 }

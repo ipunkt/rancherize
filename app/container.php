@@ -110,7 +110,7 @@ $container['composer-packet-name-parser'] = function() {
 };
 
 $container['composer-packet-path-maker'] = function() {
-	return new \Rancherize\Plugin\Composer\ComposerPacketNameParser();
+	return new \Rancherize\Plugin\Composer\ComposerPacketPathMaker();
 };
 
 /**
