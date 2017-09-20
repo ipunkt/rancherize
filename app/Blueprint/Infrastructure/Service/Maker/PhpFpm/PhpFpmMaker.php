@@ -1,10 +1,10 @@
 <?php namespace Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm;
 
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
+use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Configurations\MailTarget;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\PrefixConfigurationDecorator;
-use MailTarget;
 
 /**
  * Class PhpFpmMaker

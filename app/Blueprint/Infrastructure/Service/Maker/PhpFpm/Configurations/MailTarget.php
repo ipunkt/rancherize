@@ -1,4 +1,4 @@
-<?php
+<?php namespace Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Configurations;
 
 /**
  * Interface MailTarget
