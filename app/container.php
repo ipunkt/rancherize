@@ -110,7 +110,7 @@ $container['composer-packet-name-parser'] = function() {
 };
 
 $container['composer-packet-path-maker'] = function() {
-	return new \Rancherize\Plugin\Composer\ComposerPacketNameParser();
+	return new \Rancherize\Plugin\Composer\ComposerPacketPathMaker();
 };
 
 /**
@@ -164,19 +164,8 @@ $container->extend('plugin-loader', function($pluginLoader, $c) {
 
 });
 
-/**
- * Service Maker
- */
-$container['php-fpm-maker'] = function($c) {
-	$phpFpmMaker = new \Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMaker();
-
-	$phpFpmMaker->addVersion(new \Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions\PHP70());
-	$phpFpmMaker->addVersion(new \Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions\PHP53());
-
-	return $phpFpmMaker;
-};
-
 $container['custom-files-maker'] = function($c) {
+
 	return new \Rancherize\Blueprint\Infrastructure\Service\Maker\CustomFiles\CustomFilesMaker();
 };
 

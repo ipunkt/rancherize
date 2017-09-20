@@ -41,7 +41,7 @@ class InitCommand extends Command {
 		$environments = $input->getArgument('environments');
 
 		if (empty($environments))
-			$output->writeln($this->getHelper('formatter')->formatSection('Error', 'At least one environment mus be given for init to run'));
+			$output->writeln($this->getHelper('formatter')->formatSection('Error', 'At least one environment must be given for init to run'));
 
 		$this->setIo($input, $output);
 
