@@ -1,6 +1,7 @@
 <?php
 
 return [
+
 	Rancherize\Blueprint\Healthcheck\HealthcheckProvider::class,
 	Rancherize\Blueprint\PublishUrls\PublishUrlsProvider::class,
 	Rancherize\Blueprint\Scheduler\SchedulerProvider::class,
@@ -17,6 +18,7 @@ return [
   Rancherize\Configuration\ConfigurationProvider::class,
   Rancherize\EnvironmentAccessConfig\EnvironmentAccessConfigProvider::class,
 	Rancherize\Blueprint\ProjectName\ProjectNameProvider::class,
+	Rancherize\Configuration\Versions\VersionsProvider::class,
 	Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmProvider::class,
 	Rancherize\Blueprint\Services\Mailtrap\MailtrapProvider::class,
 

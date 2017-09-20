@@ -1,7 +1,7 @@
 <?php namespace Rancherize\Configuration\Services;
+
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Exceptions\FileNotFoundException;
-use Rancherize\Configuration\Exceptions\GlobalConfigurationNotFoundException;
 use Rancherize\Configuration\Loader\Loader;
 use Rancherize\Configuration\PrefixConfigurableDecorator;
 use Rancherize\Configuration\Writer\Writer;
@@ -47,7 +47,7 @@ class GlobalConfiguration {
 		try {
 			$this->loader->load($prefixDecorator, $globalConfigPath);
 		} catch(FileNotFoundException $e) {
-			throw new GlobalConfigurationNotFoundException($e->getPath());
+			// Ignore, requested in issue #18 https://github.com/ipunkt/rancherize/issues/18
 		}
 	}
 
