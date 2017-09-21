@@ -4,6 +4,9 @@ use Rancherize\Commands\Traits\RancherTrait;
 use Rancherize\Commands\Traits\ValidateTrait;
 use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
+use Rancherize\RancherAccess\InServiceCheckerTrait;
+use Rancherize\RancherAccess\NameMatcher\CompleteNameMatcher;
+use Rancherize\RancherAccess\NameMatcher\PrefixNameMatcher;
 use Rancherize\RancherAccess\RancherAccessService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -24,6 +27,7 @@ class EnvironmentVersionCommand extends Command   {
 	use ValidateTrait;
 	use RancherTrait;
 	use EnvironmentConfigurationTrait;
+	use InServiceCheckerTrait;
 
 	protected function configure() {
 		$this->setName('environment:version')
@@ -53,7 +57,11 @@ class EnvironmentVersionCommand extends Command   {
 		$stackName = $config->get('rancher.stack');
 		$name = $config->get('service-name');
 
-		$version = $rancher->getCurrentVersion($stackName, $name);
+		$matcher = new PrefixNameMatcher($name);
+		if( $this->inServiceChecker->isInService($config) )
+			$matcher = new CompleteNameMatcher($name);
+
+		$version = $rancher->getCurrentVersion($stackName, $matcher);
 
 		$output->writeln($version);
 
