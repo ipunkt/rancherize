@@ -16,7 +16,8 @@ use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
 use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
 use Rancherize\RancherAccess\HealthStateMatcher;
 use Rancherize\RancherAccess\InServiceCheckerTrait;
-use Rancherize\RancherAccess\RancherAccessConfigService;
+use Rancherize\RancherAccess\NameMatcher\CompleteNameMatcher;
+use Rancherize\RancherAccess\NameMatcher\PrefixNameMatcher;
 use Rancherize\RancherAccess\RancherAccessService;
 use Rancherize\RancherAccess\SingleStateMatcher;
 use Rancherize\Services\DockerService;
@@ -113,13 +114,17 @@ class PushCommand extends Command   {
 		$name = $config->get('service-name');
 
 		$versionizedName = $name.'-'.$version;
-		if( $this->getInServiceChecker()->isInService($config) )
+		$isInServiceUpgrade = $this->getInServiceChecker()->isInService( $config );
+		if( $isInServiceUpgrade )
 			$versionizedName = $name;
 
 		try {
-			$activeStack = $this->getRancher()->getActiveService($stackName, $name);
+			$matcher = new PrefixNameMatcher($name);
+			if( $isInServiceUpgrade )
+				$matcher = new CompleteNameMatcher($name);
 
-			$isInServiceUpgrade = $activeStack === $versionizedName;
+			$activeStack = $this->getRancher()->getActiveService($stackName, $matcher);
+
 			if( $isInServiceUpgrade ) {
 				$this->inServiceUpgrade( $stackName, $versionizedName, $config );
 				return 0;

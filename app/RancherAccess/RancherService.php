@@ -5,6 +5,7 @@ use Rancherize\RancherAccess\Exceptions\MultipleActiveServicesException;
 use Rancherize\RancherAccess\Exceptions\NameNotFoundException;
 use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
 use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
+use Rancherize\RancherAccess\NameMatcher\NameMatcher;
 use Rancherize\Services\ProcessTrait;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\ProcessBuilder;
@@ -302,10 +303,11 @@ class RancherService {
 	 * TODO: switch from checking the docker-compose.yml and rancher-compose.yml to api access
 	 *
 	 * @param string $stackName
-	 * @param string $name
+	 * @param NameMatcher $nameMatcher
 	 * @return array
+	 * @internal param string $name
 	 */
-	public function getActiveServiceDefinition(string $stackName, string $name) : array {
+	public function getActiveServiceDefinition(string $stackName, NameMatcher $nameMatcher) : array {
 
 		list($dockerConfig, $rancherConfig) = $this->retrieveConfig($stackName);
 
@@ -313,7 +315,7 @@ class RancherService {
 		$rancherData = Yaml::parse($rancherConfig);
 
 		if( !is_array($dockerData) || !is_array($rancherData) )
-			throw new NoActiveServiceException($name);
+			throw new NoActiveServiceException($nameMatcher->getName());
 
 		// primitive way of handling docker-compose.yml version 2
 		if( array_key_exists('version', $dockerData) && $dockerData['version'] == 2) {
@@ -355,8 +357,7 @@ class RancherService {
 			if( in_array($translatedServiceName, $sidekicks) )
 				continue;
 
-			$serviceNameContainsName = strpos($serviceName, $name) !== false;
-			if( !$serviceNameContainsName )
+			if( ! $nameMatcher->match($serviceName) )
 				continue;
 
 			if(!array_key_exists('scale', $data))
@@ -376,10 +377,10 @@ class RancherService {
 		}
 
 		if( 1 < count($matchingServices) )
-			throw new MultipleActiveServicesException($name, $matchingServiceNames);
+			throw new MultipleActiveServicesException($nameMatcher->getName(), $matchingServiceNames);
 
 		if( empty($matchingServices))
-			throw new NoActiveServiceException($name);
+			throw new NoActiveServiceException($nameMatcher->getName());
 
 		return reset($matchingServices);
 
@@ -387,11 +388,12 @@ class RancherService {
 
 	/**
 	 * @param string $stackName
-	 * @param string $name
+	 * @param NameMatcher $nameMatcher
 	 * @return string
+	 * @internal param string $name
 	 */
-	public function getActiveService(string $stackName, string $name) : string {
-		$definition = $this->getActiveServiceDefinition($stackName, $name);
+	public function getActiveService(string $stackName, NameMatcher $nameMatcher) : string {
+		$definition = $this->getActiveServiceDefinition($stackName, $nameMatcher);
 
 		return $definition['name'];
 	}
