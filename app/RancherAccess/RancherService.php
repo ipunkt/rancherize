@@ -400,16 +400,17 @@ class RancherService {
 
 	/**
 	 * @param string $stackName
-	 * @param string $serviceName
+	 * @param NameMatcher $nameMatcher
 	 * @return string
 	 */
-	public function getCurrentVersion(string $stackName, string $serviceName) {
-		$currentService = $this->getActiveServiceDefinition($stackName, $serviceName);
+	public function getCurrentVersion(string $stackName, NameMatcher $nameMatcher) {
+		$currentService = $this->getActiveServiceDefinition($stackName, $nameMatcher);
 
 		if( !array_key_exists('labels', $currentService) || !array_key_exists('version', $currentService['labels']) ) {
 			$currentServiceName = $currentService['name'];
 
-			return substr($currentServiceName, strlen($serviceName.'-') );
+			// TODO: using nameMatcher->getName is ugly here. Think of a better way to do this
+			return substr($currentServiceName, strlen($nameMatcher->getName().'-') );
 		}
 
 		return $currentService['labels']['version'];

@@ -16,6 +16,9 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 $dispatcher = container('event');
 $application = new Application('rancherize');
 $application->setDispatcher($dispatcher);
+$c = container();
+// register application in container
+$c['app'] = function () use ($application) { return $application; };
 
 $dispatcher->addListener(\Symfony\Component\Console\ConsoleEvents::EXCEPTION, function(\Symfony\Component\Console\Event\ConsoleExceptionEvent $event) {
 
@@ -62,7 +65,6 @@ $dispatcher->addListener(ConsoleEvents::COMMAND, function (ConsoleCommandEvent $
     $c = container();
     $c['output'] = function() use ($output) { return $output; };
 	$c['input'] = function() use ($input) { return $input; };
-	$c['app'] = function() use ($application) { return $application; };
 	$c['application'] = function() use ($application) { return $application; };
 	$c['command'] = function() use ($command) { return $command; };
 	$c['process-helper'] = function() use ($command) { return $command->getHelper('process'); };
