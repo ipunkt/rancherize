@@ -36,6 +36,8 @@ class WebserverProvider implements Provider {
 
 			$webserverBlueprint->setSlashPrefixer( $c['slash-prefixer'] );
 
+			$webserverBlueprint->setInServiceChecker($c['in-service-checker']);
+
 			return $webserverBlueprint;
 		});
 	}
