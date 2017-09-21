@@ -22,6 +22,7 @@ return [
 	Rancherize\Configuration\Versions\VersionsProvider::class,
 	Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmProvider::class,
 	Rancherize\Blueprint\Services\Mailtrap\MailtrapProvider::class,
+	Rancherize\Blueprint\Services\Directory\DirectoryProvider::class,
 	/**
 	 * TODO: Only here to keep backwards compatibility. Remove with v3
 	 */

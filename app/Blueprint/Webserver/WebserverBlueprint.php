@@ -21,6 +21,7 @@ use Rancherize\Blueprint\PublishUrls\PublishUrlsParser\PublishUrlsParser;
 use Rancherize\Blueprint\Scheduler\SchedulerInitializer\SchedulerInitializer;
 use Rancherize\Blueprint\Scheduler\SchedulerParser\SchedulerParser;
 use Rancherize\Blueprint\Services\Database\DatabaseBuilder\DatabaseBuilder;
+use Rancherize\Blueprint\Services\Directory\Traits\SlashPrefixerTrait;
 use Rancherize\Blueprint\Services\Mailtrap\MailtrapService\MailtrapService;
 use Rancherize\Blueprint\TakesDockerAccount;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
@@ -58,6 +59,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	use InServiceCheckerTrait;
 
 	use ProjectNameTrait;
+
+	use SlashPrefixerTrait;
 
 	/**
 	 * @var ArrayAdder
@@ -294,9 +297,11 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		$dockerfile->addVolume('/var/www/app');
 
 		$copySuffix = $config->get('work-sub-directory', '');
+		$prefixedCopySuffix = $this->slashPrefixer->prefix( $copySuffix );
 		$targetSuffix = $config->get('target-sub-directory', '');
+		$prefixedTargetSuffix = $this->slashPrefixer->prefix( $targetSuffix );
 
-		$dockerfile->copy('.'.$copySuffix, '/var/www/app'.$targetSuffix);
+		$dockerfile->copy('.'.$prefixedCopySuffix, '/var/www/app'.$prefixedTargetSuffix);
 
 		$dockerfile->run('chown -R '.self::WWW_DATA_USER_ID.':'.self::WWW_DATA_GROUP_ID.' /var/www/app');
 
@@ -514,7 +519,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	 */
 	private function addVersionSuffix(Configuration $config, Service $serverService, $versionSuffix) {
 
-		if( $this->getInServiceChecker()->isInService($config) )
+		if( $this->inServiceChecker->isInService($config) )
 			return;
 
 		/**

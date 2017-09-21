@@ -34,6 +34,8 @@ class WebserverProvider implements Provider {
 
 			$webserverBlueprint->setMailtrapService($c['mailtrap-service']);
 
+			$webserverBlueprint->setSlashPrefixer( $c['slash-prefixer'] );
+
 			return $webserverBlueprint;
 		});
 	}
