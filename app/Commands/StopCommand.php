@@ -45,7 +45,7 @@ class StopCommand extends Command   {
 			->setOutput($output)
 			->setProcessHelper($this->getHelper('process'));
 
-		$this->getDocker()->stop('./.rancherize/', $config->get('service-name'));
+		$this->getDocker()->stop('./.rancherize', $config->get('service-name'));
 
 		return 0;
 	}
