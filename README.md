@@ -10,7 +10,7 @@ of of adding and connecting services.
 For a concrete example on how the configuration becomes easier through this see the example at the bottom of this page.
 
 # Usage as docker container (preferred)
-Rancherize comes bundled as Docker Container `ipunktbs/rancherize`.
+Rancherize comes bundled as Docker Container [`ipunktbs/rancherize`](https://hub.docker.com/r/ipunktbs/rancherize/).
 ## Requirements
 Rancherize creates configuration to be used with external docker tools. Thus it is necessary to have the following tools
 installed to use Rancherize:
@@ -26,7 +26,7 @@ or use the provided script `script/rancherize.sh`.
 From now on use rancherize without other dependencies for your local environment than docker.
 
 # Usage in build tools
-With build tools like jenkins or gitlab-ci, you cannot rely on the presence of a .rancherize file in the home-dir. For this usecase you can set account settings with environment variables on runtime. best practise would be to include these variables via secrets.
+With build tools like jenkins or gitlab-ci, you cannot rely on the presence of a .rancherize file in the home-dir. For this usecase you can set account settings with environment variables on the [docker container](https://hub.docker.com/r/ipunktbs/rancherize/) on runtime. best practise would be to include these variables via secrets.
 
 - `DOCKER_USER` - username for dockerhub / registry
 - `DOCKER_PASSWORD` - password for dockerhub / registry
