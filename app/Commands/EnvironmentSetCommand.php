@@ -2,6 +2,7 @@
 use Rancherize\Commands\Traits\EnvironmentTrait;
 use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Configuration\Configurable;
+use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Services\ConfigWrapper;
 use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
@@ -17,7 +18,7 @@ use Symfony\Component\Console\Question\Question;
  *
  * Set the value for the environment variable with the given name in all known environments
  */
-class EnvironmentSetCommand extends Command {
+class EnvironmentSetCommand extends Command implements LoadsConfiguration {
 
 	use IoTrait;
 	use LoadsConfigurationTrait;
@@ -41,7 +42,7 @@ class EnvironmentSetCommand extends Command {
 
 		$this->setIo($input, $output);
 
-		$configuration = $this->loadConfiguration();
+		$configuration = $this->getConfiguration();
 
 		$this->setVariable($input, $output, $configuration);
 

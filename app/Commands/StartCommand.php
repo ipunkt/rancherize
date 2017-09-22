@@ -1,9 +1,11 @@
 <?php namespace Rancherize\Commands;
+
 use Rancherize\Blueprint\Traits\BlueprintTrait;
-use Rancherize\Commands\Traits\BuildsTrait;
 use Rancherize\Commands\Traits\DockerTrait;
+use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
+use Rancherize\Services\BuildService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,13 +18,25 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Start the given infrastructure on the local machine
  * Triggers the blueprint to build the environment and then starts it in docker
  */
-class StartCommand extends Command   {
+class StartCommand extends Command implements LoadsConfiguration {
 
-	use BuildsTrait;
 	use DockerTrait;
 	use LoadsConfigurationTrait;
 	use EnvironmentConfigurationTrait;
 	use BlueprintTrait;
+	/**
+	 * @var BuildService
+	 */
+	private $buildService;
+
+	/**
+	 * StartCommand constructor.
+	 * @param BuildService $buildService
+	 */
+	public function __construct( BuildService $buildService) {
+		parent::__construct();
+		$this->buildService = $buildService;
+	}
 
 	protected function configure() {
 		$this->setName('start')
@@ -52,11 +66,11 @@ class StartCommand extends Command   {
 
 		$environment = $input->getArgument('environment');
 
-		$configuration = $this->loadConfiguration();
+		$configuration = $this->getConfiguration();
 		$config = $this->environmentConfig($configuration, $environment);
 
-		$blueprint = $this->getBlueprintService()->byConfiguration($configuration, $input->getArguments());
-		$infrastructure = $this->getBuildService()->build($blueprint, $configuration, $environment);
+		$blueprint = $this->blueprintService->byConfiguration($configuration, $input->getArguments());
+		$infrastructure = $this->buildService->build($blueprint, $configuration, $environment);
 
 		$this->getDocker()
 			->setOutput($output)

@@ -89,6 +89,14 @@ $container['build-service'] = function($c) {
 	return new \Rancherize\Services\BuildService($c['validate-service'], $c['infrastructure-writer'], $c['event']);
 };
 
+$container[\Rancherize\Services\BuildService::class] = function($c) {
+	return new \Rancherize\Services\BuildService($c['validate-service'], $c['infrastructure-writer'], $c['event']);
+};
+
+$container[\Rancherize\Services\DockerService::class] = function($c) {
+	return new \Rancherize\Services\DockerService();
+};
+
 $container['docker-service'] = function($c) {
 	return new \Rancherize\Services\DockerService();
 };

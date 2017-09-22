@@ -4,10 +4,12 @@ use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Configuration\Configurable;
+use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Services\ConfigWrapper;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\Docker\DockerAccessConfigService;
-use Rancherize\RancherAccess\RancherAccessConfigService;
+use Rancherize\RancherAccess\RancherAccessParsesConfiguration;
+use Rancherize\RancherAccess\RancherAccessService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,11 +22,24 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * Create the given environments in the configuration with explanatory default options
  */
-class InitCommand extends Command {
+class InitCommand extends Command implements LoadsConfiguration {
 
 	use IoTrait;
 	use LoadsConfigurationTrait;
 	use BlueprintTrait;
+	/**
+	 * @var RancherAccessService
+	 */
+	private $rancherAccessService;
+
+	/**
+	 * InitCommand constructor.
+	 * @param RancherAccessService $rancherAccessService
+	 */
+	public function __construct( RancherAccessService $rancherAccessService) {
+		parent::__construct();
+		$this->rancherAccessService = $rancherAccessService;
+	}
 
 	protected function configure() {
 		$this->setName('init')
@@ -45,15 +60,16 @@ class InitCommand extends Command {
 
 		$this->setIo($input, $output);
 
-		$configuration = $this->loadConfiguration();
+		$configuration = $this->getConfiguration();
 
 
-		$blueprint = $this->getBlueprintService()->load($blueprintName, $input->getOptions());
+		$blueprint = $this->blueprintService->load($blueprintName, $input->getOptions());
 
 		$configuration->set('project.blueprint', $blueprintName);
-		$rancherAccessService = new RancherAccessConfigService($configuration);
+		if($this->rancherAccessService instanceof RancherAccessParsesConfiguration)
+			$this->rancherAccessService->parse($configuration);
 
-		$accounts = $rancherAccessService->availableAccounts();
+		$accounts = $this->rancherAccessService->availableAccounts();
 		if (!$configuration->has('project.default.rancher.account'))
 			$configuration->set('project.default.rancher.account', reset($accounts));
 

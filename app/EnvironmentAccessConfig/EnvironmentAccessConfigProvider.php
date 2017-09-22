@@ -29,7 +29,7 @@ class EnvironmentAccessConfigProvider implements Provider
             };
 
             $this->container['rancher-access-service'] = function($c) {
-                return new RancherAccessEnvironmentService($c['event']);
+                return new RancherAccessEnvironmentService();
             };
 
             $this->container['global-config-service'] = function($c) {

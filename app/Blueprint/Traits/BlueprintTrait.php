@@ -15,10 +15,15 @@ use Rancherize\Services\BlueprintService;
 trait BlueprintTrait {
 
 	/**
-	 * @return BlueprintService
+	 * @var BlueprintService
 	 */
-	private function getBlueprintService() : BlueprintService {
-		return container('blueprint-service');
+	protected $blueprintService;
+
+	/**
+	 * @param BlueprintService $blueprintService
+	 */
+	public function setBlueprintService( BlueprintService $blueprintService ) {
+		$this->blueprintService = $blueprintService;
 	}
 
 }

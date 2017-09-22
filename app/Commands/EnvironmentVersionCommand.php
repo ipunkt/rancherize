@@ -1,7 +1,9 @@
 <?php namespace Rancherize\Commands;
+
 use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Commands\Traits\RancherTrait;
 use Rancherize\Commands\Traits\ValidateTrait;
+use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\RancherAccess\InServiceCheckerTrait;
@@ -20,7 +22,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * This command builds deployment files as if they were used in the start or push command.
  * Can be used to inspect the files for correctness before starting or pushing
  */
-class EnvironmentVersionCommand extends Command   {
+class EnvironmentVersionCommand extends Command implements LoadsConfiguration {
 
 	use LoadsConfigurationTrait;
 	use BlueprintTrait;
@@ -40,7 +42,7 @@ class EnvironmentVersionCommand extends Command   {
 
 		$environment = $input->getArgument('environment');
 
-		$configuration = $this->loadConfiguration();
+		$configuration = $this->getConfiguration();
 		$config = $this->environmentConfig($configuration, $environment);
 
 		/**
