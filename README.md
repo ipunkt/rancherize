@@ -25,6 +25,16 @@ or use the provided script `script/rancherize.sh`.
 
 From now on use rancherize without other dependencies for your local environment than docker.
 
+# Usage in build tools
+With build tools like jenkins or gitlab-ci, you cannot rely on the presence of a .rancherize file in the home-dir. For this usecase you can set account settings with environment variables on runtime. best practise would be to include these variables via secrets.
+
+- `DOCKER_USER` - username for dockerhub / registry
+- `DOCKER_PASSWORD` - password for dockerhub / registry
+- `DOCKER_ECR` - true if using [AWS ECR](https://aws.amazon.com/ecr/)
+- `RANCHER_URL` - rancher environment api-url
+- `RANCHER_KEY` - rancher api-key
+- `RANCHER_SECRET` - rancher api-secret
+
 # Usage in project
 ## Requirements
 Rancherize creates configuration to be used with external docker tools. Thus it is necessary to have the following tools
