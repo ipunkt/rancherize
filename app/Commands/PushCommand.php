@@ -6,7 +6,7 @@ use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Commands\Traits\RancherTrait;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\LoadsConfiguration;
-use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
+use Rancherize\Configuration\Services\EnvironmentConfigurationService;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\Docker\DockerAccessConfigService;
 use Rancherize\Docker\DockerAccount;
@@ -40,7 +40,6 @@ class PushCommand extends Command implements LoadsConfiguration {
 	use IoTrait;
 	use RancherTrait;
 	use LoadsConfigurationTrait;
-	use EnvironmentConfigurationTrait;
 	use InServiceCheckerTrait;
 	use EventTrait;
 
@@ -62,6 +61,10 @@ class PushCommand extends Command implements LoadsConfiguration {
 	 * @var BlueprintService
 	 */
 	private $blueprintService;
+	/**
+	 * @var EnvironmentConfigurationService
+	 */
+	private $environmentConfigurationService;
 
 	/**
 	 * PushCommand constructor.
@@ -69,13 +72,15 @@ class PushCommand extends Command implements LoadsConfiguration {
 	 * @param DockerService $dockerService
 	 * @param BuildService $buildService
 	 * @param BlueprintService $blueprintService
+	 * @param EnvironmentConfigurationService $environmentConfigurationService
 	 */
-	public function __construct( RancherAccessService $rancherAccessService, DockerService $dockerService, BuildService $buildService, BlueprintService $blueprintService) {
+	public function __construct( RancherAccessService $rancherAccessService, DockerService $dockerService, BuildService $buildService, BlueprintService $blueprintService, EnvironmentConfigurationService $environmentConfigurationService) {
 		parent::__construct();
 		$this->rancherAccessService = $rancherAccessService;
 		$this->dockerService = $dockerService;
 		$this->buildService = $buildService;
 		$this->blueprintService = $blueprintService;
+		$this->environmentConfigurationService = $environmentConfigurationService;
 	}
 
 	protected function configure() {
@@ -96,7 +101,7 @@ class PushCommand extends Command implements LoadsConfiguration {
 		$version = $input->getArgument('version');
 
 		$configuration = $this->getConfiguration();
-		$environmentConfig = $this->environmentConfig($configuration, $environment);
+		$environmentConfig = $this->environmentConfigurationService->environmentConfig($configuration, $environment);
 
 		if($this->rancherAccessService instanceof RancherAccessParsesConfiguration)
 			$this->rancherAccessService->parse($configuration);

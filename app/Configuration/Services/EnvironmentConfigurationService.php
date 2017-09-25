@@ -1,23 +1,19 @@
-<?php namespace Rancherize\Configuration\Traits;
+<?php namespace Rancherize\Configuration\Services;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\PrefixConfigurationDecorator;
-use Rancherize\Configuration\Services\ConfigurationFallback;
 
 /**
- * Trait EnvironmentConfigurationTrait
- * @package Rancherize\Configuration\Traits
- *
- * Returns a configuration for the given environment which falls back to project.default.* if project.environments.ENVIRONMENT.*
- * is not found
+ * Class EnvironmentConfigurationService
+ * @package Rancherize\Configuration\Services
  */
-Trait EnvironmentConfigurationTrait {
+class EnvironmentConfigurationService {
 
 	/**
 	 * @param Configuration $configuration
 	 * @param $environment
 	 * @return Configuration
 	 */
-	protected function environmentConfig(Configuration $configuration, $environment) : Configuration {
+	public function environmentConfig(Configuration $configuration, $environment) : Configuration {
 		$projectConfiguration = new PrefixConfigurationDecorator($configuration, 'project.default.');
 		$environmentConfiguration = new PrefixConfigurationDecorator($configuration, "project.environments.$environment.");
 		$config = new ConfigurationFallback($environmentConfiguration, $projectConfiguration);

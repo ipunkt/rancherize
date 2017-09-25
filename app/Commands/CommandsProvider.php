@@ -3,6 +3,7 @@
 use Rancherize\Blueprint\Commands\BlueprintAdd;
 use Rancherize\Blueprint\Commands\BlueprintList;
 use Rancherize\Blueprint\Factory\BlueprintFactory;
+use Rancherize\Configuration\Services\EnvironmentConfigurationService;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Rancherize\RancherAccess\RancherAccessService;
@@ -23,7 +24,7 @@ class CommandsProvider implements Provider {
 	 */
 	public function register() {
 		$this->container['environment-version-command'] = function($c) {
-			$environmentVersionCommand = new EnvironmentVersionCommand( $c[BlueprintService::class], $c[RancherAccessService::class] );
+			$environmentVersionCommand = new EnvironmentVersionCommand( $c[BlueprintService::class], $c[RancherAccessService::class], $c[EnvironmentConfigurationService::class] );
 
 			$environmentVersionCommand->setInServiceChecker( $c['in-service-checker'] );
 
@@ -31,7 +32,7 @@ class CommandsProvider implements Provider {
 		};
 
 		$this->container['command.push'] = function($c) {
-			$pushCommand =  new PushCommand( $c[RancherAccessService::class], $c[DockerService::class], $c[BuildService::class], $c[BlueprintService::class]  );
+			$pushCommand =  new PushCommand( $c[RancherAccessService::class], $c[DockerService::class], $c[BuildService::class], $c[BlueprintService::class], $c[EnvironmentConfigurationService::class]  );
 
 			$pushCommand->setInServiceChecker( $c['in-service-checker'] );
 
@@ -45,13 +46,13 @@ class CommandsProvider implements Provider {
 		};
 
 		$this->container['command.start'] = function($c) {
-			$startCommand =  new StartCommand( $c[DockerService::class], $c[BuildService::class], $c[BlueprintService::class] );
+			$startCommand =  new StartCommand( $c[DockerService::class], $c[BuildService::class], $c[BlueprintService::class], $c[EnvironmentConfigurationService::class] );
 
 			return $startCommand;
 		};
 
 		$this->container['command.stop'] = function($c) {
-			$stopCommand =  new StopCommand( $c[DockerService::class], $c[BuildService::class], $c[BlueprintService::class]  );
+			$stopCommand =  new StopCommand( $c[DockerService::class], $c[BuildService::class], $c[BlueprintService::class], $c[EnvironmentConfigurationService::class]  );
 
 			return $stopCommand;
 		};
@@ -69,7 +70,7 @@ class CommandsProvider implements Provider {
 		};
 
 		$this->container['command.restart'] = function($c) {
-			$restartCommand =  new RestartCommand( $c[DockerService::class], $c[BuildService::class], $c[BlueprintService::class]  );
+			$restartCommand =  new RestartCommand( $c[DockerService::class], $c[BuildService::class], $c[BlueprintService::class], $c[EnvironmentConfigurationService::class]  );
 
 			return $restartCommand;
 		};
@@ -84,6 +85,10 @@ class CommandsProvider implements Provider {
 			$blueprintListCommand = new BlueprintList( $c[BlueprintFactory::class], $c['project-config-service'], $c['configuration'] );
 
 			return $blueprintListCommand;
+		};
+
+		$this->container['command.environment.set'] = function($c) {
+			return new EnvironmentSetCommand( $c[EnvironmentConfigurationService::class] );
 		};
 	}
 
@@ -104,6 +109,7 @@ class CommandsProvider implements Provider {
 		$app->add( $this->container['command.init'] );
 		$app->add( $this->container['command.blueprint.add'] );
 		$app->add( $this->container['command.blueprint.list'] );
+		$app->add( $this->container['command.environment.set'] );
 
 		$app->add( $this->container['environment-version-command'] );
 	}

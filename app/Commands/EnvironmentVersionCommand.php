@@ -3,7 +3,7 @@
 use Rancherize\Commands\Traits\RancherTrait;
 use Rancherize\Commands\Traits\ValidateTrait;
 use Rancherize\Configuration\LoadsConfiguration;
-use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
+use Rancherize\Configuration\Services\EnvironmentConfigurationService;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\RancherAccess\InServiceCheckerTrait;
 use Rancherize\RancherAccess\NameMatcher\CompleteNameMatcher;
@@ -28,7 +28,6 @@ class EnvironmentVersionCommand extends Command implements LoadsConfiguration {
 	use LoadsConfigurationTrait;
 	use ValidateTrait;
 	use RancherTrait;
-	use EnvironmentConfigurationTrait;
 	use InServiceCheckerTrait;
 	/**
 	 * @var BlueprintService
@@ -38,16 +37,22 @@ class EnvironmentVersionCommand extends Command implements LoadsConfiguration {
 	 * @var RancherAccessService
 	 */
 	private $rancherAccessService;
+	/**
+	 * @var EnvironmentConfigurationService
+	 */
+	private $environmentConfigurationService;
 
 	/**
 	 * EnvironmentVersionCommand constructor.
 	 * @param BlueprintService $blueprintService
 	 * @param RancherAccessService $rancherAccessService
+	 * @param EnvironmentConfigurationService $environmentConfigurationService
 	 */
-	public function __construct( BlueprintService $blueprintService, RancherAccessService $rancherAccessService) {
+	public function __construct( BlueprintService $blueprintService, RancherAccessService $rancherAccessService, EnvironmentConfigurationService $environmentConfigurationService) {
 		parent::__construct();
 		$this->blueprintService = $blueprintService;
 		$this->rancherAccessService = $rancherAccessService;
+		$this->environmentConfigurationService = $environmentConfigurationService;
 	}
 
 	protected function configure() {
@@ -62,7 +67,7 @@ class EnvironmentVersionCommand extends Command implements LoadsConfiguration {
 		$environment = $input->getArgument('environment');
 
 		$configuration = $this->getConfiguration();
-		$config = $this->environmentConfig($configuration, $environment);
+		$config = $this->environmentConfigurationService->environmentConfig($configuration, $environment);
 
 		if( $this->rancherAccessService instanceof RancherAccessParsesConfiguration)
 			$this->rancherAccessService->parse($configuration);

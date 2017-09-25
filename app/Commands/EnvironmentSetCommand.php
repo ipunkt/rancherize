@@ -4,7 +4,7 @@ use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Services\ConfigWrapper;
-use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
+use Rancherize\Configuration\Services\EnvironmentConfigurationService;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,7 +23,19 @@ class EnvironmentSetCommand extends Command implements LoadsConfiguration {
 	use IoTrait;
 	use LoadsConfigurationTrait;
 	use EnvironmentTrait;
-	use EnvironmentConfigurationTrait;
+	/**
+	 * @var EnvironmentConfigurationService
+	 */
+	private $environmentConfigurationService;
+
+	/**
+	 * EnvironmentSetCommand constructor.
+	 * @param EnvironmentConfigurationService $environmentConfigurationService
+	 */
+	public function __construct( EnvironmentConfigurationService $environmentConfigurationService) {
+		parent::__construct();
+		$this->environmentConfigurationService = $environmentConfigurationService;
+	}
 
 	protected function configure() {
 		$this->setName('environment:set')
@@ -65,7 +77,7 @@ class EnvironmentSetCommand extends Command implements LoadsConfiguration {
 		$environments = $this->getEnvironmentService()->allAvailable($configuration);
 		foreach($environments as $environment) {
 
-			$environmentConfig = $this->environmentConfig($configuration, $environment);
+			$environmentConfig = $this->environmentConfigurationService->environmentConfig($configuration, $environment);
 
 			$output->writeln( $output->getFormatter()->format("<info>$environment</info>") );
 
