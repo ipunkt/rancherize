@@ -1,10 +1,10 @@
 <?php namespace Rancherize\Commands;
 
 use LogicException;
-use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
+use Rancherize\Services\BlueprintService;
 use Rancherize\Services\BuildService;
 use Rancherize\Services\DockerService;
 use Symfony\Component\Console\Command\Command;
@@ -19,7 +19,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class RestartCommand extends Command implements LoadsConfiguration {
 
 	use LoadsConfigurationTrait;
-	use BlueprintTrait;
 	use EnvironmentConfigurationTrait;
 
 	/**
@@ -30,16 +29,22 @@ class RestartCommand extends Command implements LoadsConfiguration {
 	 * @var BuildService
 	 */
 	private $buildService;
+	/**
+	 * @var BlueprintService
+	 */
+	private $blueprintService;
 
 	/**
 	 * RestartCommand constructor.
 	 * @param DockerService $dockerService
 	 * @param BuildService $buildService
+	 * @param BlueprintService $blueprintService
 	 */
-	public function __construct( DockerService $dockerService, BuildService $buildService ) {
+	public function __construct( DockerService $dockerService, BuildService $buildService, BlueprintService $blueprintService ) {
 		parent::__construct();
 		$this->dockerService = $dockerService;
 		$this->buildService = $buildService;
+		$this->blueprintService = $blueprintService;
 	}
 
 	protected function configure() {

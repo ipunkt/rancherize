@@ -109,10 +109,6 @@ $container['rancher-service'] = function($c) {
 	return new \Rancherize\RancherAccess\RancherService( $c['api-service'] );
 };
 
-$container['blueprint-service'] = function($c) {
-	return new \Rancherize\Services\BlueprintService($c['blueprint-factory']);
-};
-
 $container['composer-packet-name-parser'] = function() {
 	return new \Rancherize\Plugin\Composer\ComposerPacketNameParser();
 };

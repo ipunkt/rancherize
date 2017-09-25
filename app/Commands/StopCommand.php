@@ -1,9 +1,9 @@
 <?php namespace Rancherize\Commands;
-use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Commands\Traits\DockerTrait;
 use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
+use Rancherize\Services\BlueprintService;
 use Rancherize\Services\BuildService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -19,7 +19,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class StopCommand extends Command implements LoadsConfiguration {
 
-	use BlueprintTrait;
 	use LoadsConfigurationTrait;
 	use DockerTrait;
 	use EnvironmentConfigurationTrait;
@@ -27,14 +26,20 @@ class StopCommand extends Command implements LoadsConfiguration {
 	 * @var BuildService
 	 */
 	private $buildService;
+	/**
+	 * @var BlueprintService
+	 */
+	private $blueprintService;
 
 	/**
 	 * StopCommand constructor.
 	 * @param BuildService $buildService
+	 * @param BlueprintService $blueprintService
 	 */
-	public function __construct( BuildService $buildService) {
+	public function __construct( BuildService $buildService, BlueprintService $blueprintService) {
 		parent::__construct();
 		$this->buildService = $buildService;
+		$this->blueprintService = $blueprintService;
 	}
 
 	protected function configure() {

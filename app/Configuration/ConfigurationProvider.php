@@ -23,7 +23,7 @@ class ConfigurationProvider implements Provider {
 		};
 
 
-		$this->container['config.load-configurationf-for-command-event-handler'] = function($c) {
+		$this->container[LoadConfigurationForCommandEventHandler::class] = function($c) {
 			return new LoadConfigurationForCommandEventHandler( $c['event'], $c['config-wrapper']);
 		};
 	}
@@ -35,7 +35,7 @@ class ConfigurationProvider implements Provider {
 		 * @var EventDispatcher $eventDispatcher
 		 */
 		$eventDispatcher = $this->container['event'];
-		$eventHandler = $this->container['config.load-configurationf-for-command-event-handler'];
+		$eventHandler = $this->container[LoadConfigurationForCommandEventHandler::class];
 
 		$eventDispatcher->addListener(ConsoleEvents::COMMAND, [$eventHandler, 'prepareCommand']);
 	}

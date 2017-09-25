@@ -1,6 +1,5 @@
 <?php namespace Rancherize\Commands;
 
-use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Commands\Traits\RancherTrait;
 use Rancherize\Commands\Traits\ValidateTrait;
 use Rancherize\Configuration\LoadsConfiguration;
@@ -10,6 +9,7 @@ use Rancherize\RancherAccess\InServiceCheckerTrait;
 use Rancherize\RancherAccess\NameMatcher\CompleteNameMatcher;
 use Rancherize\RancherAccess\NameMatcher\PrefixNameMatcher;
 use Rancherize\RancherAccess\RancherAccessService;
+use Rancherize\Services\BlueprintService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,11 +25,23 @@ use Symfony\Component\Console\Output\OutputInterface;
 class EnvironmentVersionCommand extends Command implements LoadsConfiguration {
 
 	use LoadsConfigurationTrait;
-	use BlueprintTrait;
 	use ValidateTrait;
 	use RancherTrait;
 	use EnvironmentConfigurationTrait;
 	use InServiceCheckerTrait;
+	/**
+	 * @var BlueprintService
+	 */
+	private $blueprintService;
+
+	/**
+	 * EnvironmentVersionCommand constructor.
+	 * @param BlueprintService $blueprintService
+	 */
+	public function __construct( BlueprintService $blueprintService) {
+		parent::__construct();
+		$this->blueprintService = $blueprintService;
+	}
 
 	protected function configure() {
 		$this->setName('environment:version')

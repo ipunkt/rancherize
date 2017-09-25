@@ -2,7 +2,6 @@
 use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Infrastructure\InfrastructureWriter;
 use Rancherize\Blueprint\TakesDockerAccount;
-use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\Docker\DockerAccount;
@@ -19,7 +18,6 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 class BuildService {
 
 	use LoadsConfigurationTrait;
-	use BlueprintTrait;
 
 	/**
 	 * @var string

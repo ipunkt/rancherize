@@ -12,6 +12,19 @@ use Symfony\Component\Console\Output\OutputInterface;
  * List all known blueprints
  */
 class BlueprintList extends Command {
+	/**
+	 * @var BlueprintFactory
+	 */
+	private $blueprintFactory;
+
+	/**
+	 * BlueprintList constructor.
+	 * @param BlueprintFactory $blueprintFactory
+	 */
+	public function __construct( BlueprintFactory $blueprintFactory) {
+		parent::__construct();
+		$this->blueprintFactory = $blueprintFactory;
+	}
 
 	/**
 	 *
@@ -36,11 +49,7 @@ class BlueprintList extends Command {
 		$configuration = $projectConfig->load($configuration);
 		container()->offsetSet('project-configuration', $configuration);
 
-		/**
-		 * @var BlueprintFactory $blueprintFactory
-		 */
-		$blueprintFactory = container('blueprint-factory');
-		$blueprints = $blueprintFactory->available();
+		$blueprints = $this->blueprintFactory->available();
 
 		$output->writeln([
 			'Available Blueprints',

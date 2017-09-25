@@ -1,8 +1,8 @@
 <?php namespace Rancherize\Commands;
-use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Commands\Traits\ValidateTrait;
 use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
+use Rancherize\Services\BlueprintService;
 use Rancherize\Services\BuildService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -19,20 +19,27 @@ use Symfony\Component\Console\Output\OutputInterface;
 class BuildCommand extends Command implements LoadsConfiguration {
 
 	use LoadsConfigurationTrait;
-	use BlueprintTrait;
 	use ValidateTrait;
+
 	/**
 	 * @var BuildService
 	 */
 	private $buildService;
 
 	/**
+	 * @var BlueprintService
+	 */
+	private $blueprintService;
+
+	/**
 	 * BuildCommand constructor.
 	 * @param BuildService $buildService
+	 * @param BlueprintService $blueprintService
 	 */
-	public function __construct( BuildService $buildService) {
+	public function __construct( BuildService $buildService, BlueprintService $blueprintService) {
 		parent::__construct();
 		$this->buildService = $buildService;
+		$this->blueprintService = $blueprintService;
 	}
 
 	protected function configure() {

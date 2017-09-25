@@ -13,6 +13,19 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Add the given blueprint name and classpath to the known blueprints
  */
 class BlueprintAdd extends Command   {
+	/**
+	 * @var BlueprintFactory
+	 */
+	private $blueprintFactory;
+
+	/**
+	 * BlueprintAdd constructor.
+	 * @param BlueprintFactory $blueprintFactory
+	 */
+	public function __construct( BlueprintFactory $blueprintFactory) {
+		parent::__construct();
+		$this->blueprintFactory = $blueprintFactory;
+	}
 
 	/**
 	 *
@@ -50,8 +63,7 @@ class BlueprintAdd extends Command   {
 		/**
 		 * @var BlueprintFactory $blueprintFactory
 		 */
-		$blueprintFactory = container('blueprint-factory');
-		$blueprintFactory->add($name, $classpath);
+		$this->blueprintFactory->add($name, $classpath);
 
 		/**
 		 * TODO: logical combination of add -> projectConfig->save

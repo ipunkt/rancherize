@@ -1,7 +1,6 @@
 <?php namespace Rancherize\Commands;
 
 use Rancherize\Blueprint\Blueprint;
-use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\LoadsConfiguration;
@@ -10,6 +9,7 @@ use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\Docker\DockerAccessConfigService;
 use Rancherize\RancherAccess\RancherAccessParsesConfiguration;
 use Rancherize\RancherAccess\RancherAccessService;
+use Rancherize\Services\BlueprintService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,19 +26,25 @@ class InitCommand extends Command implements LoadsConfiguration {
 
 	use IoTrait;
 	use LoadsConfigurationTrait;
-	use BlueprintTrait;
+
 	/**
 	 * @var RancherAccessService
 	 */
 	private $rancherAccessService;
+	/**
+	 * @var BlueprintService
+	 */
+	private $blueprintService;
 
 	/**
 	 * InitCommand constructor.
 	 * @param RancherAccessService $rancherAccessService
+	 * @param BlueprintService $blueprintService
 	 */
-	public function __construct( RancherAccessService $rancherAccessService) {
+	public function __construct( RancherAccessService $rancherAccessService, BlueprintService $blueprintService) {
 		parent::__construct();
 		$this->rancherAccessService = $rancherAccessService;
+		$this->blueprintService = $blueprintService;
 	}
 
 	protected function configure() {
@@ -61,7 +67,6 @@ class InitCommand extends Command implements LoadsConfiguration {
 		$this->setIo($input, $output);
 
 		$configuration = $this->getConfiguration();
-
 
 		$blueprint = $this->blueprintService->load($blueprintName, $input->getOptions());
 

@@ -1,5 +1,4 @@
 <?php namespace Rancherize\Commands;
-use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Commands\Events\PushCommandInServiceUpgradeEvent;
 use Rancherize\Commands\Events\PushCommandStartEvent;
 use Rancherize\Commands\Traits\EventTrait;
@@ -20,6 +19,7 @@ use Rancherize\RancherAccess\NameMatcher\PrefixNameMatcher;
 use Rancherize\RancherAccess\RancherAccessParsesConfiguration;
 use Rancherize\RancherAccess\RancherAccessService;
 use Rancherize\RancherAccess\SingleStateMatcher;
+use Rancherize\Services\BlueprintService;
 use Rancherize\Services\BuildService;
 use Rancherize\Services\DockerService;
 use Symfony\Component\Console\Command\Command;
@@ -41,7 +41,6 @@ class PushCommand extends Command implements LoadsConfiguration {
 	use RancherTrait;
 	use LoadsConfigurationTrait;
 	use EnvironmentConfigurationTrait;
-	use BlueprintTrait;
 	use InServiceCheckerTrait;
 	use EventTrait;
 
@@ -60,16 +59,23 @@ class PushCommand extends Command implements LoadsConfiguration {
 	private $buildService;
 
 	/**
+	 * @var BlueprintService
+	 */
+	private $blueprintService;
+
+	/**
 	 * PushCommand constructor.
 	 * @param RancherAccessService $rancherAccessService
 	 * @param DockerService $dockerService
 	 * @param BuildService $buildService
+	 * @param BlueprintService $blueprintService
 	 */
-	public function __construct( RancherAccessService $rancherAccessService, DockerService $dockerService, BuildService $buildService) {
+	public function __construct( RancherAccessService $rancherAccessService, DockerService $dockerService, BuildService $buildService, BlueprintService $blueprintService) {
 		parent::__construct();
 		$this->rancherAccessService = $rancherAccessService;
 		$this->dockerService = $dockerService;
 		$this->buildService = $buildService;
+		$this->blueprintService = $blueprintService;
 	}
 
 	protected function configure() {
@@ -132,7 +138,7 @@ class PushCommand extends Command implements LoadsConfiguration {
 		$dockerService->setOutput($output)
 			->setProcessHelper($this->getHelper('process'));
 
-		$this->buildImage($dockerService, $configuration, $environmentConfig, $image, $dockerAccount);
+		$this->buildImage($dockerService, $image, $dockerAccount);
 
 		$name = $environmentConfig->get('service-name');
 
@@ -183,7 +189,7 @@ class PushCommand extends Command implements LoadsConfiguration {
 	 * @param $image
 	 * @internal param $dockerAccount
 	 */
-	protected function buildImage(DockerService $dockerService, Configuration $configuration, Configuration $config, $image, DockerAccount $dockerAccount) {
+	protected function buildImage(DockerService $dockerService, $image, DockerAccount $dockerAccount) {
 
 		if ( $this->getInput()->getOption('image-exists') ) {
 			$this->getOutput()->writeln("Option image-exists was set, skipping build.", OutputInterface::VERBOSITY_VERBOSE);

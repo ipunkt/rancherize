@@ -1,10 +1,10 @@
 <?php namespace Rancherize\Commands;
 
-use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Commands\Traits\DockerTrait;
 use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
+use Rancherize\Services\BlueprintService;
 use Rancherize\Services\BuildService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,19 +23,24 @@ class StartCommand extends Command implements LoadsConfiguration {
 	use DockerTrait;
 	use LoadsConfigurationTrait;
 	use EnvironmentConfigurationTrait;
-	use BlueprintTrait;
 	/**
 	 * @var BuildService
 	 */
 	private $buildService;
+	/**
+	 * @var BlueprintService
+	 */
+	private $blueprintService;
 
 	/**
 	 * StartCommand constructor.
 	 * @param BuildService $buildService
+	 * @param BlueprintService $blueprintService
 	 */
-	public function __construct( BuildService $buildService) {
+	public function __construct( BuildService $buildService, BlueprintService $blueprintService) {
 		parent::__construct();
 		$this->buildService = $buildService;
+		$this->blueprintService = $blueprintService;
 	}
 
 	protected function configure() {
@@ -58,7 +63,7 @@ class StartCommand extends Command implements LoadsConfiguration {
      *
      * @return null|int null or 0 if everything went fine, or an error code
      *
-     * @throws LogicException When this abstract method is not implemented
+     * @throws \LogicException When this abstract method is not implemented
      *
      * @see setCode()
      */

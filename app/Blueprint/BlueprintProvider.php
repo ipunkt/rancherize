@@ -1,8 +1,10 @@
 <?php namespace Rancherize\Blueprint;
 
+use Rancherize\Blueprint\Factory\BlueprintFactory;
 use Rancherize\Blueprint\Factory\ContainerBlueprintFactory;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
+use Rancherize\Services\BlueprintService;
 
 /**
  * Class BlueprintProvider
@@ -15,8 +17,12 @@ class BlueprintProvider implements Provider {
 	/**
 	 */
 	public function register() {
-		$this->container['blueprint-factory'] = function($c) {
+		$this->container[BlueprintFactory::class] = function($c) {
 			return new ContainerBlueprintFactory($c);
+		};
+
+		$this->container[BlueprintService::class] = function($c) {
+			return new BlueprintService($c[BlueprintFactory::class]);
 		};
 	}
 
