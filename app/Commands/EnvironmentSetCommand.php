@@ -23,6 +23,7 @@ class EnvironmentSetCommand extends Command implements LoadsConfiguration {
 	use IoTrait;
 	use LoadsConfigurationTrait;
 	use EnvironmentTrait;
+
 	/**
 	 * @var EnvironmentConfigurationService
 	 */

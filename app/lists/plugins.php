@@ -26,6 +26,7 @@ return [
 	 * TODO: Only here to keep backwards compatibility. Remove with v3
 	 */
 	RancherizePhp53\Php53Provider::class,
+	Rancherize\InputOutput\InputOutputProvider::class,
 
 	Rancherize\Commands\CommandsProvider::class,
 
