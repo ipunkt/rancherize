@@ -51,8 +51,6 @@ class EnvironmentSetCommand extends Command implements LoadsConfiguration {
 		 */
 		$configWrapper = container('config-wrapper');
 		$configWrapper->saveProjectConfig($configuration);
-
-		return 0;
 	}
 
 	/**

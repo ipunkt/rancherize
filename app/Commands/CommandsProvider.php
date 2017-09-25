@@ -23,7 +23,7 @@ class CommandsProvider implements Provider {
 	 */
 	public function register() {
 		$this->container['environment-version-command'] = function($c) {
-			$environmentVersionCommand = new EnvironmentVersionCommand( $c[BlueprintService::class] );
+			$environmentVersionCommand = new EnvironmentVersionCommand( $c[BlueprintService::class], $c[RancherAccessService::class] );
 
 			$environmentVersionCommand->setInServiceChecker( $c['in-service-checker'] );
 

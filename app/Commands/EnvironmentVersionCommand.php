@@ -8,6 +8,7 @@ use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\RancherAccess\InServiceCheckerTrait;
 use Rancherize\RancherAccess\NameMatcher\CompleteNameMatcher;
 use Rancherize\RancherAccess\NameMatcher\PrefixNameMatcher;
+use Rancherize\RancherAccess\RancherAccessParsesConfiguration;
 use Rancherize\RancherAccess\RancherAccessService;
 use Rancherize\Services\BlueprintService;
 use Symfony\Component\Console\Command\Command;
@@ -33,14 +34,20 @@ class EnvironmentVersionCommand extends Command implements LoadsConfiguration {
 	 * @var BlueprintService
 	 */
 	private $blueprintService;
+	/**
+	 * @var RancherAccessService
+	 */
+	private $rancherAccessService;
 
 	/**
 	 * EnvironmentVersionCommand constructor.
 	 * @param BlueprintService $blueprintService
+	 * @param RancherAccessService $rancherAccessService
 	 */
-	public function __construct( BlueprintService $blueprintService) {
+	public function __construct( BlueprintService $blueprintService, RancherAccessService $rancherAccessService) {
 		parent::__construct();
 		$this->blueprintService = $blueprintService;
+		$this->rancherAccessService = $rancherAccessService;
 	}
 
 	protected function configure() {
@@ -57,12 +64,9 @@ class EnvironmentVersionCommand extends Command implements LoadsConfiguration {
 		$configuration = $this->getConfiguration();
 		$config = $this->environmentConfig($configuration, $environment);
 
-		/**
-		 * @var RancherAccessService $rancherConfiguration
-		 */
-		$rancherConfiguration = container('rancher-access-service');
-		$rancherConfiguration->parse($configuration);
-		$account = $rancherConfiguration->getAccount( $config->get('rancher.account') );
+		if( $this->rancherAccessService instanceof RancherAccessParsesConfiguration)
+			$this->rancherAccessService->parse($configuration);
+		$account = $this->rancherAccessService->getAccount( $config->get('rancher.account') );
 
 		$rancher = $this->getRancher();
 		$rancher->setAccount($account)
