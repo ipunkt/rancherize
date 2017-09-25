@@ -81,7 +81,7 @@ class CommandsProvider implements Provider {
 		};
 
 		$this->container['command.blueprint.list'] = function($c) {
-			$blueprintListCommand = new BlueprintList( $c[BlueprintFactory::class] );
+			$blueprintListCommand = new BlueprintList( $c[BlueprintFactory::class], $c['project-config-service'], $c['configuration'] );
 
 			return $blueprintListCommand;
 		};

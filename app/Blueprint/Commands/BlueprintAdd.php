@@ -11,6 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @package Rancherize\Commands
  *
  * Add the given blueprint name and classpath to the known blueprints
+ * @deprecated Blueprints are automatically added to the list via plugin providers now.
  */
 class BlueprintAdd extends Command   {
 	/**
@@ -44,6 +45,8 @@ class BlueprintAdd extends Command   {
 	 * @return int
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		$output->writeln('<info>This command is deprecated and will be removed in the future.</info>');
+
 		/**
 		 * @var ProjectConfiguration $projectConfig
 		 */
