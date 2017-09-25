@@ -45,13 +45,13 @@ class CommandsProvider implements Provider {
 		};
 
 		$this->container['command.start'] = function($c) {
-			$startCommand =  new StartCommand( $c[BuildService::class], $c[BlueprintService::class] );
+			$startCommand =  new StartCommand( $c[DockerService::class], $c[BuildService::class], $c[BlueprintService::class] );
 
 			return $startCommand;
 		};
 
 		$this->container['command.stop'] = function($c) {
-			$stopCommand =  new StopCommand( $c[BuildService::class], $c[BlueprintService::class]  );
+			$stopCommand =  new StopCommand( $c[DockerService::class], $c[BuildService::class], $c[BlueprintService::class]  );
 
 			return $stopCommand;
 		};

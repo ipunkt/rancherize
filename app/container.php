@@ -97,7 +97,7 @@ $container[\Rancherize\Services\DockerService::class] = function($c) {
 	return new \Rancherize\Services\DockerService();
 };
 
-$container['docker-service'] = function($c) {
+$container[\Rancherize\Services\DockerService::class] = function($c) {
 	return new \Rancherize\Services\DockerService();
 };
 

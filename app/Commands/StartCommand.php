@@ -1,11 +1,11 @@
 <?php namespace Rancherize\Commands;
 
-use Rancherize\Commands\Traits\DockerTrait;
 use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\Services\BlueprintService;
 use Rancherize\Services\BuildService;
+use Rancherize\Services\DockerService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,7 +20,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class StartCommand extends Command implements LoadsConfiguration {
 
-	use DockerTrait;
 	use LoadsConfigurationTrait;
 	use EnvironmentConfigurationTrait;
 	/**
@@ -31,16 +30,22 @@ class StartCommand extends Command implements LoadsConfiguration {
 	 * @var BlueprintService
 	 */
 	private $blueprintService;
+	/**
+	 * @var DockerService
+	 */
+	private $dockerService;
 
 	/**
 	 * StartCommand constructor.
+	 * @param DockerService $dockerService
 	 * @param BuildService $buildService
 	 * @param BlueprintService $blueprintService
 	 */
-	public function __construct( BuildService $buildService, BlueprintService $blueprintService) {
+	public function __construct( DockerService $dockerService, BuildService $buildService, BlueprintService $blueprintService) {
 		parent::__construct();
 		$this->buildService = $buildService;
 		$this->blueprintService = $blueprintService;
+		$this->dockerService = $dockerService;
 	}
 
 	protected function configure() {
@@ -77,11 +82,11 @@ class StartCommand extends Command implements LoadsConfiguration {
 		$blueprint = $this->blueprintService->byConfiguration($configuration, $input->getArguments());
 		$infrastructure = $this->buildService->build($blueprint, $configuration, $environment);
 
-		$this->getDocker()
+		$this->dockerService
 			->setOutput($output)
 			->setProcessHelper($this->getHelper('process'));
 
-		$this->getDocker()->start('./.rancherize', $config->get('service-name') );
+		$this->dockerService->start('./.rancherize', $config->get('service-name') );
 
 		foreach( $infrastructure->getServices() as $service ) {
 			$exposedPorts = $service->getExposedPorts();
