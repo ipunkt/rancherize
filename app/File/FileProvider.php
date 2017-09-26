@@ -20,11 +20,11 @@ class FileProvider implements Provider {
 		 */
 		$container[FileLoader::class] = function() {
 
-			return new \Rancherize\File\FileLoader();
+			return new FileLoader();
 		};
 
 		$container['file-writer'] = function() {
-			return new \Rancherize\File\FileWriter();
+			return new FileWriter();
 		};
 	}
 
