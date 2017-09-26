@@ -3,7 +3,6 @@ use Rancherize\Commands\Events\PushCommandInServiceUpgradeEvent;
 use Rancherize\Commands\Events\PushCommandStartEvent;
 use Rancherize\Commands\Traits\EventTrait;
 use Rancherize\Commands\Traits\IoTrait;
-use Rancherize\Commands\Traits\RancherTrait;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Services\EnvironmentConfigurationService;
@@ -18,6 +17,7 @@ use Rancherize\RancherAccess\NameMatcher\CompleteNameMatcher;
 use Rancherize\RancherAccess\NameMatcher\PrefixNameMatcher;
 use Rancherize\RancherAccess\RancherAccessParsesConfiguration;
 use Rancherize\RancherAccess\RancherAccessService;
+use Rancherize\RancherAccess\RancherService;
 use Rancherize\RancherAccess\SingleStateMatcher;
 use Rancherize\Services\BlueprintService;
 use Rancherize\Services\BuildService;
@@ -38,7 +38,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class PushCommand extends Command implements LoadsConfiguration {
 
 	use IoTrait;
-	use RancherTrait;
 	use LoadsConfigurationTrait;
 	use InServiceCheckerTrait;
 	use EventTrait;
@@ -69,6 +68,10 @@ class PushCommand extends Command implements LoadsConfiguration {
 	 * @var DockerAccessService
 	 */
 	private $dockerAccessService;
+	/**
+	 * @var RancherService
+	 */
+	private $rancherService;
 
 	/**
 	 * PushCommand constructor.
@@ -78,10 +81,12 @@ class PushCommand extends Command implements LoadsConfiguration {
 	 * @param BlueprintService $blueprintService
 	 * @param EnvironmentConfigurationService $environmentConfigurationService
 	 * @param DockerAccessService $dockerAccessService
+	 * @param RancherService $rancherService
 	 */
 	public function __construct( RancherAccessService $rancherAccessService, DockerService $dockerService,
 			BuildService $buildService, BlueprintService $blueprintService,
-			EnvironmentConfigurationService $environmentConfigurationService, DockerAccessService $dockerAccessService) {
+			EnvironmentConfigurationService $environmentConfigurationService, DockerAccessService $dockerAccessService,
+			RancherService $rancherService) {
 		parent::__construct();
 		$this->rancherAccessService = $rancherAccessService;
 		$this->dockerService = $dockerService;
@@ -89,6 +94,7 @@ class PushCommand extends Command implements LoadsConfiguration {
 		$this->blueprintService = $blueprintService;
 		$this->environmentConfigurationService = $environmentConfigurationService;
 		$this->dockerAccessService = $dockerAccessService;
+		$this->rancherService = $rancherService;
 	}
 
 	protected function configure() {
@@ -115,7 +121,7 @@ class PushCommand extends Command implements LoadsConfiguration {
 			$this->rancherAccessService->parse($configuration);
 		$account = $this->rancherAccessService->getAccount( $environmentConfig->get('rancher.account') );
 
-		$rancher = $this->getRancher();
+		$rancher = $this->rancherService;
 		$rancher->setAccount($account)
 			->setOutput($output)
 			->setProcessHelper( $this->getHelper('process'));
@@ -165,7 +171,7 @@ class PushCommand extends Command implements LoadsConfiguration {
 			if( $isInServiceUpgrade )
 				$matcher = new CompleteNameMatcher($name);
 
-			$activeStack = $this->getRancher()->getActiveService($stackName, $matcher);
+			$activeStack = $this->rancherService->getActiveService($stackName, $matcher);
 
 			if( $isInServiceUpgrade ) {
 				$this->inServiceUpgrade( $stackName, $versionizedName, $environmentConfig );
@@ -257,17 +263,17 @@ class PushCommand extends Command implements LoadsConfiguration {
 		$serviceNames = $startEvent->getServiceNames();
 		$forcedUpgrade = $startEvent->isForceUpgrade();
 
-		$this->getRancher()->start( './.rancherize', $stackName, $serviceNames, true, $forcedUpgrade );
+		$this->rancherService->start( './.rancherize', $stackName, $serviceNames, true, $forcedUpgrade );
 
 		// Use default Matcher
 		$stateMatcher = new SingleStateMatcher( 'upgraded' );
 		if ( $config->get( 'rancher.upgrade-healthcheck', false ) )
 			$stateMatcher = new HealthStateMatcher( 'healthy' );
 
-		$this->getRancher()->wait( $stackName, $versionizedName, $stateMatcher );
+		$this->rancherService->wait( $stackName, $versionizedName, $stateMatcher );
 		// TODO: set timeout and roll back the upgrade if the timeout is reached without health confirmation.
 
-		$this->getRancher()->confirm( './.rancherize', $stackName, [$versionizedName] );
+		$this->rancherService->confirm( './.rancherize', $stackName, [$versionizedName] );
 		return array($serviceNames, $startEvent);
 	}
 
@@ -277,7 +283,7 @@ class PushCommand extends Command implements LoadsConfiguration {
 	 * @param $versionizedName
 	 */
 	protected function rollingUpgrade( $stackName, $activeStack, $versionizedName ) {
-		$this->getRancher()->upgrade( './.rancherize', $stackName, $activeStack, $versionizedName );
+		$this->rancherService->upgrade( './.rancherize', $stackName, $activeStack, $versionizedName );
 	}
 
 	/**
@@ -291,7 +297,7 @@ class PushCommand extends Command implements LoadsConfiguration {
 		$this->getEventDispatcher()->dispatch( PushCommandStartEvent::NAME, $startEvent );
 		$serviceNames = $startEvent->getServiceNames();
 
-		$this->getRancher()->start( './.rancherize', $stackName, $serviceNames );
+		$this->rancherService->start( './.rancherize', $stackName, $serviceNames );
 	}
 
 

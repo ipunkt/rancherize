@@ -8,6 +8,7 @@ use Rancherize\Docker\DockerAccessService;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Rancherize\RancherAccess\RancherAccessService;
+use Rancherize\RancherAccess\RancherService;
 use Rancherize\Services\BlueprintService;
 use Rancherize\Services\BuildService;
 use Rancherize\Services\DockerService;
@@ -25,7 +26,7 @@ class CommandsProvider implements Provider {
 	 */
 	public function register() {
 		$this->container['environment-version-command'] = function($c) {
-			$environmentVersionCommand = new EnvironmentVersionCommand( $c[BlueprintService::class], $c[RancherAccessService::class], $c[EnvironmentConfigurationService::class] );
+			$environmentVersionCommand = new EnvironmentVersionCommand( $c[BlueprintService::class], $c[RancherAccessService::class], $c[EnvironmentConfigurationService::class], $c[RancherService::class] );
 
 			$environmentVersionCommand->setInServiceChecker( $c['in-service-checker'] );
 
@@ -35,7 +36,7 @@ class CommandsProvider implements Provider {
 		$this->container['command.push'] = function($c) {
 			$pushCommand =  new PushCommand( $c[RancherAccessService::class], $c[DockerService::class],
 				$c[BuildService::class], $c[BlueprintService::class], $c[EnvironmentConfigurationService::class],
-				$c[DockerAccessService::class]  );
+				$c[DockerAccessService::class], $c[RancherService::class] );
 
 			$pushCommand->setInServiceChecker( $c['in-service-checker'] );
 
