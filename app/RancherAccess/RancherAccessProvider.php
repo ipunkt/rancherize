@@ -28,6 +28,11 @@ class RancherAccessProvider implements Provider {
 			return new RancherService( $c[ApiService::class] );
 		};
 
+		$container[InServiceChecker::class] = function() {
+			return new InServiceChecker();
+		};
+
+
 	}
 
 	/**
