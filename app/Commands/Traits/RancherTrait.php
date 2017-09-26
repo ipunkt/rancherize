@@ -18,6 +18,6 @@ trait RancherTrait {
 	 * @return RancherService
 	 */
 	public function getRancher() : RancherService {
-		return container('rancher-service');
+		return container(RancherService::class);
 	}
 }

@@ -89,14 +89,6 @@ $container[\Rancherize\Services\DockerService::class] = function() {
 	return new \Rancherize\Services\DockerService();
 };
 
-$container['api-service'] = function() {
-	return new \Rancherize\RancherAccess\ApiService\CurlApiService();
-};
-
-$container['rancher-service'] = function($c) {
-	return new \Rancherize\RancherAccess\RancherService( $c['api-service'] );
-};
-
 $container['composer-packet-name-parser'] = function() {
 	return new \Rancherize\Plugin\Composer\ComposerPacketNameParser();
 };
