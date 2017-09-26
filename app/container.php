@@ -8,35 +8,23 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 $container = new \Pimple\Container();
 
-$container['event'] = function ($c) {
+$container['event'] = function () {
 	return new EventDispatcher();
-};
-
-/**
- * File handling
- */
-$container['file-loader'] = function($c) {
-
-	return new \Rancherize\File\FileLoader();
-};
-
-$container['file-writer'] = function($c) {
-	return new \Rancherize\File\FileWriter();
 };
 
 /**
  * Configuration
  */
-$container['configuration'] = function($container) {
+$container['configuration'] = function() {
 	return new \Rancherize\Configuration\ArrayConfiguration();
 };
 
 $container['loader'] = function($c) {
-	return new \Rancherize\Configuration\Loader\JsonLoader($c['file-loader']);
+	return new \Rancherize\Configuration\Loader\JsonLoader($c[\Rancherize\File\FileLoader::class]);
 };
 
 $container['writer'] = function($c) {
-	return new \Rancherize\Configuration\Writer\JsonWriter($c['file-writer']);
+	return new \Rancherize\Configuration\Writer\JsonWriter($c[\Rancherize\File\FileLoader::class]);
 };
 
 $container['global-config-service'] = function($c) {
@@ -61,24 +49,24 @@ $container['config-wrapper'] = function($c) {
 	);
 };
 
-$container['environment-service'] = function($c) {
+$container['environment-service'] = function() {
 	return new \Rancherize\Services\EnvironmentService();
 };
 
-$container['validate-service'] = function($c) {
+$container['validate-service'] = function() {
 		return new \Rancherize\Services\ValidateService();
 };
 
-$container['dockerfile-writer'] = function($c) {
+$container['dockerfile-writer'] = function() {
 	return new \Rancherize\Blueprint\Infrastructure\Dockerfile\DockerfileWriter();
 };
 
 $container['service-writer'] = function($c) {
-	return new \Rancherize\Blueprint\Infrastructure\Service\ServiceWriter($c['file-loader'], $c['event']);
+	return new \Rancherize\Blueprint\Infrastructure\Service\ServiceWriter($c[\Rancherize\File\FileLoader::class], $c['event']);
 };
 
 $container['volume-writer'] = function($c) {
-	return new \Rancherize\Blueprint\Infrastructure\Volume\VolumeWriter($c['file-loader']);
+	return new \Rancherize\Blueprint\Infrastructure\Volume\VolumeWriter($c[\Rancherize\File\FileLoader::class]);
 };
 
 $container['infrastructure-writer'] = function($c) {
@@ -93,15 +81,15 @@ $container[\Rancherize\Services\BuildService::class] = function($c) {
 	return new \Rancherize\Services\BuildService($c['validate-service'], $c['infrastructure-writer'], $c['event']);
 };
 
-$container[\Rancherize\Services\DockerService::class] = function($c) {
+$container[\Rancherize\Services\DockerService::class] = function() {
 	return new \Rancherize\Services\DockerService();
 };
 
-$container[\Rancherize\Services\DockerService::class] = function($c) {
+$container[\Rancherize\Services\DockerService::class] = function() {
 	return new \Rancherize\Services\DockerService();
 };
 
-$container['api-service'] = function($c) {
+$container['api-service'] = function() {
 	return new \Rancherize\RancherAccess\ApiService\CurlApiService();
 };
 
@@ -128,13 +116,16 @@ $container['plugin-installer'] = function($c) {
 
 	$installer = new \Rancherize\Plugin\Installer\ComposerPluginInstaller($nameParser, $pathMaker);
 
+	/**
+	 * @var \Symfony\Component\Console\Helper\ProcessHelper $processHelper
+	 */
 	$processHelper = $application->getHelperSet()->get('process');
 	$installer->setProcessHelper($processHelper);
 
 	return $installer;
 };
 
-$container['loader-interface'] = function ($c) {
+$container['loader-interface'] = function () {
 	return new \Rancherize\Plugin\Loader\NewLoader();
 };
 
@@ -142,7 +133,7 @@ $container['plugin-loader-extra'] = function($c) {
 	return new \Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator($c['loader-interface']);
 };
 
-$container['package-name-parser'] = function($c) {
+$container['package-name-parser'] = function() {
 	return new \Rancherize\Composer\PackageNameParser();
 };
 
@@ -168,7 +159,7 @@ $container->extend('plugin-loader', function($pluginLoader, $c) {
 
 });
 
-$container['custom-files-maker'] = function($c) {
+$container['custom-files-maker'] = function() {
 
 	return new \Rancherize\Blueprint\Infrastructure\Service\Maker\CustomFiles\CustomFilesMaker();
 };
@@ -176,7 +167,7 @@ $container['custom-files-maker'] = function($c) {
 /**
  * Blueprint Validator
  */
-$container['blueprint-rule-factory'] = function($c) {
+$container['blueprint-rule-factory'] = function() {
 	return new \Rancherize\Blueprint\Validation\RuleFactory\NamespaceRuleFactory('Rancherize\Blueprint\Validation\Rules');
 };
 
@@ -184,27 +175,27 @@ $container['blueprint-validator'] = function($c) {
 	return new \Rancherize\Blueprint\Validation\Validator($c['blueprint-rule-factory']);
 };
 
-$container['docker-compose-reader'] = function($c) {
+$container['docker-compose-reader'] = function() {
 	return new Rancherize\Docker\DockerComposeReader\DockerComposeReader();
 };
 
-$container['rancher-compose-reader'] = function($c) {
+$container['rancher-compose-reader'] = function() {
 	return new Rancherize\Docker\RancherComposeReader\RancherComposeReader();
 };
 
-$container['docker-compose-versionizer'] = function($c) {
+$container['docker-compose-versionizer'] = function() {
 	return new \Rancherize\Docker\DockerComposerVersionizer();
 };
 
-$container['by-key-service'] = function($c) {
+$container['by-key-service'] = function() {
 	return new \Rancherize\General\Services\ByKeyService();
 };
 
-$container['name-is-path-checker'] = function($c) {
+$container['name-is-path-checker'] = function() {
 	return new \Rancherize\General\Services\NameIsPathChecker();
 };
 
-$container['in-service-checker'] = function($c) {
+$container['in-service-checker'] = function() {
 	return new \Rancherize\RancherAccess\InServiceChecker();
 };
 
