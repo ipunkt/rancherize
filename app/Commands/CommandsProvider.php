@@ -58,7 +58,7 @@ class CommandsProvider implements Provider {
 		};
 
 		$this->container['command.init'] = function($c) {
-			$initCommand =  new InitCommand( $c['rancher-access-service'], $c[BlueprintService::class]  );
+			$initCommand =  new InitCommand( $c[RancherAccessService::class], $c[BlueprintService::class]  );
 
 			return $initCommand;
 		};

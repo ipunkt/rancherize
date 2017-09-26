@@ -14,10 +14,7 @@ class RancherAccessProvider implements Provider {
 	/**
 	 */
 	public function register() {
-		$this->container[RancherAccessService::class] = function($c) {
-			return new RancherAccessConfigService();
-		};
-		$this->container['rancher-access-service'] = function($c) {
+		$this->container[RancherAccessService::class] = function() {
 			return new RancherAccessConfigService();
 		};
 	}

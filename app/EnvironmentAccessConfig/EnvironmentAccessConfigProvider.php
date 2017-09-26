@@ -2,6 +2,7 @@
 
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
+use Rancherize\RancherAccess\RancherAccessService;
 
 /**
  * Class EnvironmentAccessConfigProvider
@@ -28,7 +29,7 @@ class EnvironmentAccessConfigProvider implements Provider
                 return new DockerAccessEnvironmentService($c['event']);
             };
 
-            $this->container['rancher-access-service'] = function($c) {
+            $this->container[RancherAccessService::class] = function() {
                 return new RancherAccessEnvironmentService();
             };
 
