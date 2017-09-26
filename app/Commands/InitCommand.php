@@ -6,7 +6,7 @@ use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Services\ConfigWrapper;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
-use Rancherize\Docker\DockerAccessConfigService;
+use Rancherize\Docker\DockerAccessService;
 use Rancherize\RancherAccess\RancherAccessParsesConfiguration;
 use Rancherize\RancherAccess\RancherAccessService;
 use Rancherize\Services\BlueprintService;
@@ -35,16 +35,22 @@ class InitCommand extends Command implements LoadsConfiguration {
 	 * @var BlueprintService
 	 */
 	private $blueprintService;
+	/**
+	 * @var DockerAccessService
+	 */
+	private $dockerAccessService;
 
 	/**
 	 * InitCommand constructor.
 	 * @param RancherAccessService $rancherAccessService
 	 * @param BlueprintService $blueprintService
+	 * @param DockerAccessService $dockerAccessService
 	 */
-	public function __construct( RancherAccessService $rancherAccessService, BlueprintService $blueprintService) {
+	public function __construct( RancherAccessService $rancherAccessService, BlueprintService $blueprintService, DockerAccessService $dockerAccessService) {
 		parent::__construct();
 		$this->rancherAccessService = $rancherAccessService;
 		$this->blueprintService = $blueprintService;
+		$this->dockerAccessService = $dockerAccessService;
 	}
 
 	protected function configure() {
@@ -79,10 +85,7 @@ class InitCommand extends Command implements LoadsConfiguration {
 			$configuration->set('project.default.rancher.account', reset($accounts));
 
 
-		/**
-		 * @var DockerAccessConfigService $dockerAccessService
-		 */
-		$dockerAccessService = container('docker-access-service');
+		$dockerAccessService = $this->dockerAccessService;
 		$dockerAccessService->parse($configuration);
 		$dockerAccounts = $dockerAccessService->availableAccounts();
 		if (!$configuration->has('project.default.docker.account'))

@@ -4,6 +4,7 @@ use Rancherize\Blueprint\Commands\BlueprintAdd;
 use Rancherize\Blueprint\Commands\BlueprintList;
 use Rancherize\Blueprint\Factory\BlueprintFactory;
 use Rancherize\Configuration\Services\EnvironmentConfigurationService;
+use Rancherize\Docker\DockerAccessService;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Rancherize\RancherAccess\RancherAccessService;
@@ -32,7 +33,9 @@ class CommandsProvider implements Provider {
 		};
 
 		$this->container['command.push'] = function($c) {
-			$pushCommand =  new PushCommand( $c[RancherAccessService::class], $c[DockerService::class], $c[BuildService::class], $c[BlueprintService::class], $c[EnvironmentConfigurationService::class]  );
+			$pushCommand =  new PushCommand( $c[RancherAccessService::class], $c[DockerService::class],
+				$c[BuildService::class], $c[BlueprintService::class], $c[EnvironmentConfigurationService::class],
+				$c[DockerAccessService::class]  );
 
 			$pushCommand->setInServiceChecker( $c['in-service-checker'] );
 
@@ -58,7 +61,7 @@ class CommandsProvider implements Provider {
 		};
 
 		$this->container['command.init'] = function($c) {
-			$initCommand =  new InitCommand( $c[RancherAccessService::class], $c[BlueprintService::class]  );
+			$initCommand =  new InitCommand( $c[RancherAccessService::class], $c[BlueprintService::class], $c[DockerAccessService::class]  );
 
 			return $initCommand;
 		};

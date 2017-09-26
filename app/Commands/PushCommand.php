@@ -8,7 +8,7 @@ use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Services\EnvironmentConfigurationService;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
-use Rancherize\Docker\DockerAccessConfigService;
+use Rancherize\Docker\DockerAccessService;
 use Rancherize\Docker\DockerAccount;
 use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
 use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
@@ -65,6 +65,10 @@ class PushCommand extends Command implements LoadsConfiguration {
 	 * @var EnvironmentConfigurationService
 	 */
 	private $environmentConfigurationService;
+	/**
+	 * @var DockerAccessService
+	 */
+	private $dockerAccessService;
 
 	/**
 	 * PushCommand constructor.
@@ -73,14 +77,18 @@ class PushCommand extends Command implements LoadsConfiguration {
 	 * @param BuildService $buildService
 	 * @param BlueprintService $blueprintService
 	 * @param EnvironmentConfigurationService $environmentConfigurationService
+	 * @param DockerAccessService $dockerAccessService
 	 */
-	public function __construct( RancherAccessService $rancherAccessService, DockerService $dockerService, BuildService $buildService, BlueprintService $blueprintService, EnvironmentConfigurationService $environmentConfigurationService) {
+	public function __construct( RancherAccessService $rancherAccessService, DockerService $dockerService,
+			BuildService $buildService, BlueprintService $blueprintService,
+			EnvironmentConfigurationService $environmentConfigurationService, DockerAccessService $dockerAccessService) {
 		parent::__construct();
 		$this->rancherAccessService = $rancherAccessService;
 		$this->dockerService = $dockerService;
 		$this->buildService = $buildService;
 		$this->blueprintService = $blueprintService;
 		$this->environmentConfigurationService = $environmentConfigurationService;
+		$this->dockerAccessService = $dockerAccessService;
 	}
 
 	protected function configure() {
@@ -175,10 +183,7 @@ class PushCommand extends Command implements LoadsConfiguration {
 
 	protected function login(Configuration $configuration, Configuration $config) {
 
-		/**
-		 * @var DockerAccessConfigService $dockerAccessService
-		 */
-		$dockerAccessService = container('docker-access-service');
+		$dockerAccessService = $this->dockerAccessService;
 		$dockerAccessService->parse($configuration);
 		$dockerAccount = $dockerAccessService->getAccount( $config->get('docker.account') );
 
