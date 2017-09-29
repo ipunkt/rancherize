@@ -3,3 +3,4 @@
 composer.lock
 /rancherize.json
 /.rancherize
+/scripts/rancherize-test.sh
