@@ -8,7 +8,7 @@ if [ ! -z "$GROUP_ID" ] && [ ! -z "$USER_ID" ] ; then
 	USER="rancherize"
 fi
 
-if [ -x "$1" ] ; then
+if [ hash "$1" ] ; then
 	su-exec "$USER" $*
 	exit $?
 fi
