@@ -21,11 +21,11 @@ ENV HOME=$RANCHERIZE_HOME
 ENV EDITOR=$DEFAULT_EDITOR
 
 # install packages
-RUN apk update \
-	&& apk add --no-cache \
+RUN apk add --no-cache \
 		git \
 		docker \
 		py-pip \
+		su-exec \
 # install docker-compose
 	&& pip install docker-compose==$DOCKER_COMPOSE_VERSION
 
@@ -40,7 +40,6 @@ WORKDIR /opt/rancherize
 
 # install composer packages
 RUN curl -sSL "https://gist.githubusercontent.com/justb81/1006b89e41e41e1c848fe91969af7a0b/raw/c12faf968e659356ec1cb53f313e7f8383836be3/getcomposer.sh" | sh \
-    && ./composer.phar install --no-dev && rm composer.phar
+    && COMPOSER_ALLOW_SUPERUSER=1 ./composer.phar install --no-dev && rm composer.phar
 
-ENTRYPOINT ["/opt/rancherize/rancherize"]
-#ENTRYPOINT ["/bin/sh"]
+ENTRYPOINT ["/bin/sh", "/opt/rancherize/docker-entrypoint.sh"]
