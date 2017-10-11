@@ -4,7 +4,7 @@ use Pimple\Container;
 use Rancherize\Composer\PackageNameParser;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Services\ProjectConfiguration;
-use Rancherize\Plugin\Exceptions\PluginAlreadyRegisteredException;
+use Rancherize\Exceptions\PluginAlreadyRegisteredException;
 use Rancherize\Plugin\Provider;
 use Symfony\Component\Console\Application;
 
@@ -12,37 +12,28 @@ use Symfony\Component\Console\Application;
  * Class ComposerPluginLoader
  */
 class ComposerPluginLoader implements PluginLoader {
-	/**
-	 * @var Configurable
-	 */
-	private $configurable;
-	/**
-	 * @var ProjectConfiguration
-	 */
-	private $projectConfiguration;
+
 	/**
 	 * @var PackageNameParser
 	 */
 	private $packageNameParser;
 
 	/**
-	 * ComposerPluginLoader constructor.
-	 * @param Configurable $configurable
-	 * @param ProjectConfiguration $projectConfiguration
-	 * @param PackageNameParser $packageNameParser
+	 * @var ProjectConfiguration
 	 */
-	public function __construct(Configurable $configurable, ProjectConfiguration $projectConfiguration, PackageNameParser $packageNameParser) {
-		$this->configurable = $configurable;
-		$this->projectConfiguration = $projectConfiguration;
-		$this->packageNameParser = $packageNameParser;
-	}
+	private $projectConfiguration;
 
 	/**
 	 * @param string $pluginName
 	 * @param string $classpath
 	 */
 	public function register( string $pluginName, string $classpath) {
-		$plugins = $this->configurable->get('project.plugins');
+		/**
+		 * @var Configurable $configurable
+		 */
+		$configurable = container('project-config');
+
+		$plugins = $configurable->get('project.plugins');
 
 		if( !is_array($plugins) )
 			$plugins = [];
@@ -53,17 +44,30 @@ class ComposerPluginLoader implements PluginLoader {
 		$key = $this->removeVersionRestraint($pluginName);
 
 		$plugins[$key] = $classpath;
-		$this->configurable->set('project.plugins', $plugins);
+		$configurable->set('project.plugins', $plugins);
 
-		$this->projectConfiguration->save($this->configurable);
+		$this->projectConfiguration->save($configurable);
 	}
 
 	/**
-	 * @param \Rancherize\Configuration\Configuration $configuration
 	 * @param Application $application
 	 * @param Container $container
 	 */
-	public function load(\Rancherize\Configuration\Configuration $configuration, Application $application, Container $container) {
+	public function load( Application $application, Container $container) {
+		$this->packageNameParser = $container[PackageNameParser::class];
+
+		/**
+		 * @var ProjectConfiguration $projectConfig
+		 */
+		$projectConfig = $container['project-config-service'];
+		$this->projectConfiguration = $projectConfig;
+
+		/**
+		 * @var \Rancherize\Configuration\Configurable $configuration
+		 */
+		$configuration = $container['configuration'];
+		$configuration = $projectConfig->load($configuration);
+
 		$pluginClasspathes = $configuration->get('project.plugins');
 		if( !is_array($pluginClasspathes) )
 			$pluginClasspathes = [];

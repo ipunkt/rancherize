@@ -5,6 +5,8 @@ use Rancherize\Blueprint\Commands\BlueprintList;
 use Rancherize\Blueprint\Factory\BlueprintFactory;
 use Rancherize\Configuration\Services\EnvironmentConfigurationService;
 use Rancherize\Docker\DockerAccessService;
+use Rancherize\Plugin\Commands\PluginInstallCommand;
+use Rancherize\Plugin\Commands\PluginRegisterCommand;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Rancherize\RancherAccess\InServiceChecker;
@@ -95,6 +97,18 @@ class CommandsProvider implements Provider {
 		$this->container['command.environment.set'] = function($c) {
 			return new EnvironmentSetCommand( $c[EnvironmentConfigurationService::class] );
 		};
+
+		$this->container['command.rancher.access'] = function() {
+			return new RancherAccessCommand();
+		};
+
+		$this->container['command.plugin.install'] = function() {
+			return new PluginInstallCommand();
+		};
+
+		$this->container['command.plugin.register'] = function() {
+			return new PluginRegisterCommand();
+		};
 	}
 
 	/**
@@ -115,6 +129,9 @@ class CommandsProvider implements Provider {
 		$app->add( $this->container['command.blueprint.add'] );
 		$app->add( $this->container['command.blueprint.list'] );
 		$app->add( $this->container['command.environment.set'] );
+		$app->add( $this->container['command.rancher.access'] );
+		$app->add( $this->container['command.plugin.install'] );
+		$app->add( $this->container['command.plugin.register'] );
 
 		$app->add( $this->container['environment-version-command'] );
 	}
