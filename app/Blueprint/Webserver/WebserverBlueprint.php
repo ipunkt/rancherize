@@ -205,7 +205,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
         $this->addAppContainer($version, $config, $serverService, $infrastructure);
 
         $this->addVersionEnvironment($version, $config, $serverService);
-        $this->addVersionLabel($version, $config, $serverService);
+        $this->addVersionLabel($version, $serverService);
 
 
 		/**
@@ -342,7 +342,11 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	protected function makeServerService(Configuration $config, Configuration $default) : Service {
 		$serverService = new Service();
 		$serverService->setName($config->get('service-name'));
-		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.10.2-7-1.4.0'));
+		$serverService->setImage($config->get('docker.image', 'nginx:1.13.5'));
+
+		$serverConfigService = new Service();
+		$serverConfigService->setName( $serverService->getName().'-Config' );
+
 		if( $config->get('debug-image', false) )
 			$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx-debug:debug-1.4.0'));
 
@@ -425,7 +429,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	 * @param Configuration $config
 	 * @param Service $serverService
 	 */
-	protected function addVersionLabel($version, Configuration $config, Service $serverService) {
+	protected function addVersionLabel($version, Service $serverService) {
 		$labelVersion = $version;
 		if($version === null)
 			$labelVersion = '';

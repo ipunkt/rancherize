@@ -13,6 +13,10 @@ use Rancherize\Configuration\Configuration;
  */
 class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
 
+	const PHP_IMAGE = 'php:7.0-fpm';
+
+	const CONFIG_IMAGE = 'ipunktbs/php-config:7.0-fpm';
+
 	/**
 	 * @var string
 	 */
@@ -29,21 +33,33 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
 	private $postLimit = self::DEFAULT_POST_LIMIT;
 
 	public function make( Configuration $config, Service $mainService, Infrastructure $infrastructure) {
-		/**
-		 * PHP7.0 is started by default, no fpm service needs to be added
-		 */
+
+		$phpFpmService = new Service();
+		$phpFpmService->setName($mainService->getName().'-PHP-FPM');
+		$phpFpmService->setImage( self::PHP_IMAGE );
+		$phpFpmService->setRestart( Service::RESTART_UNLESS_STOPPED );
+
+		$phpFpmConfigurationService = new Service();
+		$phpFpmService->setName($mainService->getName().'-PHP-FPM-Config');
+		$phpFpmService->setImage( self::PHP_IMAGE );
+		$phpFpmService->setRestart( Service::RESTART_UNLESS_STOPPED );
+
+		$phpFpmService->addVolumeFrom( $phpFpmConfigurationService );
 
 		$memoryLimit = $this->memoryLimit;
 		if( $memoryLimit !== self::DEFAULT_MEMORY_LIMIT)
-			$mainService->setEnvironmentVariable('PHP_MEMORY_LIMIT', $memoryLimit);
+			$phpFpmService->setEnvironmentVariable('PHP_MEMORY_LIMIT', $memoryLimit);
 
 		$postLimit = $this->postLimit;
 		if( $postLimit !== self::DEFAULT_POST_LIMIT)
-			$mainService->setEnvironmentVariable('PHP_POST_MAX_SIZE', $postLimit);
+			$phpFpmService->setEnvironmentVariable('PHP_POST_MAX_SIZE', $postLimit);
 
 		$uploadFileLimit = $this->uploadFileLimit;
 		if( $uploadFileLimit !== self::DEFAULT_UPLOAD_FILE_LIMIT)
-			$mainService->setEnvironmentVariable('PHP_UPLOAD_MAX_FILESIZE', $uploadFileLimit);
+			$phpFpmService->setEnvironmentVariable('PHP_UPLOAD_MAX_FILESIZE', $uploadFileLimit);
+
+		$infrastructure->addService( $phpFpmService );
+		$infrastructure->addService( $phpFpmConfigurationService );
 	}
 
 	/**
