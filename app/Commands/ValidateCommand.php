@@ -2,6 +2,7 @@
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Commands\Traits\EnvironmentTrait;
 use Rancherize\Commands\Traits\ValidateTrait;
+use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\Services\BlueprintService;
 use Rancherize\Services\BuildService;
@@ -16,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * Ensure that the given environments have the minimum configuration options present to be started / pushed
  */
-class ValidateCommand extends Command   {
+class ValidateCommand extends Command implements LoadsConfiguration {
 
 	use LoadsConfigurationTrait;
 	use ValidateTrait;
