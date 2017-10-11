@@ -18,6 +18,11 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
 	const CONFIG_IMAGE = 'ipunktbs/php-config:7.0-fpm';
 
 	/**
+	 * @var string|Service
+	 */
+	protected $appTarget;
+
+	/**
 	 * @var string
 	 */
 	private $memoryLimit = self::DEFAULT_MEMORY_LIMIT;
@@ -45,6 +50,7 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
 		$phpFpmService->setRestart( Service::RESTART_UNLESS_STOPPED );
 
 		$phpFpmService->addVolumeFrom( $phpFpmConfigurationService );
+		$mainService->addLink($phpFpmService, 'php-fpm');
 
 		$memoryLimit = $this->memoryLimit;
 		if( $memoryLimit !== self::DEFAULT_MEMORY_LIMIT)
@@ -75,6 +81,7 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
 	 * @return $this
 	 */
 	public function setAppMount(string $hostDirectory, string $containerDirectory) {
+		$this->appTarget = [$hostDirectory, $containerDirectory];
 		/**
 		 * Nothing to do while fpm 7.0 is still used from internal
 		 */
@@ -86,6 +93,7 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
 	 * @return $this
 	 */
 	public function setAppService(Service $appService) {
+		$this->appTarget = $appService;
 		/**
 		 * Nothing to do while fpm 7.0 is still used from internal
 		 */
@@ -96,10 +104,25 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
 	 * @param $commandName
 	 * @param $command
 	 * @param Service $mainService
-	 * @return Service|void
+	 * @return Service
 	 */
 	public function makeCommand( $commandName, $command, Service $mainService) {
-		die('Error: PHP Commands not Yet implemented for PHP7');
+
+		$phpCommandService = new Service();
+		$phpCommandService->setCommand($command);
+		$phpCommandService->setName('PHP-'.$commandName);
+		$phpCommandService->setImage( self::PHP_IMAGE );
+		$phpCommandService->setRestart(Service::RESTART_START_ONCE);
+		$this->addAppSource($phpCommandService);
+
+		/**
+		 * Copy environment variables because environment variables are expected to be available in php
+		 */
+		foreach( $mainService->getEnvironmentVariables() as $name => $value )
+			$phpCommandService->setEnvironmentVariable($name, $value);
+
+		$mainService->addSidekick($phpCommandService);
+		return $phpCommandService;
 	}
 
 	/**
@@ -124,5 +147,20 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
 	public function setUploadFileLimit( $limit ) {
 		$this->uploadFileLimit = $limit;
 		return $this;
+	}
+
+	/**
+	 * @param $phpFpmService
+	 */
+	protected function addAppSource(Service $phpFpmService) {
+		$appTarget = $this->appTarget;
+
+		if ($appTarget instanceof Service) {
+			$phpFpmService->addVolumeFrom($appTarget);
+			return;
+		}
+
+		list($hostDirectory, $containerDirectory) = $appTarget;
+		$phpFpmService->addVolume($hostDirectory, $containerDirectory);
 	}
 }

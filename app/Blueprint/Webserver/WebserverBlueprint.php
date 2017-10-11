@@ -346,7 +346,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		$serverService->setImage($config->get('docker.image', 'nginx:1.13.5'));
 
 		$serverConfigService = new Service();
-		$serverConfigService->setImage( $config->get('docker.config-image', 'ipunktbs/nginx-configuration') );
+		$serverConfigService->setImage( $config->get('docker.config-image', 'ipunktbs/nginx-config') );
 		$serverConfigService->setName( $serverService->getName().'-Config' );
 		$infrastructure->addService($serverConfigService);
 
@@ -354,6 +354,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx-debug:debug-1.4.0'));
 
 		if( $config->get('sync-user-into-container', false) ) {
+			$serverConfigService->setEnvironmentVariable('USER_ID',empty($_ENV['USER_ID']) ? getmyuid() : $_ENV['USER_ID'] );
+			$serverConfigService->setEnvironmentVariable('GROUP_ID', empty($_ENV['GROUP_ID']) ? getmygid() : $_ENV['GROUP_ID'] );
 			$serverService->setEnvironmentVariable('USER_ID',empty($_ENV['USER_ID']) ? getmyuid() : $_ENV['USER_ID'] );
 			$serverService->setEnvironmentVariable('GROUP_ID', empty($_ENV['GROUP_ID']) ? getmygid() : $_ENV['GROUP_ID'] );
 		}
