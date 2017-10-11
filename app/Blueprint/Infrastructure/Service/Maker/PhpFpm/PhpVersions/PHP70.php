@@ -82,9 +82,6 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
 	 */
 	public function setAppMount(string $hostDirectory, string $containerDirectory) {
 		$this->appTarget = [$hostDirectory, $containerDirectory];
-		/**
-		 * Nothing to do while fpm 7.0 is still used from internal
-		 */
 		return $this;
 	}
 
@@ -94,9 +91,6 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
 	 */
 	public function setAppService(Service $appService) {
 		$this->appTarget = $appService;
-		/**
-		 * Nothing to do while fpm 7.0 is still used from internal
-		 */
 		return $this;
 	}
 
