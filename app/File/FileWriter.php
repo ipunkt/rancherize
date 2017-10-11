@@ -24,10 +24,10 @@ class FileWriter {
          * Set user/group corresponding to executing user
          */
 		if ( !empty($_ENV['USER_ID']) )
-		    chown($path, getenv('USER_ID'));
+		    chown($path, (int) getenv('USER_ID'));
 
         if ( !empty($_ENV['GROUP_ID']) )
-		    chgrp($path, getenv('GROUP_ID'));
+		    chgrp($path, (int) getenv('GROUP_ID'));
 	}
 
 	/**
