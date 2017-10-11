@@ -2,8 +2,9 @@
 use Rancherize\Commands\Traits\EnvironmentTrait;
 use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Configuration\Configurable;
+use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Services\ConfigWrapper;
-use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
+use Rancherize\Configuration\Services\EnvironmentConfigurationService;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -17,12 +18,25 @@ use Symfony\Component\Console\Question\Question;
  *
  * Set the value for the environment variable with the given name in all known environments
  */
-class EnvironmentSetCommand extends Command {
+class EnvironmentSetCommand extends Command implements LoadsConfiguration {
 
 	use IoTrait;
 	use LoadsConfigurationTrait;
 	use EnvironmentTrait;
-	use EnvironmentConfigurationTrait;
+
+	/**
+	 * @var EnvironmentConfigurationService
+	 */
+	private $environmentConfigurationService;
+
+	/**
+	 * EnvironmentSetCommand constructor.
+	 * @param EnvironmentConfigurationService $environmentConfigurationService
+	 */
+	public function __construct( EnvironmentConfigurationService $environmentConfigurationService) {
+		parent::__construct();
+		$this->environmentConfigurationService = $environmentConfigurationService;
+	}
 
 	protected function configure() {
 		$this->setName('environment:set')
@@ -41,7 +55,7 @@ class EnvironmentSetCommand extends Command {
 
 		$this->setIo($input, $output);
 
-		$configuration = $this->loadConfiguration();
+		$configuration = $this->getConfiguration();
 
 		$this->setVariable($input, $output, $configuration);
 
@@ -50,8 +64,6 @@ class EnvironmentSetCommand extends Command {
 		 */
 		$configWrapper = container('config-wrapper');
 		$configWrapper->saveProjectConfig($configuration);
-
-		return 0;
 	}
 
 	/**
@@ -66,7 +78,7 @@ class EnvironmentSetCommand extends Command {
 		$environments = $this->getEnvironmentService()->allAvailable($configuration);
 		foreach($environments as $environment) {
 
-			$environmentConfig = $this->environmentConfig($configuration, $environment);
+			$environmentConfig = $this->environmentConfigurationService->environmentConfig($configuration, $environment);
 
 			$output->writeln( $output->getFormatter()->format("<info>$environment</info>") );
 

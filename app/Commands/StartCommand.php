@@ -1,9 +1,11 @@
 <?php namespace Rancherize\Commands;
-use Rancherize\Blueprint\Traits\BlueprintTrait;
-use Rancherize\Commands\Traits\BuildsTrait;
-use Rancherize\Commands\Traits\DockerTrait;
-use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
+
+use Rancherize\Configuration\LoadsConfiguration;
+use Rancherize\Configuration\Services\EnvironmentConfigurationService;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
+use Rancherize\Services\BlueprintService;
+use Rancherize\Services\BuildService;
+use Rancherize\Services\DockerService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,13 +18,42 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Start the given infrastructure on the local machine
  * Triggers the blueprint to build the environment and then starts it in docker
  */
-class StartCommand extends Command   {
+class StartCommand extends Command implements LoadsConfiguration {
 
-	use BuildsTrait;
-	use DockerTrait;
 	use LoadsConfigurationTrait;
-	use EnvironmentConfigurationTrait;
-	use BlueprintTrait;
+
+	/**
+	 * @var BuildService
+	 */
+	private $buildService;
+	/**
+	 * @var BlueprintService
+	 */
+	private $blueprintService;
+	/**
+	 * @var DockerService
+	 */
+	private $dockerService;
+	/**
+	 * @var EnvironmentConfigurationService
+	 */
+	private $environmentConfigurationService;
+
+	/**
+	 * StartCommand constructor.
+	 * @param DockerService $dockerService
+	 * @param BuildService $buildService
+	 * @param BlueprintService $blueprintService
+	 * @param EnvironmentConfigurationService $environmentConfigurationService
+	 */
+	public function __construct( DockerService $dockerService, BuildService $buildService, BlueprintService $blueprintService,
+			EnvironmentConfigurationService $environmentConfigurationService) {
+		parent::__construct();
+		$this->buildService = $buildService;
+		$this->blueprintService = $blueprintService;
+		$this->dockerService = $dockerService;
+		$this->environmentConfigurationService = $environmentConfigurationService;
+	}
 
 	protected function configure() {
 		$this->setName('start')
@@ -44,7 +75,7 @@ class StartCommand extends Command   {
      *
      * @return null|int null or 0 if everything went fine, or an error code
      *
-     * @throws LogicException When this abstract method is not implemented
+     * @throws \LogicException When this abstract method is not implemented
      *
      * @see setCode()
      */
@@ -52,17 +83,17 @@ class StartCommand extends Command   {
 
 		$environment = $input->getArgument('environment');
 
-		$configuration = $this->loadConfiguration();
-		$config = $this->environmentConfig($configuration, $environment);
+		$configuration = $this->getConfiguration();
+		$config = $this->environmentConfigurationService->environmentConfig($configuration, $environment);
 
-		$blueprint = $this->getBlueprintService()->byConfiguration($configuration, $input->getArguments());
-		$infrastructure = $this->getBuildService()->build($blueprint, $configuration, $environment);
+		$blueprint = $this->blueprintService->byConfiguration($configuration, $input->getArguments());
+		$infrastructure = $this->buildService->build($blueprint, $configuration, $environment);
 
-		$this->getDocker()
+		$this->dockerService
 			->setOutput($output)
 			->setProcessHelper($this->getHelper('process'));
 
-		$this->getDocker()->start('./.rancherize', $config->get('service-name') );
+		$this->dockerService->start('./.rancherize', $config->get('service-name') );
 
 		foreach( $infrastructure->getServices() as $service ) {
 			$exposedPorts = $service->getExposedPorts();

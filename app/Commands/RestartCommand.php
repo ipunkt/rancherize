@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Commands;
 
+use LogicException;
 use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Services\EnvironmentConfigurationService;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
@@ -12,15 +13,17 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class StartCommand
+ * Class RestartCommand
  * @package Rancherize\Commands
- *
- * Stop the given environment
- * This triggers the blueprint to build the infrastructure and uses docker to stop it
  */
-class StopCommand extends Command implements LoadsConfiguration {
+class RestartCommand extends Command implements LoadsConfiguration {
 
 	use LoadsConfigurationTrait;
+
+	/**
+	 * @var DockerService
+	 */
+	private $dockerService;
 	/**
 	 * @var BuildService
 	 */
@@ -30,37 +33,50 @@ class StopCommand extends Command implements LoadsConfiguration {
 	 */
 	private $blueprintService;
 	/**
-	 * @var DockerService
-	 */
-	private $dockerService;
-	/**
 	 * @var EnvironmentConfigurationService
 	 */
 	private $environmentConfigurationService;
 
 	/**
-	 * StopCommand constructor.
+	 * RestartCommand constructor.
 	 * @param DockerService $dockerService
 	 * @param BuildService $buildService
 	 * @param BlueprintService $blueprintService
 	 * @param EnvironmentConfigurationService $environmentConfigurationService
 	 */
 	public function __construct( DockerService $dockerService, BuildService $buildService, BlueprintService $blueprintService,
-			EnvironmentConfigurationService $environmentConfigurationService) {
+			EnvironmentConfigurationService $environmentConfigurationService ) {
 		parent::__construct();
+		$this->dockerService = $dockerService;
 		$this->buildService = $buildService;
 		$this->blueprintService = $blueprintService;
-		$this->dockerService = $dockerService;
 		$this->environmentConfigurationService = $environmentConfigurationService;
 	}
 
 	protected function configure() {
-		$this->setName('stop')
-			->setDescription('Stop an environment on the local machine')
+		$this->setName('restart')
+			->setDescription('Stop, then start an environment on the local machine')
 			->addArgument('environment', InputArgument::REQUIRED)
 		;
 	}
 
+	/**
+	 * Executes the current command.
+	 *
+	 * This method is not abstract because you can use this class
+	 * as a concrete class. In this case, instead of defining the
+	 * execute() method, you set the code to execute by passing
+	 * a Closure to the setCode() method.
+	 *
+	 * @param InputInterface  $input  An InputInterface instance
+	 * @param OutputInterface $output An OutputInterface instance
+	 *
+	 * @return null|int null or 0 if everything went fine, or an error code
+	 *
+	 * @throws LogicException When this abstract method is not implemented
+	 *
+	 * @see setCode()
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 
 		$environment = $input->getArgument('environment');
@@ -75,10 +91,10 @@ class StopCommand extends Command implements LoadsConfiguration {
 			->setOutput($output)
 			->setProcessHelper($this->getHelper('process'));
 
-		$this->dockerService->stop('./.rancherize', $config->get('service-name'));
+		$this->dockerService->stop('./.rancherize', $config->get('service-name') );
+
+		$this->dockerService->start('./.rancherize', $config->get('service-name') );
 
 		return 0;
 	}
-
-
 }

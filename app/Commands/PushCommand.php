@@ -1,16 +1,13 @@
 <?php namespace Rancherize\Commands;
-use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Commands\Events\PushCommandInServiceUpgradeEvent;
 use Rancherize\Commands\Events\PushCommandStartEvent;
-use Rancherize\Commands\Traits\BuildsTrait;
-use Rancherize\Commands\Traits\DockerTrait;
 use Rancherize\Commands\Traits\EventTrait;
 use Rancherize\Commands\Traits\IoTrait;
-use Rancherize\Commands\Traits\RancherTrait;
 use Rancherize\Configuration\Configuration;
-use Rancherize\Configuration\Traits\EnvironmentConfigurationTrait;
+use Rancherize\Configuration\LoadsConfiguration;
+use Rancherize\Configuration\Services\EnvironmentConfigurationService;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
-use Rancherize\Docker\DockerAccessConfigService;
+use Rancherize\Docker\DockerAccessService;
 use Rancherize\Docker\DockerAccount;
 use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
 use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
@@ -18,8 +15,12 @@ use Rancherize\RancherAccess\HealthStateMatcher;
 use Rancherize\RancherAccess\InServiceCheckerTrait;
 use Rancherize\RancherAccess\NameMatcher\CompleteNameMatcher;
 use Rancherize\RancherAccess\NameMatcher\PrefixNameMatcher;
+use Rancherize\RancherAccess\RancherAccessParsesConfiguration;
 use Rancherize\RancherAccess\RancherAccessService;
+use Rancherize\RancherAccess\RancherService;
 use Rancherize\RancherAccess\SingleStateMatcher;
+use Rancherize\Services\BlueprintService;
+use Rancherize\Services\BuildService;
 use Rancherize\Services\DockerService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -34,17 +35,67 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Push the given environment to rancher. This will trigger the blueprint to build the infrastructure and deploy or
  * upgrade it in the given stack in rancher
  */
-class PushCommand extends Command   {
+class PushCommand extends Command implements LoadsConfiguration {
 
 	use IoTrait;
-	use BuildsTrait;
-	use RancherTrait;
 	use LoadsConfigurationTrait;
-	use DockerTrait;
-	use EnvironmentConfigurationTrait;
-	use BlueprintTrait;
 	use InServiceCheckerTrait;
 	use EventTrait;
+
+	/**
+	 * @var RancherAccessService
+	 */
+	private $rancherAccessService;
+
+	/**
+	 * @var DockerService
+	 */
+	private $dockerService;
+	/**
+	 * @var BuildService
+	 */
+	private $buildService;
+
+	/**
+	 * @var BlueprintService
+	 */
+	private $blueprintService;
+	/**
+	 * @var EnvironmentConfigurationService
+	 */
+	private $environmentConfigurationService;
+	/**
+	 * @var DockerAccessService
+	 */
+	private $dockerAccessService;
+	/**
+	 * @var RancherService
+	 */
+	private $rancherService;
+
+	/**
+	 * PushCommand constructor.
+	 * @param RancherAccessService $rancherAccessService
+	 * @param DockerService $dockerService
+	 * @param BuildService $buildService
+	 * @param BlueprintService $blueprintService
+	 * @param EnvironmentConfigurationService $environmentConfigurationService
+	 * @param DockerAccessService $dockerAccessService
+	 * @param RancherService $rancherService
+	 */
+	public function __construct( RancherAccessService $rancherAccessService, DockerService $dockerService,
+			BuildService $buildService, BlueprintService $blueprintService,
+			EnvironmentConfigurationService $environmentConfigurationService, DockerAccessService $dockerAccessService,
+			RancherService $rancherService) {
+		parent::__construct();
+		$this->rancherAccessService = $rancherAccessService;
+		$this->dockerService = $dockerService;
+		$this->buildService = $buildService;
+		$this->blueprintService = $blueprintService;
+		$this->environmentConfigurationService = $environmentConfigurationService;
+		$this->dockerAccessService = $dockerAccessService;
+		$this->rancherService = $rancherService;
+	}
 
 	protected function configure() {
 		$this->setName('push')
@@ -60,61 +111,58 @@ class PushCommand extends Command   {
 
 		$this->setIo($input,$output);
 
-		$environment = $input->getArgument('environment');
+		$environment = $this->getEnvironment( $input );
 		$version = $input->getArgument('version');
 
-		$configuration = $this->loadConfiguration();
-		$config = $this->environmentConfig($configuration, $environment);
+		$configuration = $this->getConfiguration();
+		$environmentConfig = $this->environmentConfigurationService->environmentConfig($configuration, $environment);
 
-		/**
-		 * @var RancherAccessService $rancherConfiguration
-		 */
-		$rancherConfiguration = container('rancher-access-service');
-		$rancherConfiguration->parse($configuration);
-		$account = $rancherConfiguration->getAccount( $config->get('rancher.account') );
+		if($this->rancherAccessService instanceof RancherAccessParsesConfiguration)
+			$this->rancherAccessService->parse($configuration);
+		$account = $this->rancherAccessService->getAccount( $environmentConfig->get('rancher.account') );
 
-		$rancher = $this->getRancher();
+		$rancher = $this->rancherService;
 		$rancher->setAccount($account)
 			->setOutput($output)
 			->setProcessHelper( $this->getHelper('process'));
 
-		$stackName = $config->get('rancher.stack');
+		$stackName = $environmentConfig->get('rancher.stack');
 		try {
 			list($composerConfig, $rancherConfig) = $rancher->retrieveConfig($stackName);
 
-			$this->getBuildService()->createDockerCompose($composerConfig);
-			$this->getBuildService()->createRancherCompose($rancherConfig);
+			$this->buildService->createDockerCompose($composerConfig);
+			$this->buildService->createRancherCompose($rancherConfig);
 		} catch(StackNotFoundException $e) {
 			$output->writeln("Stack not found, creating", OutputInterface::VERBOSITY_NORMAL);
 			$rancher->createStack($stackName);
 
-			$this->getBuildService()->createDockerCompose('');
-			$this->getBuildService()->createRancherCompose('');
+			$this->buildService->createDockerCompose('');
+			$this->buildService->createRancherCompose('');
 		}
 
-		$repository = $config->get('docker.repository');
-		$versionPrefix = $config->get('docker.version-prefix', '');
+		$repository = $environmentConfig->get('docker.repository');
+		$versionPrefix = $environmentConfig->get('docker.version-prefix', '');
 
 		$image = $repository.':'.$versionPrefix.$version;
 
-		$dockerAccount = $this->login($configuration, $config);
+		$dockerAccount = $this->login($configuration, $environmentConfig);
 
-		$blueprint = $this->getBlueprintService()->byConfiguration($configuration, $input->getArguments());
-		$this->getBuildService()
+		$blueprint = $this->blueprintService->byConfiguration($configuration, $input->getArguments());
+		$this->buildService
 			->setVersion($version)
 			->setDockerAccount($dockerAccount)
 			->build($blueprint, $configuration, $environment, true);
 
-		$dockerService = $this->getDocker();
+		$dockerService = $this->dockerService;
 		$dockerService->setOutput($output)
 			->setProcessHelper($this->getHelper('process'));
 
-		$this->buildImage($dockerService, $configuration, $config, $image, $dockerAccount);
+		$this->buildImage($dockerService, $image, $dockerAccount);
 
-		$name = $config->get('service-name');
+		$name = $environmentConfig->get('service-name');
 
 		$versionizedName = $name.'-'.$version;
-		$isInServiceUpgrade = $this->inServiceChecker->isInService( $config );
+		$isInServiceUpgrade = $this->inServiceChecker->isInService( $environmentConfig );
 		if( $isInServiceUpgrade )
 			$versionizedName = $name;
 
@@ -123,17 +171,17 @@ class PushCommand extends Command   {
 			if( $isInServiceUpgrade )
 				$matcher = new CompleteNameMatcher($name);
 
-			$activeStack = $this->getRancher()->getActiveService($stackName, $matcher);
+			$activeStack = $this->rancherService->getActiveService($stackName, $matcher);
 
 			if( $isInServiceUpgrade ) {
-				$this->inServiceUpgrade( $stackName, $versionizedName, $config );
+				$this->inServiceUpgrade( $stackName, $versionizedName, $environmentConfig );
 				return 0;
 			}
 
 			$this->rollingUpgrade( $stackName, $activeStack, $versionizedName );
 		} catch(NoActiveServiceException $e) {
 
-			$this->createNewService( $stackName, $versionizedName, $config);
+			$this->createNewService( $stackName, $versionizedName, $environmentConfig);
 		}
 
 		return 0;
@@ -141,10 +189,7 @@ class PushCommand extends Command   {
 
 	protected function login(Configuration $configuration, Configuration $config) {
 
-		/**
-		 * @var DockerAccessConfigService $dockerAccessService
-		 */
-		$dockerAccessService = container('docker-access-service');
+		$dockerAccessService = $this->dockerAccessService;
 		$dockerAccessService->parse($configuration);
 		$dockerAccount = $dockerAccessService->getAccount( $config->get('docker.account') );
 
@@ -160,7 +205,7 @@ class PushCommand extends Command   {
 	 * @param $image
 	 * @internal param $dockerAccount
 	 */
-	protected function buildImage(DockerService $dockerService, Configuration $configuration, Configuration $config, $image, DockerAccount $dockerAccount) {
+	protected function buildImage(DockerService $dockerService, $image, DockerAccount $dockerAccount) {
 
 		if ( $this->getInput()->getOption('image-exists') ) {
 			$this->getOutput()->writeln("Option image-exists was set, skipping build.", OutputInterface::VERBOSITY_VERBOSE);
@@ -218,17 +263,17 @@ class PushCommand extends Command   {
 		$serviceNames = $startEvent->getServiceNames();
 		$forcedUpgrade = $startEvent->isForceUpgrade();
 
-		$this->getRancher()->start( './.rancherize', $stackName, $serviceNames, true, $forcedUpgrade );
+		$this->rancherService->start( './.rancherize', $stackName, $serviceNames, true, $forcedUpgrade );
 
 		// Use default Matcher
 		$stateMatcher = new SingleStateMatcher( 'upgraded' );
 		if ( $config->get( 'rancher.upgrade-healthcheck', false ) )
 			$stateMatcher = new HealthStateMatcher( 'healthy' );
 
-		$this->getRancher()->wait( $stackName, $versionizedName, $stateMatcher );
+		$this->rancherService->wait( $stackName, $versionizedName, $stateMatcher );
 		// TODO: set timeout and roll back the upgrade if the timeout is reached without health confirmation.
 
-		$this->getRancher()->confirm( './.rancherize', $stackName, [$versionizedName] );
+		$this->rancherService->confirm( './.rancherize', $stackName, [$versionizedName] );
 		return array($serviceNames, $startEvent);
 	}
 
@@ -238,7 +283,7 @@ class PushCommand extends Command   {
 	 * @param $versionizedName
 	 */
 	protected function rollingUpgrade( $stackName, $activeStack, $versionizedName ) {
-		$this->getRancher()->upgrade( './.rancherize', $stackName, $activeStack, $versionizedName );
+		$this->rancherService->upgrade( './.rancherize', $stackName, $activeStack, $versionizedName );
 	}
 
 	/**
@@ -252,8 +297,17 @@ class PushCommand extends Command   {
 		$this->getEventDispatcher()->dispatch( PushCommandStartEvent::NAME, $startEvent );
 		$serviceNames = $startEvent->getServiceNames();
 
-		$this->getRancher()->start( './.rancherize', $stackName, $serviceNames );
+		$this->rancherService->start( './.rancherize', $stackName, $serviceNames );
 	}
 
 
+  /**
+	 * Return the environment name to be loaded
+	 *
+	 * @param InputInterface $input
+	 * @return string
+	 */
+	public function getEnvironment(InputInterface $input) {
+		return $input->getArgument('environment');
+	}
 }

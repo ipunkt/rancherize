@@ -2,7 +2,7 @@
 
 return [
 
-	Rancherize\Commands\CommandsProvider::class,
+	Rancherize\File\FileProvider::class,
 	Rancherize\Blueprint\Healthcheck\HealthcheckProvider::class,
 	Rancherize\Blueprint\PublishUrls\PublishUrlsProvider::class,
 	Rancherize\Blueprint\Scheduler\SchedulerProvider::class,
@@ -27,5 +27,8 @@ return [
 	 * TODO: Only here to keep backwards compatibility. Remove with v3
 	 */
 	RancherizePhp53\Php53Provider::class,
+	Rancherize\InputOutput\InputOutputProvider::class,
+
+	Rancherize\Commands\CommandsProvider::class,
 
 ];

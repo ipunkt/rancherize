@@ -11,8 +11,22 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @package Rancherize\Commands
  *
  * Add the given blueprint name and classpath to the known blueprints
+ * @deprecated Blueprints are automatically added to the list via plugin providers now.
  */
 class BlueprintAdd extends Command   {
+	/**
+	 * @var BlueprintFactory
+	 */
+	private $blueprintFactory;
+
+	/**
+	 * BlueprintAdd constructor.
+	 * @param BlueprintFactory $blueprintFactory
+	 */
+	public function __construct( BlueprintFactory $blueprintFactory) {
+		parent::__construct();
+		$this->blueprintFactory = $blueprintFactory;
+	}
 
 	/**
 	 *
@@ -31,6 +45,8 @@ class BlueprintAdd extends Command   {
 	 * @return int
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		$output->writeln('<info>This command is deprecated and will be removed in the future.</info>');
+
 		/**
 		 * @var ProjectConfiguration $projectConfig
 		 */
@@ -50,8 +66,7 @@ class BlueprintAdd extends Command   {
 		/**
 		 * @var BlueprintFactory $blueprintFactory
 		 */
-		$blueprintFactory = container('blueprint-factory');
-		$blueprintFactory->add($name, $classpath);
+		$this->blueprintFactory->add($name, $classpath);
 
 		/**
 		 * TODO: logical combination of add -> projectConfig->save

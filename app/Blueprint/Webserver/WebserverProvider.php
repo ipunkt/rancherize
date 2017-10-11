@@ -4,6 +4,7 @@ use Pimple\Container;
 use Rancherize\Blueprint\Factory\BlueprintFactory;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
+use Rancherize\RancherAccess\InServiceChecker;
 
 /**
  * Class WebserverProvider
@@ -24,7 +25,7 @@ class WebserverProvider implements Provider {
 		/**
 		 * @var BlueprintFactory $blueprintFactory
 		 */
-		$blueprintFactory = container('blueprint-factory');
+		$blueprintFactory = $this->container[BlueprintFactory::class];
 		$blueprintFactory->add('webserver', function(Container $c) {
 			$webserverBlueprint = new WebserverBlueprint();
 
@@ -36,9 +37,10 @@ class WebserverProvider implements Provider {
 
 			$webserverBlueprint->setSlashPrefixer( $c['slash-prefixer'] );
 
-			$webserverBlueprint->setInServiceChecker($c['in-service-checker']);
+			$webserverBlueprint->setInServiceChecker($c[InServiceChecker::class]);
 
 			return $webserverBlueprint;
 		});
+
 	}
 }

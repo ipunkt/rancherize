@@ -9,7 +9,7 @@ use Rancherize\RancherAccess\Exceptions\AccountNotFoundInConfigurationException;
  *
  * Provides RancherAccounts from the configuration
  */
-class RancherAccessConfigService implements RancherAccessService
+class RancherAccessConfigService implements RancherAccessService, RancherAccessParsesConfiguration
 {
 
 	/**

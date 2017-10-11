@@ -1,11 +1,10 @@
 <?php namespace Rancherize\Commands;
-use Rancherize\Blueprint\Traits\BlueprintTrait;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
-use Rancherize\Commands\Traits\BuildsTrait;
 use Rancherize\Commands\Traits\EnvironmentTrait;
 use Rancherize\Commands\Traits\ValidateTrait;
-use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
+use Rancherize\Services\BlueprintService;
+use Rancherize\Services\BuildService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,9 +19,28 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ValidateCommand extends Command   {
 
 	use LoadsConfigurationTrait;
-	use BlueprintTrait;
 	use ValidateTrait;
 	use EnvironmentTrait;
+
+	/**
+	 * @var BuildService
+	 */
+	private $buildService;
+	/**
+	 * @var BlueprintService
+	 */
+	private $blueprintService;
+
+	/**
+	 * ValidateCommand constructor.
+	 * @param BuildService $buildService
+	 * @param BlueprintService $blueprintService
+	 */
+	public function __construct( BuildService $buildService, BlueprintService $blueprintService) {
+		parent::__construct();
+		$this->buildService = $buildService;
+		$this->blueprintService = $blueprintService;
+	}
 
 	protected function configure() {
 		$this->setName('validate')
@@ -35,7 +53,7 @@ class ValidateCommand extends Command   {
 
 		$environments = $input->getArgument('environments');
 
-		$configuration = $this->loadConfiguration();
+		$configuration = $this->getConfiguration();
 
 		if( empty($environments) ) {
 
@@ -44,7 +62,7 @@ class ValidateCommand extends Command   {
 		}
 
 		$validateService = $this->getValidateService();
-		$blueprint = $this->getBlueprintService()->byConfiguration($configuration, []);
+		$blueprint = $this->blueprintService->byConfiguration($configuration, []);
 
 		foreach($environments as $environment) {
 			$headline = "Validating $environment";
