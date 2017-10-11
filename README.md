@@ -1,6 +1,6 @@
 # Rancherize
 
-[![Latest Stable Version](https://poser.pugx.org/ipunkt/rancherize/v/stable.svg)](https://packagist.org/packages/ipunkt/rancherize) [![Latest Unstable Version](https://poser.pugx.org/ipunkt/rancherize/v/unstable.svg)](https://packagist.org/packages/ipunkt/rancherize) [![License](https://poser.pugx.org/ipunkt/rancherize/license.svg)](https://packagist.org/packages/ipunkt/rancherize) [![Total Downloads](https://poser.pugx.org/ipunkt/rancherize/downloads.svg)](https://packagist.org/packages/ipunkt/rancherize)
+[![Latest Stable Version](https://poser.pugx.org/ipunkt/rancherize/v/stable.svg)](https://packagist.org/packages/ipunkt/rancherize) [![Latest Unstable Version](https://poser.pugx.org/ipunkt/rancherize/v/unstable.svg)](https://packagist.org/packages/ipunkt/rancherize) [![License](https://poser.pugx.org/ipunkt/rancherize/license.svg)](https://packagist.org/packages/ipunkt/rancherize) [![Total Downloads](https://poser.pugx.org/ipunkt/rancherize/downloads.svg)](https://packagist.org/packages/ipunkt/rancherize) [![Docker Pulls](https://img.shields.io/docker/pulls/ipunktbs/rancherize.svg)](https://hub.docker.com/r/ipunktbs/rancherize/) [![Docker Build Status](https://img.shields.io/docker/build/ipunktbs/rancherize.svg)](https://hub.docker.com/r/ipunktbs/rancherize/)
 
 Rancherize is a php cli script based on symfony/console. It makes developing with docker and rancher easy for developers
 without specialized knowledge in the subjects.
@@ -19,7 +19,7 @@ installed to use Rancherize:
 ## Install on linux
 No need to separately install it. To use it, just make a shell alias:
 ```
-alias rancherize='docker run -it -v $HOME/.rancherize:/home/rancherize/.rancherize -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) -e "USER_ID=$(id -u)" -e "GROUP_ID=$(id -g)"  ipunktbs/rancherize'
+alias rancherize='docker run -it -v $HOME/.rancherize:/home/rancherize/.rancherize -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) -e "USER_ID=$(id -u)" -e "GROUP_ID=$(id -g)"  ipunktbs/rancherize:2-stable'
 ```
 or use the provided script `script/rancherize.sh`.
 

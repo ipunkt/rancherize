@@ -1,16 +1,12 @@
 #!/bin/sh
 
-USER="root"
-if [ ! -z "$GROUP_ID" ] && [ ! -z "$USER_ID" ] ; then
-	deluser rancherize > /dev/null 2>&1
-	addgroup -g $GROUP_ID rancherize
-	adduser -u $USER_ID -G rancherize -D -s /bin/sh rancherize
-	USER="rancherize"
+if [ "$1" = "sh" ] ; then
+	shift 1
 fi
 
-if type "$1" > /dev/null ; then
-	su-exec "$USER" $*
+if type "$1" >/dev/null ; then
+	exec $*
 	exit $?
 fi
 
-su-exec "$USER" php /opt/rancherize/rancherize $@
+exec php /opt/rancherize/rancherize $@
