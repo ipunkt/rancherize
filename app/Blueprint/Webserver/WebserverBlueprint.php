@@ -197,7 +197,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		$dockerfile = $this->makeDockerfile($config);
 		$infrastructure->setDockerfile($dockerfile);
 
-		$serverService = $this->makeServerService($config, $projectConfigurable);
+		$serverService = $this->makeServerService($config, $projectConfigurable, $infrastructure);
 		$this->mailtrapService->parse($config, $serverService, $infrastructure);
 
 		$this->addRedis($config, $serverService, $infrastructure);
@@ -337,15 +337,18 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	/**
 	 * @param Configuration $config
 	 * @param Configuration $default
+	 * @param Infrastructure $infrastructure
 	 * @return Service
 	 */
-	protected function makeServerService(Configuration $config, Configuration $default) : Service {
+	protected function makeServerService(Configuration $config, Configuration $default, Infrastructure $infrastructure) : Service {
 		$serverService = new Service();
 		$serverService->setName($config->get('service-name'));
 		$serverService->setImage($config->get('docker.image', 'nginx:1.13.5'));
 
 		$serverConfigService = new Service();
+		$serverConfigService->setImage( $config->get('docker.config-image', 'ipunktbs/nginx-configuration') );
 		$serverConfigService->setName( $serverService->getName().'-Config' );
+		$infrastructure->addService($serverConfigService);
 
 		if( $config->get('debug-image', false) )
 			$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx-debug:debug-1.4.0'));

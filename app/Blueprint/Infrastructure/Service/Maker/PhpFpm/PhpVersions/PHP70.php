@@ -41,7 +41,7 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
 
 		$phpFpmConfigurationService = new Service();
 		$phpFpmService->setName($mainService->getName().'-PHP-FPM-Config');
-		$phpFpmService->setImage( self::PHP_IMAGE );
+		$phpFpmService->setImage( self::CONFIG_IMAGE );
 		$phpFpmService->setRestart( Service::RESTART_UNLESS_STOPPED );
 
 		$phpFpmService->addVolumeFrom( $phpFpmConfigurationService );
