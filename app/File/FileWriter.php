@@ -18,6 +18,15 @@ class FileWriter {
 	public function put(string $path, string $content) {
 		if( !file_put_contents($path, $content) && strlen($content) !== 0 )
 			throw new SaveFailedException($path, 100);
+
+        /**
+         * Set user/group corresponding to executing user
+         */
+		if ( !empty($_ENV['USER_ID']) )
+		    chown($path, getenv('USER_ID'));
+
+        if ( !empty($_ENV['GROUP_ID']) )
+		    chgrp($path, getenv('GROUP_ID'));
 	}
 
 	/**
