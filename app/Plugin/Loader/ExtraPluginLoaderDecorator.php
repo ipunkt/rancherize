@@ -60,14 +60,14 @@ class ExtraPluginLoaderDecorator implements PluginLoader {
 	 * @param Container $container
 	 * @return
 	 */
-	public function load( Configuration $configuration, Application $application, Container $container ) {
+	public function load( Application $application, Container $container ) {
 
 		$extraPlugins = $this->createExtraPlugins($application, $container);
 
 		foreach($extraPlugins as $extraPlugin)
 			$extraPlugin->register();
 
-		$success = $this->pluginLoader->load($configuration, $application, $container);
+		$success = $this->pluginLoader->load($application, $container);
 
 		foreach($extraPlugins as $extraPlugin)
 			$extraPlugin->boot();
@@ -94,6 +94,7 @@ class ExtraPluginLoaderDecorator implements PluginLoader {
 		 *
 		 */
 		foreach($this->pluginList as $pluginClassPath) {
+
 			/**
 			 * @var Provider $plugin
 			 */

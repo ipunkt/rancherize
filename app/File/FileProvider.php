@@ -18,12 +18,12 @@ class FileProvider implements Provider {
 		/**
 		 * File handling
 		 */
-		$container[FileLoader::class] = function() {
+		$this->container[FileLoader::class] = function() {
 
 			return new FileLoader();
 		};
 
-		$container['file-writer'] = function() {
+		$this->container[FileWriter::class] = function() {
 			return new FileWriter();
 		};
 	}

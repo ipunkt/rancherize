@@ -1,4 +1,5 @@
 <?php namespace Rancherize\File;
+
 use Rancherize\Configuration\Exceptions\FileNotFoundException;
 
 /**

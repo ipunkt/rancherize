@@ -24,7 +24,7 @@ $container['loader'] = function($c) {
 };
 
 $container['writer'] = function($c) {
-	return new \Rancherize\Configuration\Writer\JsonWriter($c[\Rancherize\File\FileLoader::class]);
+	return new \Rancherize\Configuration\Writer\JsonWriter($c[\Rancherize\File\FileWriter::class]);
 };
 
 $container['global-config-service'] = function($c) {
@@ -101,7 +101,10 @@ $container['composer-packet-path-maker'] = function() {
  * Plugins
  */
 $container['plugin-installer'] = function($c) {
-	global $application;
+	/**
+	 * @var \Symfony\Component\Console\Application $application
+	 */
+	$application = $c['app'];
 
 	$nameParser = $c['composer-packet-name-parser'];
 	$pathMaker = $c['composer-packet-path-maker'];
@@ -125,17 +128,17 @@ $container['plugin-loader-extra'] = function($c) {
 	return new \Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator($c['loader-interface']);
 };
 
-$container['package-name-parser'] = function() {
+$container[\Rancherize\Composer\PackageNameParser::class] = function() {
 	return new \Rancherize\Composer\PackageNameParser();
 };
 
-$container['plugin-loader'] = function($c) {
+$container['plugin-loader'] = function() {
 
 	/*
 	 * project-config is not set in this file - it is set in the rancherize.php once the project config was loaded for
 	 * use with the plugin system
 	 */
-	return new \Rancherize\Plugin\Loader\ComposerPluginLoader($c['project-config'], $c['project-config-service'], $c['package-name-parser']);
+	return new \Rancherize\Plugin\Loader\ComposerPluginLoader( );
 };
 
 $container->extend('plugin-loader', function($pluginLoader, $c) {
