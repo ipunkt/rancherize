@@ -122,8 +122,18 @@ class BuildService {
 	protected function createTemporaryDirectory(): string {
 		$directory = './.rancherize/';
 
-		if (!file_exists($directory))
-			mkdir($directory);
+		if (!file_exists($directory)) {
+            mkdir($directory);
+
+            /**
+             * Set user/group corresponding to executing user
+             */
+            if ( !empty($_ENV['USER_ID']) )
+                chown($directory, (int) getenv('USER_ID'));
+
+            if ( !empty($_ENV['GROUP_ID']) )
+                chgrp($directory, (int) getenv('GROUP_ID'));
+        }
 
 		return $directory;
 	}
