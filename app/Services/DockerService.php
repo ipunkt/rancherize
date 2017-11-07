@@ -63,7 +63,7 @@ class DockerService {
 		$this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_VERY_VERBOSE);
 
 		if($process->getExitCode() !== 0)
-			throw new LoginFailedException("Loggin failed", 21);
+			throw new LoginFailedException("Login failed", 21);
 	}
 
 	/**
