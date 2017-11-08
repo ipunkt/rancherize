@@ -61,6 +61,7 @@ class DockerAccessEnvironmentService implements DockerAccessService
     public function parse( Configuration $configuration ) {
         $this->account = [
             'user' => getenv('DOCKER_USER'),
+            'server' => getenv('DOCKER_SERVER') ?: '',
             'password' => getenv('DOCKER_PASSWORD'),
             'ecr' => getenv('DOCKER_ECR') ?: false
         ];

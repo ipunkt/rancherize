@@ -28,6 +28,7 @@ From now on use rancherize without other dependencies for your local environment
 # Usage in build tools
 With build tools like jenkins or gitlab-ci, you cannot rely on the presence of a .rancherize file in the home-dir. For this usecase you can set account settings with environment variables on the [docker container](https://hub.docker.com/r/ipunktbs/rancherize/) on runtime. best practise would be to include these variables via secrets.
 
+- `DOCKER_SERVER` - registry server (e.g. registry.gitlab.com), ignore or leave empty for dockerhub
 - `DOCKER_USER` - username for dockerhub / registry
 - `DOCKER_PASSWORD` - password for dockerhub / registry
 - `DOCKER_ECR` - true if using [AWS ECR](https://aws.amazon.com/ecr/)
