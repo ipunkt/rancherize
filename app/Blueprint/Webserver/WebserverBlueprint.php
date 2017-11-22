@@ -494,11 +494,12 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	 */
 	protected function addQueueWorker(Configuration $config, Service $serverService, Infrastructure $infrastructure) {
 	    $queues = $config->get('queues', []);
+		$queueImageVersion = $config->get('queue-image-version', null);
         foreach($queues as $key => $queue) {
             $name = $config->get("queues.$key.name", 'default');
             $connection = $config->get("queues.$key.connection", 'default');
 
-            $laravelQueueWorker = new LaravelQueueWorker();
+            $laravelQueueWorker = new LaravelQueueWorker($queueImageVersion);
             $laravelQueueWorker->setName('QueueWorker' . ucwords($name));
             $laravelQueueWorker->addVolumeFrom($serverService);
             $laravelQueueWorker->addLinksFrom($serverService);
