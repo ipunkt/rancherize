@@ -1,9 +1,5 @@
 <?php namespace Rancherize\Plugin;
 
-use Rancherize\Configuration\Events\ConfigurationLoadedEvent;
-use Rancherize\Plugin\Loader\PluginLoader;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-
 /**
  * Class PluginProvider
  * @package Rancherize\Plugin
@@ -50,13 +46,5 @@ class PluginProvider implements Provider {
 	/**
 	 */
 	public function boot() {
-		/**
-		 * @var EventDispatcher $event
-		 */
-		$event = $this->container['event'];
-
-		$composerPluginLoader = $this->container[PluginLoader::class];
-
-		$event->addListener(ConfigurationLoadedEvent::NAME, [$composerPluginLoader, 'configurationLoaded']);
 	}
 }
