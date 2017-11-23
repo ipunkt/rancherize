@@ -24,10 +24,17 @@ class ComposerPluginLoader implements PluginLoader {
 	private $projectConfiguration;
 
 	/**
+	 * @var Configurable
+	 */
+	private $projectConfig;
+
+	/**
 	 * @param string $pluginName
 	 * @param string $classpath
 	 */
 	public function register( string $pluginName, string $classpath) {
+		$this->projectConfiguration = container(ProjectConfiguration::class);
+
 		/**
 		 * @var Configurable $configurable
 		 */
@@ -54,19 +61,13 @@ class ComposerPluginLoader implements PluginLoader {
 	 * @param Container $container
 	 */
 	public function load( Application $application, Container $container) {
-		$this->packageNameParser = $container[PackageNameParser::class];
-
-		/**
-		 * @var ProjectConfiguration $projectConfig
-		 */
-		$projectConfig = $container['project-config-service'];
-		$this->projectConfiguration = $projectConfig;
+		$this->projectConfiguration = container(ProjectConfiguration::class);
 
 		/**
 		 * @var \Rancherize\Configuration\Configurable $configuration
 		 */
 		$configuration = $container['configuration'];
-		$configuration = $projectConfig->load($configuration);
+		$configuration = $this->projectConfiguration->load($configuration);
 
 		$pluginClasspathes = $configuration->get('project.plugins');
 		if( !is_array($pluginClasspathes) )
@@ -100,5 +101,12 @@ class ComposerPluginLoader implements PluginLoader {
 		$withoutConstraints = $packageName->getProvider().'/'.$packageName->getPackageName();
 
 		return $withoutConstraints;
+	}
+
+	/**
+	 * @param Configurable $projectConfig
+	 */
+	public function setProjectConfig( Configurable $projectConfig ) {
+		$this->projectConfig = $projectConfig;
 	}
 }

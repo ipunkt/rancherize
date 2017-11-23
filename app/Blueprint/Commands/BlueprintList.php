@@ -58,10 +58,6 @@ class BlueprintList extends Command {
 	 * @return int
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$projectConfig = $this->projectConfiguration;
-		$configuration = $this->configurable;
-		$configuration = $projectConfig->load($configuration);
-		container()->offsetSet('project-configuration', $configuration);
 
 		$blueprints = $this->blueprintFactory->available();
 

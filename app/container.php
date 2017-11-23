@@ -27,14 +27,14 @@ $container['writer'] = function($c) {
 	return new \Rancherize\Configuration\Writer\JsonWriter($c[\Rancherize\File\FileWriter::class]);
 };
 
-$container['global-config-service'] = function($c) {
+$container[\Rancherize\Configuration\Services\GlobalConfiguration::class] = function($c) {
 	return new \Rancherize\Configuration\Services\GlobalConfiguration(
 		$c['loader'],
 		$c['writer']
 	);
 };
 
-$container['project-config-service'] = function($c) {
+$container[\Rancherize\Configuration\Services\ProjectConfiguration::class] = function($c) {
 	return new \Rancherize\Configuration\Services\ProjectConfiguration(
 		$c['loader'],
 		$c['writer']
@@ -43,8 +43,8 @@ $container['project-config-service'] = function($c) {
 
 $container['config-wrapper'] = function($c) {
 	return new \Rancherize\Configuration\Services\ConfigWrapper(
-		$c['global-config-service'],
-		$c['project-config-service'],
+		$c[\Rancherize\Configuration\Services\GlobalConfiguration::class],
+		$c[\Rancherize\Configuration\Services\ProjectConfiguration::class],
 		$c['configuration']
 	);
 };
@@ -100,7 +100,7 @@ $container['composer-packet-path-maker'] = function() {
 /**
  * Plugins
  */
-$container['plugin-installer'] = function($c) {
+$container[\Rancherize\Plugin\Installer\PluginInstaller::class] = function($c) {
 	/**
 	 * @var \Symfony\Component\Console\Application $application
 	 */
@@ -124,7 +124,7 @@ $container['loader-interface'] = function () {
 	return new \Rancherize\Plugin\Loader\NewLoader();
 };
 
-$container['plugin-loader-extra'] = function($c) {
+$container[\Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator::class] = function($c) {
 	return new \Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator($c['loader-interface']);
 };
 
@@ -132,21 +132,21 @@ $container[\Rancherize\Composer\PackageNameParser::class] = function() {
 	return new \Rancherize\Composer\PackageNameParser();
 };
 
-$container['plugin-loader'] = function() {
+$container[\Rancherize\Plugin\Loader\PluginLoader::class] = function() {
 
 	/*
 	 * project-config is not set in this file - it is set in the rancherize.php once the project config was loaded for
 	 * use with the plugin system
 	 */
-	return new \Rancherize\Plugin\Loader\ComposerPluginLoader( );
+	return new \Rancherize\Plugin\Loader\ComposerPluginLoader();
 };
 
-$container->extend('plugin-loader', function($pluginLoader, $c) {
+$container->extend(\Rancherize\Plugin\Loader\PluginLoader::class, function($pluginLoader, $c) {
 
 	/**
 	 * @var \Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator $extraPluginLoader
 	 */
-	$extraPluginLoader = $c['plugin-loader-extra'];
+	$extraPluginLoader = $c[\Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator::class];
 
 	$extraPluginLoader->setPluginLoader($pluginLoader);
 
@@ -189,6 +189,11 @@ $container['by-key-service'] = function() {
 $container['name-is-path-checker'] = function() {
 	return new \Rancherize\General\Services\NameIsPathChecker();
 };
+
+$pluginProvider = new \Rancherize\Plugin\PluginProvider();
+$pluginProvider->setContainer($container);
+$pluginProvider->register();
+$pluginProvider->boot();
 
 /**
  * Prevent redeclaration in unit tests
