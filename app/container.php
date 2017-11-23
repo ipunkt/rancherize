@@ -132,28 +132,6 @@ $container[\Rancherize\Composer\PackageNameParser::class] = function() {
 	return new \Rancherize\Composer\PackageNameParser();
 };
 
-$container[\Rancherize\Plugin\Loader\PluginLoader::class] = function() {
-
-	/*
-	 * project-config is not set in this file - it is set in the rancherize.php once the project config was loaded for
-	 * use with the plugin system
-	 */
-	return new \Rancherize\Plugin\Loader\ComposerPluginLoader();
-};
-
-$container->extend(\Rancherize\Plugin\Loader\PluginLoader::class, function($pluginLoader, $c) {
-
-	/**
-	 * @var \Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator $extraPluginLoader
-	 */
-	$extraPluginLoader = $c[\Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator::class];
-
-	$extraPluginLoader->setPluginLoader($pluginLoader);
-
-	return $extraPluginLoader;
-
-});
-
 $container['custom-files-maker'] = function() {
 
 	return new \Rancherize\Blueprint\Infrastructure\Service\Maker\CustomFiles\CustomFilesMaker();
