@@ -36,7 +36,7 @@ use Rancherize\Configuration\Services\ConfigurableFallback;
 use Rancherize\Configuration\Services\ConfigurationFallback;
 use Rancherize\Configuration\Services\ConfigurationInitializer;
 use Rancherize\Docker\DockerAccount;
-use Rancherize\RancherAccess\InServiceCheckerTrait;
+use Rancherize\RancherAccess\UpgradeMode\InServiceChecker;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -55,8 +55,6 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	use PhpFpmMakerTrait;
 
 	use CustomFilesTrait;
-
-	use InServiceCheckerTrait;
 
 	use ProjectNameTrait;
 
@@ -81,6 +79,18 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	 * @var MailtrapService
 	 */
 	protected $mailtrapService;
+	/**
+	 * @var InServiceChecker
+	 */
+	private $inServiceChecker;
+
+	/**
+	 * WebserverBlueprint constructor.
+	 * @param InServiceChecker $inServiceChecker
+	 */
+	public function __construct( InServiceChecker $inServiceChecker) {
+		$this->inServiceChecker = $inServiceChecker;
+	}
 
 	/**
 	 * @param Configurable $configurable

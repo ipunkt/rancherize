@@ -9,9 +9,11 @@ use Rancherize\Plugin\Commands\PluginInstallCommand;
 use Rancherize\Plugin\Commands\PluginRegisterCommand;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
-use Rancherize\RancherAccess\InServiceChecker;
+use Rancherize\Push\ModeFactory\ModeFactory;
 use Rancherize\RancherAccess\RancherAccessService;
 use Rancherize\RancherAccess\RancherService;
+use Rancherize\RancherAccess\UpgradeMode\InServiceChecker;
+use Rancherize\RancherAccess\UpgradeMode\ReplaceUpgradeChecker;
 use Rancherize\Services\BlueprintService;
 use Rancherize\Services\BuildService;
 use Rancherize\Services\DockerService;
@@ -29,9 +31,9 @@ class CommandsProvider implements Provider {
 	 */
 	public function register() {
 		$this->container['environment-version-command'] = function($c) {
-			$environmentVersionCommand = new EnvironmentVersionCommand( $c[BlueprintService::class], $c[RancherAccessService::class], $c[EnvironmentConfigurationService::class], $c[RancherService::class] );
-
-			$environmentVersionCommand->setInServiceChecker( $c[InServiceChecker::class] );
+			$environmentVersionCommand = new EnvironmentVersionCommand( $c[BlueprintService::class],
+					$c[RancherAccessService::class], $c[EnvironmentConfigurationService::class],
+					$c[RancherService::class], $c[InServiceChecker::class] );
 
 			return $environmentVersionCommand;
 		};
@@ -39,9 +41,8 @@ class CommandsProvider implements Provider {
 		$this->container['command.push'] = function($c) {
 			$pushCommand =  new PushCommand( $c[RancherAccessService::class], $c[DockerService::class],
 				$c[BuildService::class], $c[BlueprintService::class], $c[EnvironmentConfigurationService::class],
-				$c[DockerAccessService::class], $c[RancherService::class] );
-
-			$pushCommand->setInServiceChecker( $c[InServiceChecker::class] );
+				$c[DockerAccessService::class], $c[RancherService::class], $c[InServiceChecker::class],
+				$c[ReplaceUpgradeChecker::class], $c[ModeFactory::class]  );
 
 			return $pushCommand;
 		};
