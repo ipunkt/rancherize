@@ -20,7 +20,9 @@ This blueprint creates infrastructures to support apps using php7.
 | Option | Defaults to | Explanation |
 | ------- |:-----------:| ------------ |
 |`docker.base-image`| REQUIRED | Docker-Image to base the created app-image on. |
-|`rancher.in-service`| false | Activates in-service upgrades instead of rolling upgrades between services. |
+|`rancher.in-service`| false | Activates in-service upgrades instead of rolling upgrades between services. !DEPRECATED! use `rancher.upgrade-mode` |
+|`rancher.upgrade-mode`| `rolling-upgrade` | Change upgrade mode between rolling upgrade, in-service upgrade and `replace` which deletes the service and CREATEs it again. Possible values: `rolling-upgrade`, `in-service`, `replace` |
+|`rancher.create-mode`| `start` | Possible values: `start`, `create` |
 |`service-name`| REQUIRED | The name of the created main service, will have the version appended to it in rancher |
 |`use-app-container`| true | If set to false no service will be created to mount the app using a docker image |
 |`mount-workdir`| false | If set to true then the project root will be mounted into the main app nginx. !Does not work when deploying into rancher! |

@@ -54,8 +54,8 @@ class PushProvider implements Provider {
 			return new RollingUpgradeParser($c[InServiceChecker::class], $c[ReplaceUpgradeChecker::class]);
 		};
 
-		$this->container[ReplacePushMode::class] = function() {
-			return new ReplacePushMode();
+		$this->container[ReplacePushMode::class] = function($c) {
+			return new ReplacePushMode( $c[CreateModeFactory::class] );
 		};
 
 		$this->container[ReplaceUpgradeParser::class] = function($c) {
