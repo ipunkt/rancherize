@@ -4,7 +4,7 @@ use Rancherize\Configuration\Configuration;
 
 /**
  * Interface PushModeParser
- * @package Rancherize\Push\ModeFactory
+ * @package Rancherize\Push\PushModeFactory
  */
 interface PushModeParser {
 

@@ -9,7 +9,7 @@ use Rancherize\Plugin\Commands\PluginInstallCommand;
 use Rancherize\Plugin\Commands\PluginRegisterCommand;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
-use Rancherize\Push\ModeFactory\ModeFactory;
+use Rancherize\Push\ModeFactory\PushModeFactory;
 use Rancherize\RancherAccess\RancherAccessService;
 use Rancherize\RancherAccess\RancherService;
 use Rancherize\RancherAccess\UpgradeMode\InServiceChecker;
@@ -42,7 +42,7 @@ class CommandsProvider implements Provider {
 			$pushCommand =  new PushCommand( $c[RancherAccessService::class], $c[DockerService::class],
 				$c[BuildService::class], $c[BlueprintService::class], $c[EnvironmentConfigurationService::class],
 				$c[DockerAccessService::class], $c[RancherService::class], $c[InServiceChecker::class],
-				$c[ReplaceUpgradeChecker::class], $c[ModeFactory::class]  );
+				$c[ReplaceUpgradeChecker::class], $c[PushModeFactory::class]  );
 
 			return $pushCommand;
 		};

@@ -4,10 +4,10 @@ use Rancherize\Configuration\Configuration;
 use Rancherize\Push\Modes\PushMode;
 
 /**
- * Class ArrayModeFactory
- * @package Rancherize\Push\ModeFactory
+ * Class ArrayPushModeFactory
+ * @package Rancherize\Push\PushModeFactory
  */
-class ArrayModeFactory implements ModeFactory {
+class ArrayPushModeFactory implements PushModeFactory {
 
 	/**
 	 * @var ModeAndParser[]

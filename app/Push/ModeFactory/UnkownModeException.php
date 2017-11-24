@@ -4,7 +4,7 @@ use Rancherize\Exceptions\Exception;
 
 /**
  * Class UnkownModeException
- * @package Rancherize\Push\ModeFactory
+ * @package Rancherize\Push\PushModeFactory
  */
 class UnkownModeException extends Exception {
 

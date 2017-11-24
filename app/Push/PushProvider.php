@@ -2,8 +2,8 @@
 
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
-use Rancherize\Push\ModeFactory\ArrayModeFactory;
-use Rancherize\Push\ModeFactory\ModeFactory;
+use Rancherize\Push\ModeFactory\ArrayPushModeFactory;
+use Rancherize\Push\ModeFactory\PushModeFactory;
 use Rancherize\Push\Modes\InServiceUpgrade\InServiceModeParser;
 use Rancherize\Push\Modes\InServiceUpgrade\InServicePushMode;
 use Rancherize\Push\Modes\ReplaceUpgrade\ReplacePushMode;
@@ -24,8 +24,8 @@ class PushProvider implements Provider {
 	/**
 	 */
 	public function register() {
-		$this->container[ModeFactory::class] = function() {
-			return new ArrayModeFactory();
+		$this->container[PushModeFactory::class] = function() {
+			return new ArrayPushModeFactory();
 		};
 
 		$this->container[InServicePushMode::class] = function($c) {
@@ -58,9 +58,9 @@ class PushProvider implements Provider {
 	 */
 	public function boot() {
 		/**
-		 * @var ModeFactory $modeFactory
+		 * @var PushModeFactory $modeFactory
 		 */
-		$modeFactory = $this->container[ModeFactory::class];
+		$modeFactory = $this->container[PushModeFactory::class];
 
 		$modeFactory->register($this->container[InServiceModeParser::class], $this->container[InServicePushMode::class] );
 		$modeFactory->register($this->container[ReplaceUpgradeParser::class], $this->container[ReplacePushMode::class] );

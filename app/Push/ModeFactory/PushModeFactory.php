@@ -4,10 +4,10 @@ use Rancherize\Configuration\Configuration;
 use Rancherize\Push\Modes\PushMode;
 
 /**
- * Interface ModeFactory
- * @package Rancherize\Push\ModeFactory
+ * Interface PushModeFactory
+ * @package Rancherize\Push\PushModeFactory
  */
-interface ModeFactory {
+interface PushModeFactory {
 
 	/**
 	 * @param PushModeParser $pushModeParser

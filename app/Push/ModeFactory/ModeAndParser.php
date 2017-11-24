@@ -4,7 +4,7 @@ use Rancherize\Push\Modes\PushMode;
 
 /**
  * Class ModeAndParser
- * @package Rancherize\Push\ModeFactory
+ * @package Rancherize\Push\PushModeFactory
  */
 class ModeAndParser {
 
