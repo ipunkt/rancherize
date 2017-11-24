@@ -2,8 +2,10 @@
 
 use Rancherize\Configuration\Configuration;
 use Rancherize\Push\Modes\PushMode;
+use Rancherize\RancherAccess\Exceptions\NameNotFoundException;
 use Rancherize\RancherAccess\NameMatcher\CompleteNameMatcher;
 use Rancherize\RancherAccess\RancherService;
+use Rancherize\RancherAccess\SingleStateMatcher;
 
 /**
  * Class ReplacePushMode
@@ -28,6 +30,12 @@ class ReplacePushMode implements PushMode {
 		$activeService = $rancherService->getActiveService($stackName, $matcher);
 
 		$rancherService->rm( './.rancherize', $stackName, [$activeService] );
+		try {
+			$rancherService->wait($stackName, $activeService, new SingleStateMatcher('none'));
+		} catch(NameNotFoundException $e) {
+			// We're actually waiting for this to happen. There is no `none` state
+		}
+
 		$rancherService->create( './.rancherize', $stackName, [$serviceName] );
 	}
 }

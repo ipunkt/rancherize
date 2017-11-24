@@ -17,6 +17,7 @@ use Rancherize\Push\Modes\RollingUpgrade\RollingPushMode;
 use Rancherize\Push\Modes\RollingUpgrade\RollingUpgradeParser;
 use Rancherize\RancherAccess\UpgradeMode\InServiceChecker;
 use Rancherize\RancherAccess\UpgradeMode\ReplaceUpgradeChecker;
+use Rancherize\RancherAccess\UpgradeMode\RollingUpgradeChecker;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -73,11 +74,11 @@ class PushProvider implements Provider {
 		};
 
 		$this->container[StartCreateMode::class] = function($c) {
-			return new StartCreateMode( $c[EventDispatcher::class], $c[InServiceChecker::class] );
+			return new StartCreateMode( $c[EventDispatcher::class], $c[RollingUpgradeChecker::class] );
 		};
 
 		$this->container[CreateCreateMode::class] = function($c) {
-			return new CreateCreateMode( $c[EventDispatcher::class], $c[InServiceChecker::class] );
+			return new CreateCreateMode( $c[EventDispatcher::class], $c[RollingUpgradeChecker::class] );
 		};
 	}
 

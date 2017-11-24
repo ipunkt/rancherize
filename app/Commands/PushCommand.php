@@ -15,7 +15,6 @@ use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
 use Rancherize\RancherAccess\RancherAccessParsesConfiguration;
 use Rancherize\RancherAccess\RancherAccessService;
 use Rancherize\RancherAccess\RancherService;
-use Rancherize\RancherAccess\UpgradeMode\InServiceChecker;
 use Rancherize\RancherAccess\UpgradeMode\ReplaceUpgradeChecker;
 use Rancherize\Services\BlueprintService;
 use Rancherize\Services\BuildService;
@@ -71,11 +70,6 @@ class PushCommand extends Command implements LoadsConfiguration {
 	private $rancherService;
 
 	/**
-	 * @var InServiceChecker
-	 */
-	private $inServiceChecker;
-
-	/**
 	 * @var ReplaceUpgradeChecker
 	 */
 	private $replaceUpgradeChecker;
@@ -97,7 +91,6 @@ class PushCommand extends Command implements LoadsConfiguration {
 	 * @param EnvironmentConfigurationService $environmentConfigurationService
 	 * @param DockerAccessService $dockerAccessService
 	 * @param RancherService $rancherService
-	 * @param InServiceChecker $inServiceChecker
 	 * @param ReplaceUpgradeChecker $replaceUpgradeChecker
 	 * @param PushModeFactory $pushModeFactory
 	 * @param CreateModeFactory $createModeFactory
@@ -105,7 +98,7 @@ class PushCommand extends Command implements LoadsConfiguration {
 	public function __construct( RancherAccessService $rancherAccessService, DockerService $dockerService,
 	                             BuildService $buildService, BlueprintService $blueprintService,
 	                             EnvironmentConfigurationService $environmentConfigurationService, DockerAccessService $dockerAccessService,
-	                             RancherService $rancherService, InServiceChecker $inServiceChecker, ReplaceUpgradeChecker $replaceUpgradeChecker,
+	                             RancherService $rancherService,  ReplaceUpgradeChecker $replaceUpgradeChecker,
 	                             PushModeFactory $pushModeFactory, CreateModeFactory $createModeFactory
 
 	) {
@@ -117,7 +110,6 @@ class PushCommand extends Command implements LoadsConfiguration {
 		$this->environmentConfigurationService = $environmentConfigurationService;
 		$this->dockerAccessService = $dockerAccessService;
 		$this->rancherService = $rancherService;
-		$this->inServiceChecker = $inServiceChecker;
 		$this->replaceUpgradeChecker = $replaceUpgradeChecker;
 		$this->pushModeFactory = $pushModeFactory;
 		$this->createModeFactory = $createModeFactory;
@@ -188,12 +180,12 @@ class PushCommand extends Command implements LoadsConfiguration {
 		$name = $environmentConfig->get('service-name');
 
 		try {
-			$upgradeMode = $this->pushModeFactory->make( $configuration );
+			$upgradeMode = $this->pushModeFactory->make( $environmentConfig );
 			$upgradeMode->push($environmentConfig, $stackName, $name, $version, $rancher);
 
 		} catch(NoActiveServiceException $e) {
 
-			$createMode = $this->createModeFactory->make($configuration);
+			$createMode = $this->createModeFactory->make($environmentConfig);
 			$createMode->create($environmentConfig, $stackName, $name, $version, $rancher);
 		}
 

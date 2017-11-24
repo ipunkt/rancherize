@@ -9,11 +9,6 @@ use Rancherize\Push\Modes\PushMode;
 class ModeAndParser {
 
 	/**
-	 * @var PushModeParser
-	 */
-	protected $modeParser;
-
-	/**
 	 * @var PushMode
 	 */
 	protected $pushMode;
@@ -36,7 +31,7 @@ class ModeAndParser {
 	 * @return PushModeParser
 	 */
 	public function getModeParser(): PushModeParser {
-		return $this->modeParser;
+		return $this->pushModeParser;
 	}
 
 	/**

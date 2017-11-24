@@ -4,7 +4,7 @@ use Rancherize\Commands\Events\PushCommandCreateEvent;
 use Rancherize\Commands\Events\PushCommandStartEvent;
 use Rancherize\Configuration\Configuration;
 use Rancherize\RancherAccess\RancherService;
-use Rancherize\RancherAccess\UpgradeMode\InServiceChecker;
+use Rancherize\RancherAccess\UpgradeMode\RollingUpgradeChecker;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -17,18 +17,19 @@ class CreateCreateMode implements CreateMode {
 	 */
 	private $eventDispatcher;
 	/**
-	 * @var InServiceChecker
+	 * @var RollingUpgradeChecker
 	 */
-	private $inServiceChecker;
+	private $rollingUpgradeChecker;
 
 	/**
 	 * StartCreateMode constructor.
 	 * @param EventDispatcher $eventDispatcher
-	 * @param InServiceChecker $inServiceChecker
+	 * @param RollingUpgradeChecker $rollingUpgradeChecker
+	 * @internal param InServiceChecker $inServiceChecker
 	 */
-	public function __construct( EventDispatcher $eventDispatcher, InServiceChecker $inServiceChecker) {
+	public function __construct( EventDispatcher $eventDispatcher, RollingUpgradeChecker $rollingUpgradeChecker) {
 		$this->eventDispatcher = $eventDispatcher;
-		$this->inServiceChecker = $inServiceChecker;
+		$this->rollingUpgradeChecker = $rollingUpgradeChecker;
 	}
 
 	/**
@@ -40,9 +41,9 @@ class CreateCreateMode implements CreateMode {
 	 */
 	public function create( Configuration $configuration, string $stackName, string $serviceName, string $version, RancherService $rancherService ) {
 
-		$versionizedName = $serviceName.'-'.$version;
-		if( $this->inServiceChecker->isInService($configuration) )
-			$versionizedName = $serviceName;
+		$versionizedName = $serviceName;
+		if( $this->rollingUpgradeChecker->isRollingUpgrade($configuration) )
+			$versionizedName = $serviceName.'-'.$version;
 
 		$serviceNames = [$versionizedName];
 		$startEvent = $this->makeCreateEvent( $serviceNames, $configuration );
