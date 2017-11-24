@@ -1,6 +1,5 @@
 <?php namespace Rancherize\Commands;
 
-use Rancherize\Commands\Events\PushCommandStartEvent;
 use Rancherize\Commands\Traits\EventTrait;
 use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Configuration\Configuration;
@@ -9,6 +8,7 @@ use Rancherize\Configuration\Services\EnvironmentConfigurationService;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\Docker\DockerAccessService;
 use Rancherize\Docker\DockerAccount;
+use Rancherize\Push\CreateModeFactory\CreateModeFactory;
 use Rancherize\Push\ModeFactory\PushModeFactory;
 use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
 use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
@@ -83,6 +83,10 @@ class PushCommand extends Command implements LoadsConfiguration {
 	 * @var PushModeFactory
 	 */
 	private $pushModeFactory;
+	/**
+	 * @var CreateModeFactory
+	 */
+	private $createModeFactory;
 
 	/**
 	 * PushCommand constructor.
@@ -96,12 +100,13 @@ class PushCommand extends Command implements LoadsConfiguration {
 	 * @param InServiceChecker $inServiceChecker
 	 * @param ReplaceUpgradeChecker $replaceUpgradeChecker
 	 * @param PushModeFactory $pushModeFactory
+	 * @param CreateModeFactory $createModeFactory
 	 */
 	public function __construct( RancherAccessService $rancherAccessService, DockerService $dockerService,
 	                             BuildService $buildService, BlueprintService $blueprintService,
 	                             EnvironmentConfigurationService $environmentConfigurationService, DockerAccessService $dockerAccessService,
 	                             RancherService $rancherService, InServiceChecker $inServiceChecker, ReplaceUpgradeChecker $replaceUpgradeChecker,
-	                             PushModeFactory $pushModeFactory
+	                             PushModeFactory $pushModeFactory, CreateModeFactory $createModeFactory
 
 	) {
 		parent::__construct();
@@ -115,6 +120,7 @@ class PushCommand extends Command implements LoadsConfiguration {
 		$this->inServiceChecker = $inServiceChecker;
 		$this->replaceUpgradeChecker = $replaceUpgradeChecker;
 		$this->pushModeFactory = $pushModeFactory;
+		$this->createModeFactory = $createModeFactory;
 	}
 
 	protected function configure() {
@@ -181,15 +187,14 @@ class PushCommand extends Command implements LoadsConfiguration {
 
 		$name = $environmentConfig->get('service-name');
 
-		$versionizedName = $name.'-'.$version;
-
 		try {
 			$upgradeMode = $this->pushModeFactory->make( $configuration );
 			$upgradeMode->push($environmentConfig, $stackName, $name, $version, $rancher);
 
 		} catch(NoActiveServiceException $e) {
 
-			$this->createNewService( $stackName, $versionizedName, $environmentConfig);
+			$createMode = $this->createModeFactory->make($configuration);
+			$createMode->create($environmentConfig, $stackName, $name, $version, $rancher);
 		}
 
 		return 0;
@@ -231,40 +236,6 @@ class PushCommand extends Command implements LoadsConfiguration {
 		$dockerService->build($image, './.rancherize/Dockerfile');
 		$dockerService->login($dockerAccount->getUsername(), $dockerAccount->getPassword(), $dockerAccount->getServer());
 		$dockerService->push($image);
-	}
-
-	/**
-	 * @param $serviceNames
-	 * @param $config
-	 * @return PushCommandStartEvent
-	 */
-	protected function makeStartEvent( $serviceNames, $config ): PushCommandStartEvent {
-		$inServiceUpgradeEvent = new PushCommandStartEvent();
-		$inServiceUpgradeEvent->setServiceNames( $serviceNames );
-		$inServiceUpgradeEvent->setConfiguration( $config );
-		return $inServiceUpgradeEvent;
-	}
-
-	/**
-	 * @param $stackName
-	 * @param $activeStack
-	 * @param $versionizedName
-	 */
-	protected function rollingUpgrade( $stackName, $activeStack, $versionizedName ) {
-	}
-
-	/**
-	 * @param string $stackName
-	 * @param string $versionizedName
-	 * @param Configuration $config
-	 */
-	protected function createNewService( $stackName, $versionizedName, Configuration $config ) {
-		$serviceNames = [$versionizedName];
-		$startEvent = $this->makeStartEvent( $serviceNames, $config );
-		$this->getEventDispatcher()->dispatch( PushCommandStartEvent::NAME, $startEvent );
-		$serviceNames = $startEvent->getServiceNames();
-
-		$this->rancherService->start( './.rancherize', $stackName, $serviceNames );
 	}
 
 
