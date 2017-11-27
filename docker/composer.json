@@ -6,8 +6,8 @@
     }
   ],
   "require": {
-    "ipunkt/rancherize": "dev-gvvs-update",
-    "ipunkt/rancherize-backup-storagebox": "dev-gvvs-update",
+    "ipunkt/rancherize": "dev-gvvs-update as 2.19.0",
+    "ipunkt/rancherize-backup-storagebox": "dev-gvvs-update as 1.1.0",
     "ipunkt/rancherize-ecr": "^1.0.0",
     "ipunkt/rancherize-publish-traefik-rancher": "^1.0.1",
     "ipunkt/rancherize-blueprint-php-cli": "^1.0.1",

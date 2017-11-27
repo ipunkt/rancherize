@@ -7,4 +7,4 @@ if type "$1" >/dev/null ; then
 	exit $?
 fi
 
-exec rancherize "$@"
+exec vendor/bin/rancherize "$@"
