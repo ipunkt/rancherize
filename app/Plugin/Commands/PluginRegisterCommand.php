@@ -1,16 +1,32 @@
 <?php namespace Rancherize\Plugin\Commands;
 
-use Rancherize\Plugin\Traits\UsesPluginInstaller;
-use Rancherize\Plugin\Traits\UsesPluginLoader;
+use Rancherize\Plugin\Installer\PluginInstaller;
+use Rancherize\Plugin\Loader\PluginLoader;
 use Symfony\Component\Console\Command\Command;
 
 /**
  * Class PluginRegisterCommand
  */
 class PluginRegisterCommand extends Command {
+	/**
+	 * @var PluginLoader
+	 */
+	private $pluginLoader;
+	/**
+	 * @var PluginInstaller
+	 */
+	private $pluginInstaller;
 
-	use UsesPluginInstaller;
-	use UsesPluginLoader;
+	/**
+	 * PluginRegisterCommand constructor.
+	 * @param PluginLoader $pluginLoader
+	 * @param PluginInstaller $pluginInstaller
+	 */
+	public function __construct( PluginLoader $pluginLoader, PluginInstaller $pluginInstaller) {
+		$this->pluginLoader = $pluginLoader;
+		$this->pluginInstaller = $pluginInstaller;
+		parent::__construct();
+	}
 
 	/**
 	 *
@@ -31,11 +47,9 @@ class PluginRegisterCommand extends Command {
 	protected function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output) {
 		$pluginName = $input->getArgument('plugin name');
 
-		$pluginInstaller = $this->getPluginInstaller();
-		$pluginLoader = $this->getPluginLoader();
 
-		$classPath = $pluginInstaller->getClasspath($pluginName);
-		$pluginLoader->register($pluginName, $classPath);
+		$classPath = $this->pluginInstaller->getClasspath($pluginName);
+		$this->pluginLoader->register($pluginName, $classPath);
 
 
 	}

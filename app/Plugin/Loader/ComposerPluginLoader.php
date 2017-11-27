@@ -10,28 +10,26 @@ use Symfony\Component\Console\Application;
 
 /**
  * Class ComposerPluginLoader
+ *
+ * A plugin loader using the project rancherize.json
+ * Note that is does its own loading of the configuration because it is outside of the normal use and the normal project
+ * configuration
+ *
+ * NOTE: Dependencies can NOT be injected because they are not yet loaded when creating the loader but they will be available once it is run.
  */
 class ComposerPluginLoader implements PluginLoader {
 
 	/**
-	 * @var PackageNameParser
-	 */
-	private $packageNameParser;
-
-	/**
 	 * @var ProjectConfiguration
 	 */
-	private $projectConfiguration;
+	private $projectConfiguration = null;
 
 	/**
 	 * @param string $pluginName
 	 * @param string $classpath
 	 */
 	public function register( string $pluginName, string $classpath) {
-		/**
-		 * @var Configurable $configurable
-		 */
-		$configurable = container('project-config');
+		$configurable = $this->loadProjectConfiguration( container() );
 
 		$plugins = $configurable->get('project.plugins');
 
@@ -54,19 +52,7 @@ class ComposerPluginLoader implements PluginLoader {
 	 * @param Container $container
 	 */
 	public function load( Application $application, Container $container) {
-		$this->packageNameParser = $container[PackageNameParser::class];
-
-		/**
-		 * @var ProjectConfiguration $projectConfig
-		 */
-		$projectConfig = $container['project-config-service'];
-		$this->projectConfiguration = $projectConfig;
-
-		/**
-		 * @var \Rancherize\Configuration\Configurable $configuration
-		 */
-		$configuration = $container['configuration'];
-		$configuration = $projectConfig->load($configuration);
+		$configuration = $this->loadProjectConfiguration( $container );
 
 		$pluginClasspathes = $configuration->get('project.plugins');
 		if( !is_array($pluginClasspathes) )
@@ -95,10 +81,31 @@ class ComposerPluginLoader implements PluginLoader {
 	 * @return string
 	 */
 	private function removeVersionRestraint( $pluginName ) {
-		$packageName = $this->packageNameParser->parseName($pluginName);
+		/**
+		 * @var PackageNameParser $packageNameParser
+		 */
+		$packageNameParser = container(PackageNameParser::class);
+
+		$packageName = $packageNameParser->parseName($pluginName);
 
 		$withoutConstraints = $packageName->getProvider().'/'.$packageName->getPackageName();
 
 		return $withoutConstraints;
+	}
+
+	/**
+	 * @param Container $container
+	 * @return Configurable
+	 */
+	protected function loadProjectConfiguration( Container $container ): Configurable {
+		if($this->projectConfiguration === null)
+			$this->projectConfiguration = container( ProjectConfiguration::class );
+
+		/**
+		 * @var \Rancherize\Configuration\Configurable $configuration
+		 */
+		$configuration = $container['configuration'];
+		$configuration = $this->projectConfiguration->load( $configuration );
+		return $configuration;
 	}
 }

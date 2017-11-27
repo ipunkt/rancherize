@@ -59,13 +59,9 @@ class LoadConfigurationForCommandEventHandler {
 		$this->configWrapper->loadGlobalConfig($config);
 		$this->configWrapper->loadProjectConfig($config);
 
-		/**
-		 * @var EventDispatcher $eventSystem
-		 */
-		$eventSystem = container('event');
 		$event = new ConfigurationLoadedEvent();
 		$event->setConfiguration($config);
-		$eventSystem->dispatch($event::NAME, $event);
+		$this->eventDispatcher->dispatch($event::NAME, $event);
 
 		return $config;
 	}
