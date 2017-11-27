@@ -2,6 +2,8 @@
 
 use Exception;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
+use Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator;
+use Rancherize\Plugin\Loader\PluginLoader;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -81,7 +83,7 @@ class Rancherize {
 		});
 
 		$internalPlugins = require_once __DIR__.'/../lists/plugins.php';
-		$pluginLoaderExtra = container('plugin-loader-extra');
+		$pluginLoaderExtra = container(ExtraPluginLoaderDecorator::class);
 		foreach($internalPlugins as $internalPlugin) {
 			/**
 			 * @var \Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator $pluginLoaderExtra
@@ -94,7 +96,7 @@ class Rancherize {
 			/**
 			 * @var \Rancherize\Plugin\Loader\PluginLoader $pluginLoader
 			 */
-			$pluginLoader = container('plugin-loader');
+			$pluginLoader = container(PluginLoader::class);
 			$pluginLoader->load( $this->application, container() );
 
 		} catch(Exception $e) {

@@ -32,14 +32,14 @@ $container['writer'] = function($c) {
 	return new \Rancherize\Configuration\Writer\JsonWriter($c[\Rancherize\File\FileWriter::class]);
 };
 
-$container['global-config-service'] = function($c) {
+$container[\Rancherize\Configuration\Services\GlobalConfiguration::class] = function($c) {
 	return new \Rancherize\Configuration\Services\GlobalConfiguration(
 		$c['loader'],
 		$c['writer']
 	);
 };
 
-$container['project-config-service'] = function($c) {
+$container[\Rancherize\Configuration\Services\ProjectConfiguration::class] = function($c) {
 	return new \Rancherize\Configuration\Services\ProjectConfiguration(
 		$c['loader'],
 		$c['writer']
@@ -48,8 +48,8 @@ $container['project-config-service'] = function($c) {
 
 $container['config-wrapper'] = function($c) {
 	return new \Rancherize\Configuration\Services\ConfigWrapper(
-		$c['global-config-service'],
-		$c['project-config-service'],
+		$c[\Rancherize\Configuration\Services\GlobalConfiguration::class],
+		$c[\Rancherize\Configuration\Services\ProjectConfiguration::class],
 		$c['configuration']
 	);
 };
@@ -74,8 +74,12 @@ $container['volume-writer'] = function($c) {
 	return new \Rancherize\Blueprint\Infrastructure\Volume\VolumeWriter($c[\Rancherize\File\FileLoader::class]);
 };
 
-$container['infrastructure-writer'] = function($c) {
+$container[\Rancherize\Blueprint\Infrastructure\InfrastructureWriter::class] = function($c) {
 	return new \Rancherize\Blueprint\Infrastructure\InfrastructureWriter($c['dockerfile-writer'], $c['service-writer'], $c['volume-writer']);
+};
+
+$container['infrastructure-writer'] = function($c) {
+	return $c[\Rancherize\Blueprint\Infrastructure\InfrastructureWriter::class];
 };
 
 $container['build-service'] = function($c) {
@@ -105,7 +109,7 @@ $container['composer-packet-path-maker'] = function() {
 /**
  * Plugins
  */
-$container['plugin-installer'] = function($c) {
+$container[\Rancherize\Plugin\Installer\PluginInstaller::class] = function($c) {
 	/**
 	 * @var \Symfony\Component\Console\Application $application
 	 */
@@ -129,35 +133,13 @@ $container['loader-interface'] = function () {
 	return new \Rancherize\Plugin\Loader\NewLoader();
 };
 
-$container['plugin-loader-extra'] = function($c) {
+$container[\Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator::class] = function($c) {
 	return new \Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator($c['loader-interface']);
 };
 
 $container[\Rancherize\Composer\PackageNameParser::class] = function() {
 	return new \Rancherize\Composer\PackageNameParser();
 };
-
-$container['plugin-loader'] = function() {
-
-	/*
-	 * project-config is not set in this file - it is set in the rancherize.php once the project config was loaded for
-	 * use with the plugin system
-	 */
-	return new \Rancherize\Plugin\Loader\ComposerPluginLoader( );
-};
-
-$container->extend('plugin-loader', function($pluginLoader, $c) {
-
-	/**
-	 * @var \Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator $extraPluginLoader
-	 */
-	$extraPluginLoader = $c['plugin-loader-extra'];
-
-	$extraPluginLoader->setPluginLoader($pluginLoader);
-
-	return $extraPluginLoader;
-
-});
 
 $container['custom-files-maker'] = function() {
 
@@ -175,25 +157,49 @@ $container['blueprint-validator'] = function($c) {
 	return new \Rancherize\Blueprint\Validation\Validator($c['blueprint-rule-factory']);
 };
 
-$container['docker-compose-reader'] = function() {
+$container[\Rancherize\Docker\DockerComposeReader\DockerComposeReader::class] = function($c) {
 	return new Rancherize\Docker\DockerComposeReader\DockerComposeReader();
 };
 
-$container['rancher-compose-reader'] = function() {
+$container['docker-compose-reader'] = function($c) {
+	return $c[\Rancherize\Docker\DockerComposeReader\DockerComposeReader::class];
+};
+
+$container[\Rancherize\Docker\RancherComposeReader\RancherComposeReader::class] = function() {
 	return new Rancherize\Docker\RancherComposeReader\RancherComposeReader();
 };
 
-$container['docker-compose-versionizer'] = function() {
+$container['rancher-compose-reader'] = function($c) {
+	return $c[\Rancherize\Docker\RancherComposeReader\RancherComposeReader::class];
+};
+
+$container[\Rancherize\Docker\DockerComposerVersionizer::class] = function() {
 	return new \Rancherize\Docker\DockerComposerVersionizer();
 };
 
-$container['by-key-service'] = function() {
+$container['docker-compose-versionizer'] = function($c) {
+	return $c[\Rancherize\Docker\DockerComposerVersionizer::class];
+};
+
+$container[\Rancherize\General\Services\ByKeyService::class] = function() {
 	return new \Rancherize\General\Services\ByKeyService();
 };
 
-$container['name-is-path-checker'] = function() {
+$container['by-key-service'] = function($c) {
+	return $c[\Rancherize\General\Services\ByKeyService::class];
+};
+
+$container[\Rancherize\General\Services\NameIsPathChecker::class] = function() {
 	return new \Rancherize\General\Services\NameIsPathChecker();
 };
+
+$container['name-is-path-checker'] = function($c) {
+	return $c[\Rancherize\General\Services\NameIsPathChecker::class];
+};
+$pluginProvider = new \Rancherize\Plugin\PluginProvider();
+$pluginProvider->setContainer($container);
+$pluginProvider->register();
+$pluginProvider->boot();
 
 /**
  * Prevent redeclaration in unit tests

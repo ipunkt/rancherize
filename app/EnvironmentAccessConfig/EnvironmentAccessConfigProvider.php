@@ -1,5 +1,6 @@
 <?php namespace Rancherize\EnvironmentAccessConfig;
 
+use Rancherize\Configuration\Services\GlobalConfiguration;
 use Rancherize\Docker\DockerAccessService;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
@@ -34,7 +35,7 @@ class EnvironmentAccessConfigProvider implements Provider
                 return new RancherAccessEnvironmentService();
             };
 
-            $this->container['global-config-service'] = function($c) {
+            $this->container[GlobalConfiguration::class] = function($c) {
                 return new \Rancherize\Configuration\Services\GlobalConfiguration(
                     new \Rancherize\Configuration\Loader\NullLoader(),
                     $c['writer']

@@ -35,11 +35,16 @@ RUN curl -sSL "https://github.com/rancher/rancher-compose/releases/download/v$RA
 	&& mv rancher-compose-*/rancher-compose /usr/local/bin/ \
 	&& cp /usr/local/bin/rancher-compose /usr/local/bin/rancher-compose-$RANCHER_COMPOSE_VERSION
 
-COPY [".", "/opt/rancherize"]
+COPY ["docker", "/opt/rancherize"]
+COPY [".", "/opt/rancherize-package"]
 WORKDIR /opt/rancherize
 
 # install composer packages
-RUN curl -sSL "https://gist.githubusercontent.com/justb81/1006b89e41e41e1c848fe91969af7a0b/raw/c12faf968e659356ec1cb53f313e7f8383836be3/getcomposer.sh" | sh \
-    && COMPOSER_ALLOW_SUPERUSER=1 ./composer.phar install --no-dev && rm composer.phar
+RUN cd /opt/rancherize-package \
+	&& (git fetch --unshallow origin || echo "Not a shallow repository, continuing without fetch") \
+	&& cd /opt/rancherize \
+	&& curl -sSL "https://gist.githubusercontent.com/justb81/1006b89e41e41e1c848fe91969af7a0b/raw/c12faf968e659356ec1cb53f313e7f8383836be3/getcomposer.sh" | sh \
+    && COMPOSER_ALLOW_SUPERUSER=1 ./composer.phar  install \
+    && rm composer.phar
 
 ENTRYPOINT ["/bin/sh", "/opt/rancherize/docker-entrypoint.sh"]

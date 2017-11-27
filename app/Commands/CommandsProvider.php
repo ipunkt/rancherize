@@ -1,12 +1,14 @@
 <?php namespace Rancherize\Commands;
 
-use Rancherize\Blueprint\Commands\BlueprintAdd;
 use Rancherize\Blueprint\Commands\BlueprintList;
 use Rancherize\Blueprint\Factory\BlueprintFactory;
 use Rancherize\Configuration\Services\EnvironmentConfigurationService;
+use Rancherize\Configuration\Services\ProjectConfiguration;
 use Rancherize\Docker\DockerAccessService;
 use Rancherize\Plugin\Commands\PluginInstallCommand;
 use Rancherize\Plugin\Commands\PluginRegisterCommand;
+use Rancherize\Plugin\Installer\PluginInstaller;
+use Rancherize\Plugin\Loader\PluginLoader;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Rancherize\Push\CreateModeFactory\CreateModeFactory;
@@ -84,14 +86,8 @@ class CommandsProvider implements Provider {
 			return $restartCommand;
 		};
 
-		$this->container['command.blueprint.add'] = function($c) {
-			$blueprintAddCommand = new BlueprintAdd( $c[BlueprintFactory::class] );
-
-			return $blueprintAddCommand;
-		};
-
 		$this->container['command.blueprint.list'] = function($c) {
-			$blueprintListCommand = new BlueprintList( $c[BlueprintFactory::class], $c['project-config-service'], $c['configuration'] );
+			$blueprintListCommand = new BlueprintList( $c[BlueprintFactory::class], $c[ProjectConfiguration::class], $c['configuration'] );
 
 			return $blueprintListCommand;
 		};
@@ -104,12 +100,12 @@ class CommandsProvider implements Provider {
 			return new RancherAccessCommand();
 		};
 
-		$this->container['command.plugin.install'] = function() {
-			return new PluginInstallCommand();
+		$this->container['command.plugin.install'] = function($c) {
+			return new PluginInstallCommand(  $c[PluginLoader::class], $c[PluginInstaller::class] );
 		};
 
-		$this->container['command.plugin.register'] = function() {
-			return new PluginRegisterCommand();
+		$this->container['command.plugin.register'] = function($c) {
+			return new PluginRegisterCommand( $c[PluginLoader::class], $c[PluginInstaller::class] );
 		};
 	}
 
@@ -128,7 +124,6 @@ class CommandsProvider implements Provider {
 		$app->add( $this->container['command.restart'] );
 		$app->add( $this->container['command.validate'] );
 		$app->add( $this->container['command.init'] );
-		$app->add( $this->container['command.blueprint.add'] );
 		$app->add( $this->container['command.blueprint.list'] );
 		$app->add( $this->container['command.environment.set'] );
 		$app->add( $this->container['command.rancher.access'] );
