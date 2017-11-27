@@ -40,7 +40,10 @@ COPY [".", "/opt/rancherize-package"]
 WORKDIR /opt/rancherize
 
 # install composer packages
-RUN curl -sSL "https://gist.githubusercontent.com/justb81/1006b89e41e41e1c848fe91969af7a0b/raw/c12faf968e659356ec1cb53f313e7f8383836be3/getcomposer.sh" | sh \
+RUN cd /opt/rancherize-package \
+	&& (git fetch --unshallow origin || echo "Not a shallow repository, continuing without fetch") \
+	&& cd /opt/rancherize \
+	&& curl -sSL "https://gist.githubusercontent.com/justb81/1006b89e41e41e1c848fe91969af7a0b/raw/c12faf968e659356ec1cb53f313e7f8383836be3/getcomposer.sh" | sh \
     && COMPOSER_ALLOW_SUPERUSER=1 ./composer.phar  install \
     && rm composer.phar
 
