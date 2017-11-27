@@ -1,0 +1,18 @@
+{
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "/opt/rancherize-package"
+    }
+  ],
+  "require": {
+    "ipunkt/rancherize": "dev-gvvs-update",
+    "ipunkt/rancherize-backup-storagebox": "dev-gvvs-update",
+    "ipunkt/rancherize-ecr": "^1.0.0",
+    "ipunkt/rancherize-publish-traefik-rancher": "^1.0.1",
+    "ipunkt/rancherize-blueprint-php-cli": "^1.0.1",
+    "ipunkt/rancherize-php53": "^1.1.0"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
