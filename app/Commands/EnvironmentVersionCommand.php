@@ -4,12 +4,12 @@ use Rancherize\Commands\Traits\ValidateTrait;
 use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Services\EnvironmentConfigurationService;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
-use Rancherize\RancherAccess\InServiceCheckerTrait;
 use Rancherize\RancherAccess\NameMatcher\CompleteNameMatcher;
 use Rancherize\RancherAccess\NameMatcher\PrefixNameMatcher;
 use Rancherize\RancherAccess\RancherAccessParsesConfiguration;
 use Rancherize\RancherAccess\RancherAccessService;
 use Rancherize\RancherAccess\RancherService;
+use Rancherize\RancherAccess\UpgradeMode\InServiceChecker;
 use Rancherize\Services\BlueprintService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -28,7 +28,6 @@ class EnvironmentVersionCommand extends Command implements LoadsConfiguration {
 	use LoadsConfigurationTrait;
 	use ValidateTrait;
 
-	use InServiceCheckerTrait;
 	/**
 	 * @var BlueprintService
 	 */
@@ -45,6 +44,10 @@ class EnvironmentVersionCommand extends Command implements LoadsConfiguration {
 	 * @var RancherService
 	 */
 	private $rancherService;
+	/**
+	 * @var InServiceChecker
+	 */
+	private $inServiceChecker;
 
 	/**
 	 * EnvironmentVersionCommand constructor.
@@ -52,14 +55,16 @@ class EnvironmentVersionCommand extends Command implements LoadsConfiguration {
 	 * @param RancherAccessService $rancherAccessService
 	 * @param EnvironmentConfigurationService $environmentConfigurationService
 	 * @param RancherService $rancherService
+	 * @param InServiceChecker $inServiceChecker
 	 */
 	public function __construct( BlueprintService $blueprintService, RancherAccessService $rancherAccessService,
-			EnvironmentConfigurationService $environmentConfigurationService, RancherService $rancherService) {
+			EnvironmentConfigurationService $environmentConfigurationService, RancherService $rancherService, InServiceChecker $inServiceChecker) {
 		parent::__construct();
 		$this->blueprintService = $blueprintService;
 		$this->rancherAccessService = $rancherAccessService;
 		$this->environmentConfigurationService = $environmentConfigurationService;
 		$this->rancherService = $rancherService;
+		$this->inServiceChecker = $inServiceChecker;
 	}
 
 	protected function configure() {

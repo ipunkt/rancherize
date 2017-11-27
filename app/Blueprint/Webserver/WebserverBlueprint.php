@@ -36,7 +36,7 @@ use Rancherize\Configuration\Services\ConfigurableFallback;
 use Rancherize\Configuration\Services\ConfigurationFallback;
 use Rancherize\Configuration\Services\ConfigurationInitializer;
 use Rancherize\Docker\DockerAccount;
-use Rancherize\RancherAccess\InServiceCheckerTrait;
+use Rancherize\RancherAccess\UpgradeMode\RollingUpgradeChecker;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -55,8 +55,6 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	use PhpFpmMakerTrait;
 
 	use CustomFilesTrait;
-
-	use InServiceCheckerTrait;
 
 	use ProjectNameTrait;
 
@@ -81,6 +79,18 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	 * @var MailtrapService
 	 */
 	protected $mailtrapService;
+	/**
+	 * @var RollingUpgradeChecker
+	 */
+	private $rollingUpgradeChecker;
+
+	/**
+	 * WebserverBlueprint constructor.
+	 * @param RollingUpgradeChecker $rollingUpgradeChecker
+	 */
+	public function __construct( RollingUpgradeChecker $rollingUpgradeChecker) {
+		$this->rollingUpgradeChecker = $rollingUpgradeChecker;
+	}
 
 	/**
 	 * @param Configurable $configurable
@@ -205,7 +215,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
         $this->addAppContainer($version, $config, $serverService, $infrastructure);
 
         $this->addVersionEnvironment($version, $config, $serverService);
-        $this->addVersionLabel($version, $config, $serverService);
+        $this->addVersionLabel($version, $serverService);
 
 
 		/**
@@ -425,7 +435,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	 * @param Configuration $config
 	 * @param Service $serverService
 	 */
-	protected function addVersionLabel($version, Configuration $config, Service $serverService) {
+	protected function addVersionLabel($version, Service $serverService) {
 		$labelVersion = $version;
 		if($version === null)
 			$labelVersion = '';
@@ -520,7 +530,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	 */
 	private function addVersionSuffix(Configuration $config, Service $serverService, $versionSuffix) {
 
-		if( $this->inServiceChecker->isInService($config) )
+		if( !$this->rollingUpgradeChecker->isRollingUpgrade($config) )
 			return;
 
 		/**

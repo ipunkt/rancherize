@@ -4,6 +4,10 @@ use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Rancherize\RancherAccess\ApiService\ApiService;
 use Rancherize\RancherAccess\ApiService\CurlApiService;
+use Rancherize\RancherAccess\UpgradeMode\InServiceChecker;
+use Rancherize\RancherAccess\UpgradeMode\ReplaceUpgradeChecker;
+use Rancherize\RancherAccess\UpgradeMode\RollingUpgradeChecker;
+use Rancherize\RancherAccess\UpgradeMode\UpgradeModeFromConfiguration;
 
 /**
  * Class DockerProvider
@@ -28,10 +32,21 @@ class RancherAccessProvider implements Provider {
 			return new RancherService( $c[ApiService::class] );
 		};
 
-		$this->container[InServiceChecker::class] = function() {
-			return new InServiceChecker();
+		$this->container[UpgradeModeFromConfiguration::class] = function() {
+			return new UpgradeModeFromConfiguration();
 		};
 
+		$this->container[InServiceChecker::class] = function($c) {
+			return new InServiceChecker( $c[UpgradeModeFromConfiguration::class] );
+		};
+
+		$this->container[ReplaceUpgradeChecker::class] = function($c) {
+			return new ReplaceUpgradeChecker( $c[UpgradeModeFromConfiguration::class] );
+		};
+
+		$this->container[RollingUpgradeChecker::class] = function($c) {
+			return new RollingUpgradeChecker( $c[InServiceChecker::class], $c[ReplaceUpgradeChecker::class] );
+		};
 
 	}
 

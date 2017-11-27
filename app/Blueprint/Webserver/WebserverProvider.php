@@ -4,7 +4,7 @@ use Pimple\Container;
 use Rancherize\Blueprint\Factory\BlueprintFactory;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
-use Rancherize\RancherAccess\InServiceChecker;
+use Rancherize\RancherAccess\UpgradeMode\RollingUpgradeChecker;
 
 /**
  * Class WebserverProvider
@@ -27,7 +27,9 @@ class WebserverProvider implements Provider {
 		 */
 		$blueprintFactory = $this->container[BlueprintFactory::class];
 		$blueprintFactory->add('webserver', function(Container $c) {
-			$webserverBlueprint = new WebserverBlueprint();
+			$webserverBlueprint = new WebserverBlueprint(
+				$c[RollingUpgradeChecker::class]
+			);
 
 			$webserverBlueprint->setArrayAdder( $c['config-array-adder'] );
 
@@ -36,8 +38,6 @@ class WebserverProvider implements Provider {
 			$webserverBlueprint->setMailtrapService($c['mailtrap-service']);
 
 			$webserverBlueprint->setSlashPrefixer( $c['slash-prefixer'] );
-
-			$webserverBlueprint->setInServiceChecker($c[InServiceChecker::class]);
 
 			return $webserverBlueprint;
 		});

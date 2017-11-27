@@ -390,7 +390,6 @@ class RancherService {
 	 * @param string $stackName
 	 * @param NameMatcher $nameMatcher
 	 * @return string
-	 * @internal param string $name
 	 */
 	public function getActiveService(string $stackName, NameMatcher $nameMatcher) : string {
 		$definition = $this->getActiveServiceDefinition($stackName, $nameMatcher);
@@ -498,6 +497,33 @@ class RancherService {
 			$command = array_merge($command, $services);
 
 		$process = ProcessBuilder::create($command)
+			->setTimeout(null)
+			->addEnvironmentVariables([
+				'RANCHER_URL' => $url,
+				'RANCHER_ACCESS_KEY' => $this->account->getKey(),
+				'RANCHER_SECRET_KEY' => $this->account->getSecret(),
+			])->getProcess();
+
+		$this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+	}
+
+	/**
+	 * @param $directory
+	 * @param $stackName
+	 * @param $serviceNames
+	 */
+	public function create( $directory, $stackName, $serviceNames ) {
+		if($serviceNames === null)
+			$serviceNames = [];
+		if( !is_array($serviceNames) )
+			$serviceNames = [$serviceNames];
+
+		$url = $this->getUrl();
+		$command = [ $this->account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName, 'create' ];
+
+		$command = array_merge($command, $serviceNames);
+
+		$process = ProcessBuilder::create( $command )
 			->setTimeout(null)
 			->addEnvironmentVariables([
 				'RANCHER_URL' => $url,

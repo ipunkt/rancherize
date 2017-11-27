@@ -8,9 +8,14 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 $container = new \Pimple\Container();
 
-$container['event'] = function () {
+$container[EventDispatcher::class] = function () {
 	return new EventDispatcher();
 };
+
+$container['event'] = function ($c) {
+	return $c[EventDispatcher::class];
+};
+
 
 /**
  * Configuration
