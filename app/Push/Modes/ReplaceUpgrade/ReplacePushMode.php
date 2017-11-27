@@ -35,7 +35,7 @@ class ReplacePushMode implements PushMode {
 	 */
 	public function push( Configuration $configuration, string $stackName, string $serviceName, string $version, RancherService $rancherService ) {
 
-		$matcher = new CompleteNameMatcher($stackName);
+		$matcher = new CompleteNameMatcher($serviceName);
 
 		/**
 		 * Throw NoActiveServiceException, causing the service to be created
