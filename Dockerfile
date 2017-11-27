@@ -46,6 +46,6 @@ RUN cd /opt/rancherize-package \
 	&& curl -sSL "https://gist.githubusercontent.com/justb81/1006b89e41e41e1c848fe91969af7a0b/raw/c12faf968e659356ec1cb53f313e7f8383836be3/getcomposer.sh" | sh \
     && COMPOSER_ALLOW_SUPERUSER=1 ./composer.phar  install \
     && rm composer.phar \
-    && ln -s vendor/bin/rancherize
+    && ln -s /opt/rancherize/vendor/bin/rancherize /opt/rancherize/rancherize
 
 ENTRYPOINT ["/bin/sh", "/opt/rancherize/docker-entrypoint.sh"]
