@@ -39,6 +39,7 @@ use Rancherize\Docker\DockerAccount;
 use Rancherize\RancherAccess\UpgradeMode\RollingUpgradeChecker;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class WebserverBlueprint
@@ -83,13 +84,19 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	 * @var RollingUpgradeChecker
 	 */
 	private $rollingUpgradeChecker;
+	/**
+	 * @var EventDispatcher
+	 */
+	private $eventDispatcher;
 
 	/**
 	 * WebserverBlueprint constructor.
 	 * @param RollingUpgradeChecker $rollingUpgradeChecker
+	 * @param EventDispatcher $eventDispatcher
 	 */
-	public function __construct( RollingUpgradeChecker $rollingUpgradeChecker) {
+	public function __construct( RollingUpgradeChecker $rollingUpgradeChecker, EventDispatcher $eventDispatcher) {
 		$this->rollingUpgradeChecker = $rollingUpgradeChecker;
+		$this->eventDispatcher = $eventDispatcher;
 	}
 
 	/**
