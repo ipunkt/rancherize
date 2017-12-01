@@ -47,6 +47,13 @@ class NetworkWriter {
 	}
 
 	/**
+	 * @param string $path
+	 */
+	public function setPath( string $path ) {
+		$this->path = $path;
+	}
+
+	/**
 	 * Only add the given option if the value is not empty
 	 *
 	 * @param $name

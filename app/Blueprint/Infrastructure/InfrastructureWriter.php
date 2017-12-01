@@ -65,6 +65,7 @@ class InfrastructureWriter {
 		$serviceWriter->setPath($this->path);
 		$volumeWriter = $this->volumeWriter;
 		$volumeWriter->setPath($this->path);
+		$this->networkWriter->setPath($this->path);
 
 		if( !$this->skipClear )
 			$serviceWriter->clear($fileWriter);
