@@ -3,6 +3,7 @@
 return [
 
 	Rancherize\File\FileProvider::class,
+	Rancherize\Blueprint\Infrastructure\InfrastructureProvider::class,
 	Rancherize\Blueprint\Healthcheck\HealthcheckProvider::class,
 	Rancherize\Blueprint\PublishUrls\PublishUrlsProvider::class,
 	Rancherize\Blueprint\Scheduler\SchedulerProvider::class,
