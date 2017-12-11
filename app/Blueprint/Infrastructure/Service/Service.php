@@ -310,6 +310,9 @@ class Service {
 	public function addLinksFrom(Service $service) {
 	    $links = $service->getLinks();
 	    foreach($links as $name => $link) {
+	    	if($link === $this)
+	    		continue;
+
 	        if (is_numeric($name)) {
                 $this->addLink($link);
             } else {
