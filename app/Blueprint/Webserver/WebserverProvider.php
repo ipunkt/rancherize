@@ -5,6 +5,7 @@ use Rancherize\Blueprint\Factory\BlueprintFactory;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Rancherize\RancherAccess\UpgradeMode\RollingUpgradeChecker;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class WebserverProvider
@@ -28,7 +29,8 @@ class WebserverProvider implements Provider {
 		$blueprintFactory = $this->container[BlueprintFactory::class];
 		$blueprintFactory->add('webserver', function(Container $c) {
 			$webserverBlueprint = new WebserverBlueprint(
-				$c[RollingUpgradeChecker::class]
+				$c[RollingUpgradeChecker::class],
+				$c[EventDispatcher::class]
 			);
 
 			$webserverBlueprint->setArrayAdder( $c['config-array-adder'] );
