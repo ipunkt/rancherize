@@ -120,30 +120,6 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 	}
 
 	/**
-	 * @return $this
-	 */
-	public function setMemoryLimit( $limit ) {
-		$this->memoryLimit = $limit;
-		return $this;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function setPostLimit( $limit ) {
-		$this->postLimit = $limit;
-		return $this;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function setUploadFileLimit( $limit ) {
-		$this->uploadFileLimit = $limit;
-		return $this;
-	}
-
-	/**
 	 * Set the default php timezone
 	 *
 	 * @param $defaultTimezone
