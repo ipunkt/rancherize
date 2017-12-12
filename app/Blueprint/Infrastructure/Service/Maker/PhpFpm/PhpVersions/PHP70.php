@@ -1,5 +1,8 @@
 <?php namespace Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions;
+
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
+use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Configurations\MailTarget;
+use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\DefaultTimezone;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\MemoryLimit;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersion;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PostLimit;
@@ -114,5 +117,75 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 	public function setUploadFileLimit( $limit ) {
 		$this->uploadFileLimit = $limit;
 		return $this;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setMemoryLimit( $limit ) {
+		$this->memoryLimit = $limit;
+		return $this;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setPostLimit( $limit ) {
+		$this->postLimit = $limit;
+		return $this;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setUploadFileLimit( $limit ) {
+		$this->uploadFileLimit = $limit;
+		return $this;
+	}
+
+	/**
+	 * Set the default php timezone
+	 *
+	 * @param $defaultTimezone
+	 * @return $this
+	 */
+	public function setDefaultTimezone( $defaultTimezone ) {
+		$this->defaultTimezone = $defaultTimezone;
+		return $this;
+	}
+
+	/**
+	 * @param string $host
+	 */
+	public function setMailHost( string $host ) {
+		$this->mailHost = $host;
+	}
+
+	/**
+	 * @param int $port
+	 */
+	public function setMailPort( int $port ) {
+		$this->mailPort = $port;
+	}
+
+	/**
+	 * @param string $username
+	 */
+	public function setMailUsername( string $username ) {
+		$this->mailUsername = $username;
+	}
+
+	/**
+	 * @param string $password
+	 */
+	public function setMailPassword( string $password ) {
+		$this->mailPassword = $password;
+	}
+
+	/**
+	 * @param string $authMethod
+	 */
+	public function setMailAuthentication( string $authMethod ) {
+		$this->mailAuthentication = $authMethod;
 	}
 }
