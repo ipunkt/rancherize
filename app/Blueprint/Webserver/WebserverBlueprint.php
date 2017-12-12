@@ -274,7 +274,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		 * @var VolumeService $volumesService
 		 */
 		$volumesService = container('volume-service');
-		$volumesService->parse($config, $serverService);
+		$volumesService->parse($config, $this->appContainer);
 
 		/**
 		 * @var ExternalServiceParser $externalServicesParser
@@ -372,22 +372,6 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		if ($config->has('expose-port'))
 			$serverService->expose(80, $config->get('expose-port'));
 
-		if ($config->get('mount-workdir', false)) {
-			$mountSuffix = $config->get('work-sub-directory', '');
-			$targetSuffix = $config->get('target-sub-directory', '');
-
-			$nginxConfig = $config->get('nginx-config');
-			if (!empty($nginxConfig)) {
-				//$configName = basename($nginxConfig);
-				$serverService->addVolume(getcwd() . DIRECTORY_SEPARATOR . $nginxConfig, '/etc/nginx/conf.template.d/999-laravel.conf.tpl');
-			}
-
-			$hostDirectory = getcwd() . $mountSuffix;
-			$containerDirectory = '/var/www/app' . $targetSuffix;
-			$serverService->addVolume($hostDirectory, $containerDirectory);
-			$this->getPhpFpmMaker()->setAppMount($hostDirectory, $containerDirectory);
-		}
-
 		$persistentDriver = $config->get('docker.persistent-driver', 'pxd');
 		$persistentOptions = $config->get('docker.persistent-options', [
 			'repl' => '3',
@@ -471,6 +455,33 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$serverService->addVolumeFrom($appService);
 			$infrastructure->addService($appService);
 			$this->getPhpFpmMaker()->setAppService($appService);
+
+			$this->appContainer = $appService;
+		}
+
+
+		if ($config->get('mount-workdir', false)) {
+
+			$appService = new Service();
+			$appServiceName = $this->applyServer('App');
+			$appService->setImage('busybox');
+			$appService->setName( $appServiceName );
+
+			$mountSuffix = $config->get('work-sub-directory', '');
+			$targetSuffix = $config->get('target-sub-directory', '');
+
+			$nginxConfig = $config->get('nginx-config');
+			if (!empty($nginxConfig)) {
+				//$configName = basename($nginxConfig);
+				$serverService->addVolume(getcwd() . DIRECTORY_SEPARATOR . $nginxConfig, '/etc/nginx/conf.template.d/999-laravel.conf.tpl');
+			}
+
+			$hostDirectory = getcwd() . $mountSuffix;
+			$containerDirectory = '/var/www/app' . $targetSuffix;
+			$appService->addVolume($hostDirectory, $containerDirectory);
+			$this->getPhpFpmMaker()->setAppService($appService);
+			$serverService->addVolumeFrom($appService);
+			$infrastructure->addService($appService);
 
 			$this->appContainer = $appService;
 		}
