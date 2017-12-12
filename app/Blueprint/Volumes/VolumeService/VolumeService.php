@@ -45,6 +45,8 @@ class VolumeService {
 			$volumeParser = $this->volumeParserFactory->getParser( $type );
 			$volume = $volumeParser->parse($key, $data);
 			$mainService->addVolume($volume);
+			foreach( $mainService->getSidekicks() as $sidekick )
+				$sidekick->addVolume($volume);
 		}
 
 	}
