@@ -139,9 +139,8 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 	 * @return $this
 	 */
 	public function setAppMount(string $hostDirectory, string $containerDirectory) {
-		/**
-		 * Nothing to do while fpm 7.0 is still used from internal
-		 */
+		$this->appTarget = [$hostDirectory, $containerDirectory];
+
 		return $this;
 	}
 
