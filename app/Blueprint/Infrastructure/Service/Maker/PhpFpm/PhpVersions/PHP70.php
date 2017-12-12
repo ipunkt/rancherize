@@ -11,7 +11,14 @@ use Rancherize\Configuration\Configuration;
  * Class PHP70
  * @package Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions
  */
-class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
+class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, DefaultTimezone, MailTarget {
+
+	const PHP_IMAGE = 'ipunktbs/php:7.0-fpm';
+
+	/**
+	 * @var string|Service
+	 */
+	protected $appTarget;
 
 	/**
 	 * @var string
@@ -59,9 +66,8 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit {
 	 * @return $this
 	 */
 	public function setAppMount(string $hostDirectory, string $containerDirectory) {
-		/**
-		 * Nothing to do while fpm 7.0 is still used from internal
-		 */
+		$this->appTarget = [$hostDirectory, $containerDirectory];
+
 		return $this;
 	}
 

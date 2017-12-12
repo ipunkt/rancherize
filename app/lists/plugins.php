@@ -29,6 +29,7 @@ return [
 	RancherizePhp53\Php53Provider::class,
 	Rancherize\InputOutput\InputOutputProvider::class,
 	Rancherize\Push\PushProvider::class,
+	\Rancherize\Blueprint\PhpCommands\PhpCommandsProvider::class,
 
 	Rancherize\Commands\CommandsProvider::class,
 
