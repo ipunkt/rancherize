@@ -297,6 +297,9 @@ class Service {
 	 * @param string|null $name
 	 */
 	public function addLink(Service $service, $name = null) {
+		if($service === $this)
+			return;
+
 		if($name === null) {
 			$this->links[] = $service;
 			return;
