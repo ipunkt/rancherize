@@ -101,7 +101,10 @@ class Rancherize {
 
 		} catch(Exception $e) {
 
-			echo "Warning! Load Plugins failed: ".get_class($e).' '. $e->getMessage()."\n";
+			echo "Warning! Load Plugins failed: ".get_class($e).' '. $e->getMessage().PHP_EOL.PHP_EOL;
+			echo "Thrown by ".$e->getFile().';'.$e->getLine().' '.$e->getCode(). PHP_EOL;
+			echo "Trace: ".$e->getTraceAsString();
+
 
 		}
 	}

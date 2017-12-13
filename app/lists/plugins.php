@@ -3,6 +3,7 @@
 return [
 
 	Rancherize\File\FileProvider::class,
+	Rancherize\Blueprint\Infrastructure\InfrastructureProvider::class,
 	Rancherize\Blueprint\Healthcheck\HealthcheckProvider::class,
 	Rancherize\Blueprint\PublishUrls\PublishUrlsProvider::class,
 	Rancherize\Blueprint\Scheduler\SchedulerProvider::class,
@@ -10,7 +11,7 @@ return [
 	Rancherize\Blueprint\Cron\CronProvider::class,
 	Rancherize\Blueprint\NginxSnippets\NginxSnippetsProvider::class,
 	Rancherize\Docker\DockerProvider::class,
-	Rancherize\RancherAccess\RancherAccessProvider::class,
+	Rancherize\RancherAccess\RancherAccessProvider::class,k
 	Rancherize\Blueprint\Services\Database\DatabaseProvider::class,
 	Rancherize\Services\PathService\PathProvider::class,
 	Rancherize\Blueprint\BlueprintProvider::class,
@@ -29,7 +30,8 @@ return [
 	RancherizePhp53\Php53Provider::class,
 	Rancherize\InputOutput\InputOutputProvider::class,
 	Rancherize\Push\PushProvider::class,
-	\Rancherize\Blueprint\PhpCommands\PhpCommandsProvider::class,
+	Rancherize\Blueprint\Network\NetworkProvider::class,
+	Rancherize\Blueprint\PhpCommands\PhpCommandsProvider::class,
 
 	Rancherize\Commands\CommandsProvider::class,
 
