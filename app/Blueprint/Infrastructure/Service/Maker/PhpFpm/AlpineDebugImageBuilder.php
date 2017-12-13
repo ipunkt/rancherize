@@ -18,6 +18,23 @@ class AlpineDebugImageBuilder {
 
 		$debugDockerfile = new Dockerfile();
 		$debugDockerfile->setFrom( $baseImage );
+		$debugDockerfile->addInlineFile('/etc/confd/conf.d/xdebug.ini.toml',
+'[template]
+src = "xdebug.ini.tpl"
+dest = "/usr/local/etc/php/conf.d/30-xdebug.ini"
+');
+		$debugDockerfile->addInlineFile('/etc/confd/templates/xdebug.ini.tpl',
+'[xdebug]
+xdebug.remote_enable=On
+{{ if getenv "XDEBUG_REMOTE_HOST" }}
+xdebug.remove_host={{ getenv "XDEBUG_REMOTE_HOST" }}
+{{ else }}
+xdebug.remote_connect_back=On
+{{ end }}
+xdebug.profiler_enable_trigger=On
+xdebug.profiler_output_dir=/opt/profiling
+xdebug.profiler_output_name=cachegrind.out.%t
+');
 		$debugDockerfile->run('apk add --no-cache $PHPIZE_DEPS');
 		$debugDockerfile->run('docker-php-source extract');
 		$debugDockerfile->run('pecl install xdebug'.$xdebugVersion);

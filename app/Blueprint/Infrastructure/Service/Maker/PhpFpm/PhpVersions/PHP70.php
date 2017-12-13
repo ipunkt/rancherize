@@ -183,7 +183,7 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 	protected function setImage(Service $service) {
 		$image = self::PHP_IMAGE;
 		if( $this->debug )
-			$image = $this->debugImageBuilder->makeImage($service);
+			$image = $this->debugImageBuilder->makeImage(self::PHP_IMAGE );
 
 		$service->setImage( $image );
 	}

@@ -27,6 +27,13 @@ class DockerfileWriter {
 		foreach($dockerfile->getVolumes() as $volume)
 			$lines[] = "VOLUME $volume";
 
+		foreach($dockerfile->getInlineFiles() as $path => $content) {
+			$tempFilename = 'file-'.sha1($path);
+
+			$writer->put($this->path.$tempFilename, $content);
+			$lines[] = "COPY $tempFilename $path";
+		}
+
 		$user = $dockerfile->getUser();
 		$group = $dockerfile->getGroup();
 
