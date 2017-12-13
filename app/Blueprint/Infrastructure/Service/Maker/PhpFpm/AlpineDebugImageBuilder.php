@@ -27,7 +27,7 @@ dest = "/usr/local/etc/php/conf.d/30-xdebug.ini"
 '[xdebug]
 xdebug.remote_enable=On
 {{ if getenv "XDEBUG_REMOTE_HOST" }}
-xdebug.remove_host={{ getenv "XDEBUG_REMOTE_HOST" }}
+xdebug.remote_host={{ getenv "XDEBUG_REMOTE_HOST" }}
 {{ else }}
 xdebug.remote_connect_back=On
 {{ end }}

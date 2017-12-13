@@ -11,4 +11,9 @@ interface DebugImage {
 	 */
 	function setDebug($debug);
 
+	/**
+	 * @param $listener
+	 */
+	function setDebugListener( $listener);
+
 }

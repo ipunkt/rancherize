@@ -151,7 +151,7 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 		$phpCommandService = new Service();
 		$phpCommandService->setCommand($command);
 		$phpCommandService->setName('PHP-'.$commandName);
-		$phpCommandService->setImage( self::PHP_IMAGE );
+		$this->setImage( $phpCommandService );
 		$phpCommandService->setRestart(Service::RESTART_START_ONCE);
 		$this->addAppSource($phpCommandService);
 
@@ -182,8 +182,12 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 
 	protected function setImage(Service $service) {
 		$image = self::PHP_IMAGE;
-		if( $this->debug )
+		if( $this->debug ) {
 			$image = $this->debugImageBuilder->makeImage(self::PHP_IMAGE );
+			$service->setEnvironmentVariable('XDEBUG_REMOTE_HOST', gethostname());
+			if($this->debugListener !== null)
+				$service->setEnvironmentVariable('XDEBUG_REMOTE_HOST', $this->debugListener);
+		}
 
 		$service->setImage( $image );
 	}

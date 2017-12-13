@@ -158,7 +158,9 @@ class PhpFpmMaker {
 
 		}
 
-		if( $phpVersion instanceof DebugImage )
+		if( $phpVersion instanceof DebugImage ) {
 			$phpVersion->setDebug( $phpConfig->get('debug', false) );
+			$phpVersion->setDebugListener( $phpConfig->get('debug-listener', null) );
+		}
 	}
 }
