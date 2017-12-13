@@ -23,8 +23,7 @@
         "symfony/yaml": "^3.1",
         "pimple/pimple": "^3.0",
         "symfony/process": "^3.1",
-        "ipunkt/rancherize-php53": "dev-master",
-        "ipunkt/rancherize-php72": "dev-master"
+        "ipunkt/rancherize-php53": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.6",
@@ -34,6 +33,7 @@
         "ipunkt/rancherize-publish-traefik-rancher": "Set rancher labels for the traefik rancher backend",
         "ipunkt/rancherize-ecr": "Publish docker images to an Amazon ECR repository",
         "ipunkt/rancherize-blueprint-php-cli": "PHP command line interface blueprint with cron labels and shell execution",
-        "ipunkt/rancherize-backup-storagebox": "Adding backup commands for use with a Hetzner Storagebox service"
+        "ipunkt/rancherize-backup-storagebox": "Adding backup commands for use with a Hetzner Storagebox service",
+        "ipunkt/rancherize-php72": "Enable php version 7.2"
     }
 }
