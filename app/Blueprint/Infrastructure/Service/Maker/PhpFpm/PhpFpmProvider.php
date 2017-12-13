@@ -16,14 +16,20 @@ class PhpFpmProvider implements Provider {
 	 */
 	public function register() {
 
+		$this->container[AlpineDebugImageBuilder::class] = function() {
+			return new AlpineDebugImageBuilder();
+		};
+
 		$this->container[PhpFpmMaker::class] = function() {
-			$phpFpmMaker = new \Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMaker();
+			$phpFpmMaker = new PhpFpmMaker();
 
 			return $phpFpmMaker;
 		};
 
-		$this->container[PHP70::class] = function() {
-			return new \Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions\PHP70();
+		$this->container[PHP70::class] = function($c) {
+			return new PHP70(
+				$c[AlpineDebugImageBuilder::class]
+			);
 		};
 
 		/**
