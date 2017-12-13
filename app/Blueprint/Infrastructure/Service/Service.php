@@ -1,5 +1,7 @@
 <?php namespace Rancherize\Blueprint\Infrastructure\Service;
 
+use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
+
 /**
  * Class Service
  * @package Rancherize\Blueprint\Infrastructure
@@ -121,16 +123,16 @@ class Service {
 	}
 
 	/**
-	 * @return string
+	 * @return string|Dockerfile
 	 */
-	public function getImage(): string {
+	public function getImage() {
 		return $this->image;
 	}
 
 	/**
-	 * @param string $image
+	 * @param string|Dockerfile $image
 	 */
-	public function setImage(string $image) {
+	public function setImage($image) {
 		$this->image = $image;
 	}
 
@@ -295,6 +297,9 @@ class Service {
 	 * @param string|null $name
 	 */
 	public function addLink(Service $service, $name = null) {
+		if($service === $this)
+			return;
+
 		if($name === null) {
 			$this->links[] = $service;
 			return;

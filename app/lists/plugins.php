@@ -11,7 +11,7 @@ return [
 	Rancherize\Blueprint\Cron\CronProvider::class,
 	Rancherize\Blueprint\NginxSnippets\NginxSnippetsProvider::class,
 	Rancherize\Docker\DockerProvider::class,
-	Rancherize\RancherAccess\RancherAccessProvider::class,
+	Rancherize\RancherAccess\RancherAccessProvider::class,k
 	Rancherize\Blueprint\Services\Database\DatabaseProvider::class,
 	Rancherize\Services\PathService\PathProvider::class,
 	Rancherize\Blueprint\BlueprintProvider::class,
@@ -31,6 +31,7 @@ return [
 	Rancherize\InputOutput\InputOutputProvider::class,
 	Rancherize\Push\PushProvider::class,
 	Rancherize\Blueprint\Network\NetworkProvider::class,
+	Rancherize\Blueprint\PhpCommands\PhpCommandsProvider::class,
 
 	Rancherize\Commands\CommandsProvider::class,
 

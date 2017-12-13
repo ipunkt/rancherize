@@ -31,7 +31,12 @@ class Dockerfile {
 	/**
 	 * @var string[]
 	 */
-	protected $volumes;
+	protected $inlineFiles = [];
+
+	/**
+	 * @var string[]
+	 */
+	protected $volumes = [];
 
 	/**
 	 * @var string[]
@@ -180,6 +185,18 @@ class Dockerfile {
 	 */
 	public function setGroup( string $group ) {
 		$this->group = $group;
+	}
+
+
+	public function addInlineFile($path, $content) {
+		$this->inlineFiles[$path] = $content;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getInlineFiles(): array {
+		return $this->inlineFiles;
 	}
 
 }

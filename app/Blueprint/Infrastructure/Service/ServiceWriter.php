@@ -1,4 +1,6 @@
 <?php namespace Rancherize\Blueprint\Infrastructure\Service;
+use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
+use Rancherize\Blueprint\Infrastructure\Dockerfile\DockerfileWriter;
 use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterServicePreparedEvent;
 use Rancherize\Configuration\Exceptions\FileNotFoundException;
 use Rancherize\File\FileLoader;
@@ -21,16 +23,22 @@ class ServiceWriter {
 	 * @var EventDispatcher
 	 */
 	private $event;
+	/**
+	 * @var DockerfileWriter
+	 */
+	private $dockerfileWriter;
 
 	/**
 	 * ServiceWriter constructor.
 	 * @param FileLoader $fileLoader
 	 * @param EventDispatcher $event
+	 * @param DockerfileWriter $dockerfileWriter
 	 * @internal param FileLoader $loader
 	 */
-	public function __construct(FileLoader $fileLoader, EventDispatcher $event) {
+	public function __construct(FileLoader $fileLoader, EventDispatcher $event, DockerfileWriter $dockerfileWriter) {
 		$this->fileLoader = $fileLoader;
 		$this->event = $event;
+		$this->dockerfileWriter = $dockerfileWriter;
 	}
 
 	/**
@@ -47,7 +55,21 @@ class ServiceWriter {
 	public function write(Service $service, FileWriter $fileWriter) {
 		$content = [];
 
-		$this->addNonEmpty('image', $service->getImage(), $content);
+		$image = $service->getImage();
+		if( $image instanceof Dockerfile ) {
+			$dockerFileName = $service->getName().'-Dockerfile';
+
+			$content['build'] = [
+				// This is . because docker-compose already has its context in .rancherize
+				'context' => '.',
+				'dockerfile' => $dockerFileName,
+			];
+			$content['image'] = strtolower( $service->getName() );
+
+			$this->dockerfileWriter->write($image, $fileWriter, $dockerFileName);
+		} else
+			$this->addNonEmpty('image', $service->getImage(), $content);
+
 		$this->addNonEmpty('tty', $service->isTty(), $content);
 
 		$environment = [];

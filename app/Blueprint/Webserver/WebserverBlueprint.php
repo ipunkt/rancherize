@@ -2,6 +2,7 @@
 use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Cron\CronInit\CronInit;
 use Rancherize\Blueprint\Cron\CronParser\CronParser;
+use Rancherize\Blueprint\Events\MainServiceBuiltEvent;
 use Rancherize\Blueprint\ExternalService\ExternalServiceParser\ExternalServiceParser;
 use Rancherize\Blueprint\Flags\HasFlagsTrait;
 use Rancherize\Blueprint\Healthcheck\HealthcheckConfigurationToService\HealthcheckConfigurationToService;
@@ -84,14 +85,18 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	 * @var RollingUpgradeChecker
 	 */
 	private $rollingUpgradeChecker;
+	/**
+	 * @var EventDispatcher
+	 */
+	private $event;
 
 	/**
 	 * WebserverBlueprint constructor.
 	 * @param RollingUpgradeChecker $rollingUpgradeChecker
-	 * @param EventDispatcher $eventDispatcher
-	 */
-	public function __construct( RollingUpgradeChecker $rollingUpgradeChecker) {
+	 * @param EventDispatcher $event
+	public function __construct( RollingUpgradeChecker $rollingUpgradeChecker, EventDispatcher $event ) {
 		$this->rollingUpgradeChecker = $rollingUpgradeChecker;
+		$this->event = $event;
 	}
 
 	/**
@@ -268,7 +273,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		 * @var VolumeService $volumesService
 		 */
 		$volumesService = container('volume-service');
-		$volumesService->parse($config, $serverService);
+		$volumesService->parse($config, $this->appContainer);
 
 		/**
 		 * @var ExternalServiceParser $externalServicesParser
@@ -290,6 +295,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
         	return $phpFpmMaker->makeCommand($name, $command, $serverService, $config);
         });
 
+        $mainServiceBuiltEvent = new MainServiceBuiltEvent($infrastructure, $serverService, $config);
+        $this->event->dispatch($mainServiceBuiltEvent::NAME, $mainServiceBuiltEvent);
 
         return $infrastructure;
 	}
@@ -354,9 +361,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	protected function makeServerService(Configuration $config, Configuration $default) : Service {
 		$serverService = new Service();
 		$serverService->setName($config->get('service-name'));
-		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.10.2-7-1.4.0'));
-		if( $config->get('debug-image', false) )
-			$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx-debug:debug-1.4.0'));
+		$serverService->setImage($config->get('docker.image', 'ipunktbs/nginx:1.12.2'));
 
 		if( $config->get('sync-user-into-container', false) ) {
 			$serverService->setEnvironmentVariable('USER_ID',empty($_ENV['USER_ID']) ? getmyuid() : $_ENV['USER_ID'] );
@@ -365,22 +370,6 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 
 		if ($config->has('expose-port'))
 			$serverService->expose(80, $config->get('expose-port'));
-
-		if ($config->get('mount-workdir', false)) {
-			$mountSuffix = $config->get('work-sub-directory', '');
-			$targetSuffix = $config->get('target-sub-directory', '');
-
-			$nginxConfig = $config->get('nginx-config');
-			if (!empty($nginxConfig)) {
-				//$configName = basename($nginxConfig);
-				$serverService->addVolume(getcwd() . DIRECTORY_SEPARATOR . $nginxConfig, '/etc/nginx/conf.template.d/999-laravel.conf.tpl');
-			}
-
-			$hostDirectory = getcwd() . $mountSuffix;
-			$containerDirectory = '/var/www/app' . $targetSuffix;
-			$serverService->addVolume($hostDirectory, $containerDirectory);
-			$this->getPhpFpmMaker()->setAppMount($hostDirectory, $containerDirectory);
-		}
 
 		$persistentDriver = $config->get('docker.persistent-driver', 'pxd');
 		$persistentOptions = $config->get('docker.persistent-options', [
@@ -465,6 +454,33 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$serverService->addVolumeFrom($appService);
 			$infrastructure->addService($appService);
 			$this->getPhpFpmMaker()->setAppService($appService);
+
+			$this->appContainer = $appService;
+		}
+
+
+		if ($config->get('mount-workdir', false)) {
+
+			$appService = new Service();
+			$appServiceName = $this->applyServer('App');
+			$appService->setImage('busybox');
+			$appService->setName( $appServiceName );
+
+			$mountSuffix = $config->get('work-sub-directory', '');
+			$targetSuffix = $config->get('target-sub-directory', '');
+
+			$nginxConfig = $config->get('nginx-config');
+			if (!empty($nginxConfig)) {
+				//$configName = basename($nginxConfig);
+				$serverService->addVolume(getcwd() . DIRECTORY_SEPARATOR . $nginxConfig, '/etc/nginx/conf.template.d/999-laravel.conf.tpl');
+			}
+
+			$hostDirectory = getcwd() . $mountSuffix;
+			$containerDirectory = '/var/www/app' . $targetSuffix;
+			$appService->addVolume($hostDirectory, $containerDirectory);
+			$this->getPhpFpmMaker()->setAppService($appService);
+			$serverService->addVolumeFrom($appService);
+			$infrastructure->addService($appService);
 
 			$this->appContainer = $appService;
 		}

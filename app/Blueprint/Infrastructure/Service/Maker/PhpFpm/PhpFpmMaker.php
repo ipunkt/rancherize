@@ -157,5 +157,10 @@ class PhpFpmMaker {
 			$phpVersion->setMailPassword( $phpConfig->get('mail.password', 'smtp') );
 
 		}
+
+		if( $phpVersion instanceof DebugImage ) {
+			$phpVersion->setDebug( $phpConfig->get('debug', false) );
+			$phpVersion->setDebugListener( $phpConfig->get('debug-listener', null) );
+		}
 	}
 }

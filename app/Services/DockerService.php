@@ -86,6 +86,27 @@ class DockerService {
 			throw new PushFailedException($imageName, 20);
 	}
 
+
+	/**
+	 * Have docker-compose perform image builds
+	 *
+	 * @param string $directory
+	 * @param string $projectName
+	 */
+	public function buildImages(string $directory, string $projectName) {
+
+		$this->requireProcess();
+
+		$process = ProcessBuilder::create([
+			'docker-compose', '-p', $projectName, '-f', $directory.'/docker-compose.yml', 'build'
+		])
+			->setTimeout(null)->getProcess();
+
+		$this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+		if($process->getExitCode() !== 0)
+			throw new StartFailedException($projectName);
+	}
+
 	/**
 	 * Start the infrastructure built in directory as projectName
 	 *

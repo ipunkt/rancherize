@@ -9,6 +9,7 @@ use Rancherize\Services\DockerService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -59,6 +60,7 @@ class StartCommand extends Command implements LoadsConfiguration {
 		$this->setName('start')
 			->setDescription('Start an environment on the local machine')
 			->addArgument('environment', InputArgument::REQUIRED)
+			->addOption('rebuild', 'r', InputOption::VALUE_NONE, 'force rebuild of images. Use e.g. to update debug images.')
 		;
 	}
 
@@ -92,6 +94,9 @@ class StartCommand extends Command implements LoadsConfiguration {
 		$this->dockerService
 			->setOutput($output)
 			->setProcessHelper($this->getHelper('process'));
+
+		if( $input->getOption('rebuild') )
+			$this->dockerService->buildImages('./.rancherize', $config->get('service-name') );
 
 		$this->dockerService->start('./.rancherize', $config->get('service-name') );
 
