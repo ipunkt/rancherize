@@ -16,8 +16,9 @@ class DockerfileWriter {
 	/**
 	 * @param Dockerfile $dockerfile
 	 * @param FileWriter $writer
+	 * @param string $filename
 	 */
-	public function write(Dockerfile $dockerfile, FileWriter $writer) {
+	public function write(Dockerfile $dockerfile, FileWriter $writer, $filename = 'Dockerfile') {
 		$lines = [
 		];
 
@@ -55,7 +56,7 @@ class DockerfileWriter {
 		if( !empty($entrypoint) )
 			$lines[] = "ENTRYPOINT ". $entrypoint;
 
-		$writer->put($this->path.'Dockerfile', implode("\n", $lines));
+		$writer->put($this->path.$filename, implode("\n", $lines));
 	}
 
 	/**

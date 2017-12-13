@@ -31,7 +31,7 @@ class Dockerfile {
 	/**
 	 * @var string[]
 	 */
-	protected $volumes;
+	protected $volumes = [];
 
 	/**
 	 * @var string[]
