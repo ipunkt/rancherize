@@ -19,6 +19,10 @@ class PhpCommandsParser {
 		if( !$configuration->has('php-commands') )
 			return $this->defaults();
 
+		foreach($configuration->get('php-commands') as $name => $command) {
+			$commands[] = new PhpCommand($name, $command);
+		}
+
 		return $commands;
 	}
 
