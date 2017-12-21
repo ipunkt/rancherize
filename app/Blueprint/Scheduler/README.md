@@ -14,6 +14,7 @@ All options life inside the `scheduler` json object.
    - Arrays or numerical object variables will be created as `$VALUE=true` tag rule
    - non-numerical object variables will be created as `$NAME=$VALUE` tag rule
 - `forbid-tags`: Object or array of forbidden tags. see `tags` except the host must NOT have these tags. Defaults to []
+- `should-not-tags`: Object or array of tags. Prefer hosts which do not have these tags set. Defaults to []
 
 
 ## Example
@@ -25,7 +26,7 @@ All options life inside the `scheduler` json object.
 			"tags":[
 				"apps",
 			],
-			"should-not-have-tags":[
+			"should-not-tags":[
 				"fallback"
 			]
 		}
@@ -41,7 +42,7 @@ All options life inside the `scheduler` json object.
 				"tags":[
 					"apps",
 				],
-				"should-not-have-tags":[
+				"should-not-tags":[
 					"fallback"
 				]
 			}
