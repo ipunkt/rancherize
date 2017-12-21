@@ -25,6 +25,7 @@ dest = "/usr/local/etc/php/conf.d/30-xdebug.ini"
 ');
 		$debugDockerfile->addInlineFile('/etc/confd/templates/xdebug.ini.tpl',
 '[xdebug]
+xdebug.remote_autostart=On
 xdebug.remote_enable=On
 {{ if getenv "XDEBUG_REMOTE_HOST" }}
 xdebug.remote_host={{ getenv "XDEBUG_REMOTE_HOST" }}
