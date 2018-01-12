@@ -3,6 +3,8 @@ use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Infrastructure\InfrastructureWriter;
 use Rancherize\Blueprint\TakesDockerAccount;
 use Rancherize\Configuration\Configuration;
+use Rancherize\Configuration\PrefixConfigurationDecorator;
+use Rancherize\Configuration\Services\ConfigurationFallback;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\Docker\DockerAccount;
 use Rancherize\File\FileWriter;
@@ -72,7 +74,11 @@ class BuildService {
 		$this->validateService->validate($blueprint, $configuration, $environment);
 		$infrastructure = $blueprint->build($configuration, $environment, $this->version);
 
-		$infrastructureBuiltEvent = new InfrastructureBuiltEvent($infrastructure);
+		$projectConfigurable = new PrefixConfigurationDecorator($configuration, "project.default.");
+		$environmentConfigurable = new PrefixConfigurationDecorator($configuration, "project.environments.$environment.");
+		$environmentConfiguration = new ConfigurationFallback($environmentConfigurable, $projectConfigurable);
+
+		$infrastructureBuiltEvent = new InfrastructureBuiltEvent($infrastructure, $environmentConfiguration);
 		$this->eventDispatcher->dispatch(InfrastructureBuiltEvent::NAME, $infrastructureBuiltEvent);
 		$infrastructure = $infrastructureBuiltEvent->getInfrastructure();
 

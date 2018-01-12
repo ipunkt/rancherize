@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Blueprint\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\DockerfileWriter;
+use Rancherize\Blueprint\Infrastructure\Network\NetworkWriter;
 use Rancherize\Blueprint\Infrastructure\Service\ServiceWriter;
 use Rancherize\Blueprint\Infrastructure\Volume\VolumeWriter;
 use Rancherize\File\FileWriter;
@@ -32,18 +33,24 @@ class InfrastructureWriter {
 	 * @var VolumeWriter
 	 */
 	private $volumeWriter;
+	/**
+	 * @var NetworkWriter
+	 */
+	private $networkWriter;
 
 	/**
 	 * InfrastructureWriter constructor.
 	 * @param DockerfileWriter $dockerfileWriter
 	 * @param ServiceWriter $serviceWriter
 	 * @param VolumeWriter $volumeWriter
+	 * @param NetworkWriter $networkWriter
 	 */
 	public function __construct(DockerfileWriter $dockerfileWriter, ServiceWriter $serviceWriter,
-								VolumeWriter $volumeWriter) {
+								VolumeWriter $volumeWriter, NetworkWriter $networkWriter) {
 		$this->dockerfileWriter = $dockerfileWriter;
 		$this->serviceWriter = $serviceWriter;
 		$this->volumeWriter = $volumeWriter;
+		$this->networkWriter = $networkWriter;
 	}
 
 	/**
@@ -58,6 +65,7 @@ class InfrastructureWriter {
 		$serviceWriter->setPath($this->path);
 		$volumeWriter = $this->volumeWriter;
 		$volumeWriter->setPath($this->path);
+		$this->networkWriter->setPath($this->path);
 
 		if( !$this->skipClear )
 			$serviceWriter->clear($fileWriter);
@@ -67,6 +75,9 @@ class InfrastructureWriter {
 
 		foreach($infrastructure->getVolumes() as $volume)
 			$volumeWriter->write($volume, $fileWriter);
+
+		foreach($infrastructure->getNetworks() as $network)
+			$this->networkWriter->write($network, $fileWriter);
 
 	}
 

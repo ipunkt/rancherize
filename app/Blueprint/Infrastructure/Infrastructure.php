@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Blueprint\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
+use Rancherize\Blueprint\Infrastructure\Network\Network;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\Infrastructure\Volume\Volume;
 
@@ -26,6 +27,11 @@ class Infrastructure {
 	 * @var Volume[]
 	 */
 	protected $volumes = [];
+
+	/**
+	 * @var Network[]
+	 */
+	protected $networks = [];
 
 	/**
 	 * @param Dockerfile $dockerfile
@@ -74,5 +80,16 @@ class Infrastructure {
 	 */
 	public function hasDockerfile() {
 		return ($this->dockerfile !== null);
+	}
+
+	public function addNetwork(Network $network) {
+		$this->networks[] = $network;
+	}
+
+	/**
+	 * @return Network[]
+	 */
+	public function getNetworks(): array {
+		return $this->networks;
 	}
 }

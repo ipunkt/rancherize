@@ -3,6 +3,7 @@
 return [
 
 	Rancherize\File\FileProvider::class,
+	Rancherize\Blueprint\Infrastructure\InfrastructureProvider::class,
 	Rancherize\Blueprint\Healthcheck\HealthcheckProvider::class,
 	Rancherize\Blueprint\PublishUrls\PublishUrlsProvider::class,
 	Rancherize\Blueprint\Scheduler\SchedulerProvider::class,
@@ -29,7 +30,8 @@ return [
 	RancherizePhp53\Php53Provider::class,
 	Rancherize\InputOutput\InputOutputProvider::class,
 	Rancherize\Push\PushProvider::class,
-	\Rancherize\Blueprint\PhpCommands\PhpCommandsProvider::class,
+	Rancherize\Blueprint\Network\NetworkProvider::class,
+	Rancherize\Blueprint\PhpCommands\PhpCommandsProvider::class,
 
 	Rancherize\Commands\CommandsProvider::class,
 

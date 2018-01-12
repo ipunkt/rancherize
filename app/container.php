@@ -62,30 +62,6 @@ $container['validate-service'] = function() {
 		return new \Rancherize\Services\ValidateService();
 };
 
-$container['dockerfile-writer'] = function($c) {
-	return $c[\Rancherize\Blueprint\Infrastructure\Dockerfile\DockerfileWriter::class];
-};
-
-$container[\Rancherize\Blueprint\Infrastructure\Dockerfile\DockerfileWriter::class] = function() {
-	return new \Rancherize\Blueprint\Infrastructure\Dockerfile\DockerfileWriter();
-};
-
-$container['service-writer'] = function($c) {
-	return new \Rancherize\Blueprint\Infrastructure\Service\ServiceWriter($c[\Rancherize\File\FileLoader::class], $c['event'],$c[\Rancherize\Blueprint\Infrastructure\Dockerfile\DockerfileWriter::class]);
-};
-
-$container['volume-writer'] = function($c) {
-	return new \Rancherize\Blueprint\Infrastructure\Volume\VolumeWriter($c[\Rancherize\File\FileLoader::class]);
-};
-
-$container[\Rancherize\Blueprint\Infrastructure\InfrastructureWriter::class] = function($c) {
-	return new \Rancherize\Blueprint\Infrastructure\InfrastructureWriter($c['dockerfile-writer'], $c['service-writer'], $c['volume-writer']);
-};
-
-$container['infrastructure-writer'] = function($c) {
-	return $c[\Rancherize\Blueprint\Infrastructure\InfrastructureWriter::class];
-};
-
 $container['build-service'] = function($c) {
 	return new \Rancherize\Services\BuildService($c['validate-service'], $c['infrastructure-writer'], $c['event']);
 };
