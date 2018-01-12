@@ -60,7 +60,7 @@ class InServicePushMode implements PushMode {
 		$rancherService->wait( $stackName, $serviceName, $stateMatcher );
 		// TODO: set timeout and roll back the upgrade if the timeout is reached without health confirmation.
 
-		$rancherService->confirm( './.rancherize', $stackName, [$stackName] );
+		$rancherService->confirm( './.rancherize', $stackName, [$serviceName] );
 		return array($serviceNames, $startEvent);
 
 	}
