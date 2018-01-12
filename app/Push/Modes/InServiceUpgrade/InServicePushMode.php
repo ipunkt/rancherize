@@ -57,7 +57,7 @@ class InServicePushMode implements PushMode {
 		if ( $configuration->get( 'rancher.upgrade-healthcheck', false ) )
 			$stateMatcher = new HealthStateMatcher( 'healthy' );
 
-		$rancherService->wait( $stackName, $stackName, $stateMatcher );
+		$rancherService->wait( $stackName, $serviceName, $stateMatcher );
 		// TODO: set timeout and roll back the upgrade if the timeout is reached without health confirmation.
 
 		$rancherService->confirm( './.rancherize', $stackName, [$stackName] );
