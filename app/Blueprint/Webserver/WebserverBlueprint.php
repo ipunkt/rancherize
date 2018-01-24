@@ -94,6 +94,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	 * WebserverBlueprint constructor.
 	 * @param RollingUpgradeChecker $rollingUpgradeChecker
 	 * @param EventDispatcher $event
+	 */
 	public function __construct( RollingUpgradeChecker $rollingUpgradeChecker, EventDispatcher $event ) {
 		$this->rollingUpgradeChecker = $rollingUpgradeChecker;
 		$this->event = $event;

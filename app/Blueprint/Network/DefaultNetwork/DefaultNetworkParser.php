@@ -11,6 +11,8 @@ use Rancherize\Configuration\Configuration;
 class DefaultNetworkParser {
 
 	public function parse( Configuration $configuration, Infrastructure $infrastructure ) {
+		if(!$configuration->has('default-network'))
+			return;
 
 		$networkName = $configuration->get('default-network');
 
