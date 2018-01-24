@@ -449,8 +449,9 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$imageNameWithServer = $this->applyServer($imageName);
 
 			$appService = new AppService($imageNameWithServer);
-			$appService->setName($config->get('service-name') . 'App');
-
+			$appService->setName(function() use ($serverService) {
+				return $serverService->getName().'App';
+			});
 			$serverService->addSidekick($appService);
 			$serverService->addVolumeFrom($appService);
 			$infrastructure->addService($appService);
@@ -529,7 +530,9 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
             $connection = $config->get("queues.$key.connection", 'default');
 
             $laravelQueueWorker = new LaravelQueueWorker($queueImageVersion);
-            $laravelQueueWorker->setName('QueueWorker' . ucwords($name));
+            $laravelQueueWorker->setName( function() use($serverService, $name) {
+            	return $serverService->getName().'-QueueWorker' . ucwords($name);
+            });
             $laravelQueueWorker->addVolumeFrom($serverService);
             $laravelQueueWorker->addLinksFrom($serverService);
             $laravelQueueWorker->setEnvironmentVariablesFrom($serverService);
@@ -556,8 +559,14 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 		 * Add Version suffix to the main service and all its sidekicks
 		 */
 		$serverService->setName($serverService->getName() . $versionSuffix);
+
+		/*
+		 * Deprecated!
+		 * Create Sidekicks with a closure in setName which creates the name based on the ServerService
 		foreach ($serverService->getSidekicks() as $sidekick)
 			$sidekick->setName($sidekick->getName() . $versionSuffix);
+		 *
+		 */
 	}
 
 	/**
