@@ -119,7 +119,7 @@ class Service {
 		if($this->name instanceof Closure) {
 			$callback = $this->name;
 
-			$callback($this);
+			return $callback($this);
 		}
 
 		return $this->name;
