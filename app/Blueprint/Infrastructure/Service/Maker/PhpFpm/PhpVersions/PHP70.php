@@ -52,7 +52,11 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 	public function make( Configuration $config, Service $mainService, Infrastructure $infrastructure) {
 
 		$phpFpmService = new Service();
-		$phpFpmService->setName($mainService->getName().'-PHP-FPM');
+		$phpFpmService->setName( function() use ($mainService) {
+			$name = $mainService->getName() . '-PHP-FPM';
+			$mainService->setEnvironmentVariable('BACKEND_HOST', $name.':9000');
+			return $name;
+		});
 
 		$this->setImage($phpFpmService);
 
@@ -150,7 +154,9 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 
 		$phpCommandService = new Service();
 		$phpCommandService->setCommand($command);
-		$phpCommandService->setName('PHP-'.$commandName);
+		$phpCommandService->setName( function() use ($mainService, $commandName) {
+			return $mainService->getName() . '-PHP-'.$commandName;
+		});
 		$this->setImage( $phpCommandService );
 		$phpCommandService->setRestart(Service::RESTART_START_ONCE);
 		$this->addAppSource($phpCommandService);
