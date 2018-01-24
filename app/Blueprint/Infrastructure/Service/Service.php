@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Blueprint\Infrastructure\Service;
 
+use Closure;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
 
 /**
@@ -10,7 +11,10 @@ use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
  */
 class Service {
 	/**
-	 * @var string
+	 * Either the name as a string or a closure taking $this as parameter.
+	 * @see setName
+	 *
+	 * @var string|Closure
 	 */
 	protected $name = '';
 
@@ -112,13 +116,25 @@ class Service {
 	 * @return string
 	 */
 	public function getName(): string {
+		if($this->name instanceof Closure) {
+			$callback = $this->name;
+
+			$callback($this);
+		}
+
 		return $this->name;
 	}
 
 	/**
-	 * @param string $name
+	 * If a closure is set then the closure is called with $closure($this) every time the name is read with getName()
+	 * Use it if the name is relative to some other container.
+	 *
+	 * Example:
+	 * $service->setName( function($Service $myService) use ($mainService) { return $mainService->getName().'-PHP-FPM'; } );
+	 *
+	 * @param string|Closure $name
 	 */
-	public function setName(string $name) {
+	public function setName($name) {
 		$this->name = $name;
 	}
 
