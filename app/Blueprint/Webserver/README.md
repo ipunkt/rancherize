@@ -59,7 +59,7 @@ This blueprint creates infrastructures to support apps using php7.
 |`php.upload-file-limit`| `2M` | PHP post_max_size option |
 |`php.default-timezone`| `UTC` | PHP date.timezone option |
 |`queues`| [] | Add Laravel Queue Worker, providing their name and connection in `name` and `connection`. Example: `"queues":[{"connection": "redis","name": "default"}],` |
-|`queue-image-version`| `php7.0-v1.0` | Which docker image version do you need: (default: `php7.0-v1.0`, or `php7.1-v2.0`, `latest` are [valid](https://hub.docker.com/r/ipunktbs/laravel-queue-worker/tags/) right now) |
+|`queue-image-version`| `php7.0-v1.0` | Which docker image version do you need: (default: `php7.0-v1.0`; also `php7.1-v2.0`, `php7.2-v3.0` and `latest` are [valid](https://hub.docker.com/r/ipunktbs/laravel-queue-worker/tags/) right now) |
 |`add-redis`| false | Add a Redis server and link it to the main app, providing its name and port in `REDIS_HOST` and `REDIS_PORT` |
 
 #### Services for local development
