@@ -10,6 +10,7 @@
     "ipunkt/rancherize-backup-storagebox": "^1.0.1",
     "ipunkt/rancherize-ecr": "^1.0.0",
     "ipunkt/rancherize-publish-traefik-rancher": "^1.0.1",
+    "ipunkt/rancherize-ftp": "^1.0",
     "ipunkt/rancherize-blueprint-php-cli": "^1.0.1",
     "ipunkt/rancherize-php53": "^1.1.0",
     "ipunkt/rancherize-php72": "^1.0.1"
