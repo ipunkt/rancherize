@@ -1,6 +1,7 @@
 <?php namespace Rancherize\Blueprint\PhpCommands;
 
-use Rancherize\Blueprint\Cron\CronParser\CronParser;
+use Rancherize\Blueprint\Cron\CronService\CronService;
+use Rancherize\Blueprint\Cron\Schedule\ScheduleParser;
 use Rancherize\Blueprint\Events\MainServiceBuiltEvent;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMaker;
 use Rancherize\Blueprint\PhpCommands\EventHandler\PhpCommandsEventHandler;
@@ -35,7 +36,7 @@ class PhpCommandsProvider implements Provider {
 		};
 
 		$this->container[PhpCommandsEventHandler::class] = function( $c) {
-			return new PhpCommandsEventHandler( $c[PhpFpmMaker::class], $c[PhpCommandsParser::class], $c[CronParser::class] );
+			return new PhpCommandsEventHandler( $c[PhpFpmMaker::class], $c[PhpCommandsParser::class], $c[CronService::class], $c[ScheduleParser::class] );
 		};
 	}
 

@@ -1,6 +1,8 @@
 <?php namespace Rancherize\Blueprint\PhpCommands\EventHandler;
 
-use Rancherize\Blueprint\Cron\CronParser\CronParser;
+use Rancherize\Blueprint\Cron\CronService\CronService;
+use Rancherize\Blueprint\Cron\Schedule\Exceptions\NoScheduleConfiguredException;
+use Rancherize\Blueprint\Cron\Schedule\ScheduleParser;
 use Rancherize\Blueprint\Events\MainServiceBuiltEvent;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMaker;
 use Rancherize\Blueprint\PhpCommands\Parser\PhpCommandsParser;
@@ -19,20 +21,26 @@ class PhpCommandsEventHandler {
 	 */
 	private $commandsParser;
 	/**
-	 * @var CronParser
+	 * @var ScheduleParser
 	 */
-	private $cronParser;
+	private $scheduleParser;
+	/**
+	 * @var CronService
+	 */
+	private $cronService;
 
 	/**
 	 * PhpCommandsEventHandler constructor.
 	 * @param PhpFpmMaker $fpmMaker
 	 * @param PhpCommandsParser $commandsParser
-	 * @param CronParser $cronParser
+	 * @param CronService $cronService
+	 * @param ScheduleParser $scheduleParser
 	 */
-	public function __construct( PhpFpmMaker $fpmMaker, PhpCommandsParser $commandsParser, CronParser $cronParser ) {
+	public function __construct( PhpFpmMaker $fpmMaker, PhpCommandsParser $commandsParser, CronService $cronService, ScheduleParser $scheduleParser ) {
 		$this->fpmMaker = $fpmMaker;
 		$this->commandsParser = $commandsParser;
-		$this->cronParser = $cronParser;
+		$this->scheduleParser = $scheduleParser;
+		$this->cronService = $cronService;
 	}
 
 	/**
@@ -49,6 +57,13 @@ class PhpCommandsEventHandler {
 		$commands = $this->commandsParser->parse($config);
 		foreach( $commands as $command) {
 			$service = $this->fpmMaker->makeCommand( $command->getName(), $command->getCommand(), $mainService, $config );
+
+			try {
+				$schedule = $this->scheduleParser->parseSchedule( $command->getConfiguration() );
+				$this->cronService->makeCron( $service, $schedule );
+			} catch ( NoScheduleConfiguredException $e ) {
+				// do nothing, no schedule configurated
+			}
 
 			$infrastructure->addService($service);
 		}
