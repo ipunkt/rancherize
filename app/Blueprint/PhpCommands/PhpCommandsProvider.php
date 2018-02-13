@@ -1,8 +1,11 @@
 <?php namespace Rancherize\Blueprint\PhpCommands;
 
+use Rancherize\Blueprint\Cron\CronParser\CronParser;
 use Rancherize\Blueprint\Events\MainServiceBuiltEvent;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMaker;
 use Rancherize\Blueprint\PhpCommands\EventHandler\PhpCommandsEventHandler;
+use Rancherize\Blueprint\PhpCommands\Parser\ArrayParser;
+use Rancherize\Blueprint\PhpCommands\Parser\NameParser;
 use Rancherize\Blueprint\PhpCommands\Parser\PhpCommandsParser;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
@@ -19,12 +22,20 @@ class PhpCommandsProvider implements Provider {
 	/**
 	 */
 	public function register() {
-		$this->container[PhpCommandsParser::class] = function() {
-			return new PhpCommandsParser();
+		$this->container[ArrayParser::class] = function () {
+			return new ArrayParser();
 		};
 
-		$this->container[PhpCommandsEventHandler::class] = function($c) {
-			return new PhpCommandsEventHandler( $c[PhpFpmMaker::class], $c[PhpCommandsParser::class] );
+		$this->container[NameParser::class] = function () {
+			return new NameParser();
+		};
+
+		$this->container[PhpCommandsParser::class] = function ( $c ) {
+			return new PhpCommandsParser( $c[ArrayParser::class], $c[NameParser::class] );
+		};
+
+		$this->container[PhpCommandsEventHandler::class] = function( $c) {
+			return new PhpCommandsEventHandler( $c[PhpFpmMaker::class], $c[PhpCommandsParser::class], $c[CronParser::class] );
 		};
 	}
 
