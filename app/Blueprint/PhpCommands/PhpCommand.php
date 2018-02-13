@@ -1,5 +1,7 @@
 <?php namespace Rancherize\Blueprint\PhpCommands;
 
+use Rancherize\Configuration\Configuration;
+
 /**
  * Class PhpCommand
  * @package Rancherize\Blueprint\PhpCommands
@@ -15,6 +17,11 @@ class PhpCommand {
 	 * @var string
 	 */
 	protected $command = '';
+
+	/**
+	 * @var Configuration
+	 */
+	protected $configuration;
 
 	/**
 	 * PhpCommand constructor.
@@ -52,6 +59,20 @@ class PhpCommand {
 	 */
 	public function setCommand( string $command ) {
 		$this->command = $command;
+	}
+
+	/**
+	 * @param Configuration $configuration
+	 */
+	public function setConfiguration( Configuration $configuration ) {
+		$this->configuration = $configuration;
+	}
+
+	/**
+	 * @return Configuration
+	 */
+	public function getConfiguration(): Configuration {
+		return $this->configuration;
 	}
 
 }

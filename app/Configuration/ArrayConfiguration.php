@@ -58,6 +58,9 @@ class ArrayConfiguration implements Configurable  {
 		$currentValues = $this->values;
 
 		foreach($keyParts as $keyPart) {
+			if( !is_array($currentValues) )
+				return false;
+
 			if( !array_key_exists($keyPart, $currentValues) )
 				return false;
 

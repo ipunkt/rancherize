@@ -8,7 +8,7 @@ to easily support adding cronjob sidekicks
 ## Options
 - command: The command given to the entrypoint of your image
 - schedule: When to run the command. This has a cron-like syntax meaning `*` stands for `any`. `*/XX` means every XX
-  - String: `second minute hour month dayOfMonth dayOfWeek` e.g. `* 0 * * * *`: run every full hour.
+  - String: `second minute hour month dayOfMonth dayOfWeek` e.g. `00 0 * * * *`: run every full hour.
   - Object: Object with the following attributes. Any attribute that is not given will default to `*`
     - hour
     - minute
@@ -19,6 +19,7 @@ to easily support adding cronjob sidekicks
 
 ## Examples
 - Run the PHP Command `php /var/www/app/artisan sitemap:make` every day at 2:30 am for every environment
+```json
 { 
 	"default":{ 
 		"cron":{
@@ -26,12 +27,14 @@ to easily support adding cronjob sidekicks
 				"command":"php /var/www/app/artisan sitemap:make",
 				"schedule":{
 					"hour": 2,
-					"minute": 30
+					"minute": 30,
+					"second": 0
 				}
 			}
 		}
 	} 
 }
+```
 
 - Run the PHP Command `php /var/www/app/artisan sitemap:make` every day at 2:30 am for the environment `staging`
 ```json
@@ -43,7 +46,8 @@ to easily support adding cronjob sidekicks
 					"command":"php /var/www/app/artisan sitemap:make",
 					"schedule":{
 						"hour": 2,
-						"minute": 30
+						"minute": 30,
+						"second": 0
 					}
 				}
 			}
