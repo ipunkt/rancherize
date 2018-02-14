@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Blueprint\PhpCommands;
 
+use Rancherize\Configuration\ArrayConfiguration;
 use Rancherize\Configuration\Configuration;
 
 /**
@@ -31,6 +32,7 @@ class PhpCommand {
 	public function __construct( $name = '', $command = '') {
 		$this->name = $name;
 		$this->command = $command;
+		$this->configuration = new ArrayConfiguration( [] );
 	}
 
 	/**
