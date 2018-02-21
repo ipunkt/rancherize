@@ -131,6 +131,12 @@ class ServiceWriter {
 		$externalLinks = [];
 		foreach($service->getExternalLinks() as $name => $serviceName) {
 
+			/**
+			 * Skip external link if internal link with the same name exists
+			 */
+			if ( is_string( $name ) && array_key_exists( $name, $service->getLinks() ) )
+				continue;
+
 			if( is_string($name) )
 				$externalLinks[] = "$serviceName:$name";
 			else
