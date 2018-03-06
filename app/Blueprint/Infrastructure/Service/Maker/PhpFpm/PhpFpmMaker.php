@@ -132,6 +132,7 @@ class PhpFpmMaker {
 
 		if( !is_array($config->get('php') ) )
 			return;
+		var_dump('php-config: '.$config->get('php') );
 
 		$phpConfig = new PrefixConfigurationDecorator($config, 'php.');
 		if( $phpVersion instanceof MemoryLimit && $phpConfig->has('memory-limit')  )
