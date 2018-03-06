@@ -132,7 +132,6 @@ class PhpFpmMaker {
 
 		if( !is_array($config->get('php') ) )
 			return;
-		var_dump('php-config: ', $config->get('php') );
 
 		$phpConfig = new PrefixConfigurationDecorator($config, 'php.');
 		if( $phpVersion instanceof MemoryLimit && $phpConfig->has('memory-limit')  )
@@ -165,8 +164,6 @@ class PhpFpmMaker {
 			$phpVersion->setDebugListener( $phpConfig->get('debug-listener', null) );
 		}
 
-		var_dump('update-backend: '.$phpConfig->get('update-backend', true) );
-		die();
 		if( $phpVersion instanceof UpdatesBackendEnvironment )
 			$phpVersion->enableUpdateEnvironment( $phpConfig->get('update-backend', true) );
 	}
