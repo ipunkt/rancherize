@@ -8,6 +8,8 @@ All options lie in the `healthcheck` json object.
   to `true`
 - `port` the port to query for a successful connection. Defaults to `80`
 - `url` http url to check. This will enable http 1.0 checking instead of tcp 'conection opens' checking
+- `strategy` define what rancher does when the healthcheck fails. Default `none` Possible values: `none`, `recreate`  
+  The value for recreate if service is not yet known
 - `interval`: Interval between healthchecks in ms. Defaults to `2000`
 - `response-timeout`: Time in ms before a stalled request is counted as having failed. Defaults to `2000`
 - `init-timeout`: Time before the first healthcheck is attempted in ms. Defaults to `60000`
