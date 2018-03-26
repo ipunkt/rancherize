@@ -2,6 +2,7 @@
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\AlpineDebugImageBuilder;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Configurations\MailTarget;
+use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Configurations\UpdatesBackendEnvironment;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\DebugImage;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\DefaultTimezone;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\MemoryLimit;
@@ -12,6 +13,7 @@ use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Traits\DefaultTimez
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Traits\MailTargetTrait;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Traits\MemoryLimitTrait;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Traits\PostLimitTrait;
+use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Traits\UpdatesBackendEnvironmentTrait;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Traits\UploadFileLimitTrait;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\UploadFileLimit;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
@@ -21,7 +23,7 @@ use Rancherize\Configuration\Configuration;
  * Class PHP70
  * @package Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions
  */
-class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, DefaultTimezone, MailTarget, DebugImage {
+class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, DefaultTimezone, MailTarget, DebugImage, UpdatesBackendEnvironment {
 
 	const PHP_IMAGE = 'ipunktbs/php:7.0-fpm';
 
@@ -31,6 +33,7 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 	use UploadFileLimitTrait;
 	use PostLimitTrait;
 	use MemoryLimitTrait;
+	use UpdatesBackendEnvironmentTrait;
 
 	/**
 	 * @var string|Service
@@ -54,7 +57,10 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 		$phpFpmService = new Service();
 		$phpFpmService->setName( function() use ($mainService) {
 			$name = $mainService->getName() . '-PHP-FPM';
-			$mainService->setEnvironmentVariable('BACKEND_HOST', $name.':9000');
+
+			if($this->updateBackendEnvironment)
+				$mainService->setEnvironmentVariable('BACKEND_HOST', $name.':9000');
+
 			return $name;
 		});
 

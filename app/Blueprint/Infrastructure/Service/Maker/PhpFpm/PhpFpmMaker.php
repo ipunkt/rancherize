@@ -2,6 +2,7 @@
 
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Configurations\MailTarget;
+use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Configurations\UpdatesBackendEnvironment;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\PrefixConfigurationDecorator;
@@ -162,5 +163,8 @@ class PhpFpmMaker {
 			$phpVersion->setDebug( $phpConfig->get('debug', false) );
 			$phpVersion->setDebugListener( $phpConfig->get('debug-listener', null) );
 		}
+
+		if( $phpVersion instanceof UpdatesBackendEnvironment )
+			$phpVersion->enableUpdateEnvironment( $phpConfig->get('update-backend', true) );
 	}
 }
