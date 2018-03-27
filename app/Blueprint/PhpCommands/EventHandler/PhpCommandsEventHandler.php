@@ -5,6 +5,7 @@ use Rancherize\Blueprint\Cron\Schedule\Exceptions\NoScheduleConfiguredException;
 use Rancherize\Blueprint\Cron\Schedule\ScheduleParser;
 use Rancherize\Blueprint\Events\MainServiceBuiltEvent;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMaker;
+use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\PhpCommands\Parser\PhpCommandsParser;
 
 /**
@@ -54,9 +55,19 @@ class PhpCommandsEventHandler {
 
 		$config = $event->getEnvironmentConfiguration();
 
-		$commands = $this->commandsParser->parse($config);
-		foreach( $commands as $command) {
+		$commands = $this->commandsParser->parse( $config );
+		foreach ( $commands as $command ) {
 			$service = $this->fpmMaker->makeCommand( $command->getName(), $command->getCommand(), $mainService, $config );
+
+			$restart = [
+				'never' => Service::RESTART_NEVER,
+				'always' => Service::RESTART_ALWAYS,
+				'unless-stopped' => Service::RESTART_UNLESS_STOPPED,
+				'start-once' => Service::RESTART_START_ONCE,
+			];
+
+			if ( array_key_exists( $command->getRestart(), $restart ) )
+				$service->setRestart( $restart[$command->getRestart()] );
 
 			try {
 				$schedule = $this->scheduleParser->parseSchedule( $command->getConfiguration() );
@@ -65,7 +76,7 @@ class PhpCommandsEventHandler {
 				// do nothing, no schedule configurated
 			}
 
-			$infrastructure->addService($service);
+			$infrastructure->addService( $service );
 		}
 
 	}

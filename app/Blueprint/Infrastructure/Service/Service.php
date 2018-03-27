@@ -72,7 +72,11 @@ class Service {
 
 	const RESTART_UNLESS_STOPPED = 0;
 	const RESTART_NEVER = 1;
+	/**
+	 * @deprecated use RESTART_ALWAYS instead
+	 */
 	const RESTART_AWAYS = 2;
+	const RESTART_ALWAYS = 2;
 	const RESTART_START_ONCE = 3;
 
 	/**

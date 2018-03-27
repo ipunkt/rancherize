@@ -25,6 +25,11 @@ class ArrayParser implements PhpCommandParser {
 
 		$command = $data['command'];
 
-		return new PhpCommand( $commandName, $command );
+		$phpCommand = new PhpCommand( $commandName, $command );
+
+		if ( array_key_exists( 'restart', $data ) )
+			$phpCommand->setRestart( $data['restart'] );
+
+		return $phpCommand;
 	}
 }

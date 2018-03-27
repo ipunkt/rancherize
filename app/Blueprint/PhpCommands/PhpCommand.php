@@ -20,6 +20,11 @@ class PhpCommand {
 	protected $command = '';
 
 	/**
+	 * @var string
+	 */
+	protected $restart = 'never';
+
+	/**
 	 * @var Configuration
 	 */
 	protected $configuration;
@@ -75,6 +80,20 @@ class PhpCommand {
 	 */
 	public function getConfiguration(): Configuration {
 		return $this->configuration;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRestart(): string {
+		return $this->restart;
+	}
+
+	/**
+	 * @param string $restart
+	 */
+	public function setRestart( string $restart ) {
+		$this->restart = $restart;
 	}
 
 }
