@@ -1,4 +1,5 @@
 <?php namespace Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions;
+
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\AlpineDebugImageBuilder;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Configurations\MailTarget;
@@ -112,6 +113,8 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 			$phpFpmService->setEnvironmentVariable($name, $value);
 
 		$mainService->addLink($phpFpmService, 'phpfpm');
+		if ( $this->updateBackendEnvironment )
+			$mainService->setEnvironmentVariable( 'BACKEND_HOST', $name . ':9000' );
 
 		/**
 		 * Copy links from the main service so databases etc are available
