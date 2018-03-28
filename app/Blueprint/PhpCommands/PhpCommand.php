@@ -22,7 +22,7 @@ class PhpCommand {
 	/**
 	 * @var string
 	 */
-	protected $restart = 'never';
+	protected $restart = 'start-once';
 
 	/**
 	 * @var Configuration
