@@ -113,6 +113,7 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 			$phpFpmService->setEnvironmentVariable($name, $value);
 
 		$mainService->addLink($phpFpmService, 'phpfpm');
+		die( 'update-backend:' . $this->updateBackendEnvironment );
 		if ( $this->updateBackendEnvironment )
 			$mainService->setEnvironmentVariable( 'BACKEND_HOST', $name . ':9000' );
 
