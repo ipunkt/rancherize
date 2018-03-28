@@ -15,6 +15,9 @@ trait UpdatesBackendEnvironmentTrait {
 	 * @param bool $enabled
 	 */
 	public function enableUpdateEnvironment($enabled = true) {
+		var_dump( $enabled );
+
+		die();
 
 		$this->updateBackendEnvironment = $enabled;
 	}
