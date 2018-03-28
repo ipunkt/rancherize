@@ -130,8 +130,13 @@ class PhpFpmMaker {
 	 */
 	private function setConfig( PhpVersion $phpVersion, Configuration $config ) {
 
-		if( !is_array($config->get('php') ) )
+		if ( !is_array( $config->get( 'php' ) ) ) {
+
+			if ( $phpVersion instanceof UpdatesBackendEnvironment )
+				$phpVersion->enableUpdateEnvironment( true );
+
 			return;
+		}
 
 		$phpConfig = new PrefixConfigurationDecorator($config, 'php.');
 		if( $phpVersion instanceof MemoryLimit && $phpConfig->has('memory-limit')  )
