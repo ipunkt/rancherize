@@ -39,7 +39,6 @@ class ComposerPluginInstaller implements PluginInstaller {
 	 * @param $name
 	 * @param InputInterface $input
 	 * @param OutputInterface $output
-	 * @return mixed
 	 */
 	public function install($name, InputInterface $input, OutputInterface $output) {
 
@@ -63,7 +62,7 @@ class ComposerPluginInstaller implements PluginInstaller {
 
 		$composerPacket = $this->nameParser->parse($name);
 		$path = $this->pathMaker->makePath($composerPacket);
-		$composerJson = getcwd().'/'.$path.'/composer.json';
+		$composerJson = $path . '/composer.json';
 
 		$composerContent = file_get_contents( $composerJson );
 		$composerData = json_decode( $composerContent, true );

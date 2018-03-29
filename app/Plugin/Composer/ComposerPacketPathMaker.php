@@ -15,7 +15,9 @@ class ComposerPacketPathMaker {
 		$namespace = $packet->getNamespace();
 		$name = $packet->getName();
 
-		return "vendor/$namespace/$name";
+		$basePath = container( 'plugin_path' );
+
+		return "$basePath/vendor/$namespace/$name";
 	}
 
 }

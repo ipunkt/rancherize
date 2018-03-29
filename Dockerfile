@@ -47,4 +47,6 @@ RUN cd /opt/rancherize-package \
     && COMPOSER_ALLOW_SUPERUSER=1 ./composer.phar  install \
     && rm composer.phar
 
+COPY docker/plugin_path.php /opt/rancherize-package
+
 ENTRYPOINT ["/bin/sh", "/opt/rancherize/docker-entrypoint.sh"]
