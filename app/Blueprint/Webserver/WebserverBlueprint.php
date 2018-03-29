@@ -193,6 +193,25 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			'service-name' => 'required',
 
 		]);
+
+		$failures = [];
+
+		$unsupportedOptions = [
+			'persistent-volumes' => 'volumes',
+			'docker.persistent-driver' => 'volumes',
+			'docker.persistent-options' => 'volumes',
+		];
+		foreach ( $unsupportedOptions as $oldOption => $replacement ) {
+
+			if ( $config->has( $oldOption ) )
+				$failures[$oldOption] = ["Option $oldOption is no longer supported, use $replacement instead"];
+
+		}
+
+
+		if ( !empty( $failures ) )
+			throw new ValidationFailedException( $failures );
+
 	}
 
 	/**
@@ -371,20 +390,6 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 
 		if ($config->has('expose-port'))
 			$serverService->expose(80, $config->get('expose-port'));
-
-		$persistentDriver = $config->get('docker.persistent-driver', 'pxd');
-		$persistentOptions = $config->get('docker.persistent-options', [
-			'repl' => '3',
-			'shared' => 'true',
-		]);
-		foreach( $config->get('persistent-volumes', []) as $volumeName => $path ) {
-			$volume = new \Rancherize\Blueprint\Infrastructure\Service\Volume();
-			$volume->setDriver($persistentDriver);
-			$volume->setOptions($persistentOptions);
-			$volume->setExternalPath($volumeName);
-			$volume->setInternalPath($path);
-			$serverService->addVolume( $volume );
-		}
 
 		$this->arrayAdder->addAll([$default, $config], 'environment', function(string $name, $value) use ($serverService) {
 			$serverService->setEnvironmentVariable($name, $value);
