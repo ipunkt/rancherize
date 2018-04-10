@@ -111,11 +111,6 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 		foreach( $mainService->getEnvironmentVariables() as $name => $value )
 			$phpFpmService->setEnvironmentVariable($name, $value);
 
-		/**
-		 * Copy links from the main service so databases etc are available
-		 */
-		$phpFpmService->addLinksFrom($mainService);
-
 		$mainService->addSidekick($phpFpmService);
 		$infrastructure->addService($phpFpmService);
 	}
