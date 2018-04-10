@@ -24,6 +24,6 @@ class ShareNetworkMode implements NetworkMode {
 	 * @return string
 	 */
 	public function getNetworkMode(): string {
-		return 'container:' . $this->service->getName();
+		return 'service:' . $this->service->getName();
 	}
 }
