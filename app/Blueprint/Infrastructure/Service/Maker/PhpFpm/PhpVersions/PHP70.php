@@ -58,7 +58,7 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 
 		$phpFpmService = new Service();
 		$phpFpmService->setNetworkMode( new ShareNetworkMode( $mainService ) );
-		$phpFpmService->setEnvironmentVariable( 'BACKEND_HOST', '127.0.0.1:9000' );
+		$mainService->setEnvironmentVariable( 'BACKEND_HOST', '127.0.0.1:9000' );
 		$phpFpmService->setName( function() use ($mainService) {
 			$name = $mainService->getName() . '-PHP-FPM';
 			return $name;
