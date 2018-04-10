@@ -2,6 +2,7 @@
 
 /**
  * Class UpdatesBackendEnvironmentTrait
+ * @deprecated  use SharedNetworkMode with the mainService and BACKEND_HOST=127.0.0.1:9000 instead*
  * @package Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Traits
  */
 trait UpdatesBackendEnvironmentTrait {
