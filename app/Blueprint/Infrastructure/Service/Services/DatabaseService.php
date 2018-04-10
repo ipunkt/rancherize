@@ -16,6 +16,7 @@ class DatabaseService extends Service {
 	 * DatabaseService constructor.
 	 */
 	public function __construct() {
+		parent::__construct();
 		$this->setName('Database');
 		$this->setRestart(self::RESTART_UNLESS_STOPPED);
 		$this->setTty(true);

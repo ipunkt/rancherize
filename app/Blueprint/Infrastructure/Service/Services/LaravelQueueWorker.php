@@ -19,6 +19,7 @@ class LaravelQueueWorker extends Service
 
 	public function __construct($imageVersion = null)
 	{
+		parent::__construct();
 		$this->setName('LaravelQueueWorker');
 		$this->setImageVersion($imageVersion);
 		$this->setRestart(self::RESTART_UNLESS_STOPPED);

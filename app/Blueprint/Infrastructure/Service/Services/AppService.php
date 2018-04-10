@@ -12,6 +12,7 @@ class AppService extends Service {
 	 * @param $image
 	 */
 	public function __construct($image) {
+		parent::__construct();
 		$this->setImage($image);
 		$this->setRestart(self::RESTART_START_ONCE);
 		$this->setCommand('/bin/true');

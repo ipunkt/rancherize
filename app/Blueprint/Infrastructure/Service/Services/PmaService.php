@@ -12,6 +12,7 @@ class PmaService extends Service {
 	 * PmaService constructor.
 	 */
 	public function __construct() {
+		parent::__construct();
 		$this->setName('PMA');
 		$this->setTty(true);
 		$this->setImage('phpmyadmin/phpmyadmin:4.6.2-3');
