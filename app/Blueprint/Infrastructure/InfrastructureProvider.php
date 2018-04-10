@@ -55,6 +55,8 @@ class InfrastructureProvider implements Provider {
 		$this->container['infrastructure-writer'] = function($c) {
 			return $c[\Rancherize\Blueprint\Infrastructure\InfrastructureWriter::class];
 		};
+
+		$this->container['shared-network-mode'] = 'container:';
 	}
 
 	/**

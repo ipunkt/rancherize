@@ -83,6 +83,9 @@ class StartCommand extends Command implements LoadsConfiguration {
      */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 
+		$container = container();
+		$container['shared-network-mode'] = 'service:';
+
 		$environment = $input->getArgument('environment');
 
 		$configuration = $this->getConfiguration();
