@@ -72,6 +72,9 @@ class ServiceWriter {
 
 		$this->addNonEmpty('tty', $service->isTty(), $content);
 
+		$networkMode = $service->getNetworkMode();
+		$this->addNonEmpty( 'network_mode', $networkMode, $content );
+
 		$environment = [];
 		foreach($service->getEnvironmentVariables() as $name => $value)
 			$environment[$name] = $value;

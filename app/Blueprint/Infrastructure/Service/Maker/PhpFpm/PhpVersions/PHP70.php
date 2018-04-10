@@ -17,6 +17,7 @@ use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Traits\PostLimitTra
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Traits\UpdatesBackendEnvironmentTrait;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Traits\UploadFileLimitTrait;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\UploadFileLimit;
+use Rancherize\Blueprint\Infrastructure\Service\NetworkMode\ShareNetworkMode;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Configuration\Configuration;
 
@@ -56,12 +57,10 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 	public function make( Configuration $config, Service $mainService, Infrastructure $infrastructure) {
 
 		$phpFpmService = new Service();
+		$phpFpmService->setNetworkMode( new ShareNetworkMode( $mainService ) );
+		$phpFpmService->setEnvironmentVariable( 'BACKEND_HOST', '127.0.0.1:9000' );
 		$phpFpmService->setName( function() use ($mainService) {
 			$name = $mainService->getName() . '-PHP-FPM';
-
-			if($this->updateBackendEnvironment)
-				$mainService->setEnvironmentVariable('BACKEND_HOST', $name.':9000');
-
 			return $name;
 		});
 
@@ -113,8 +112,6 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 			$phpFpmService->setEnvironmentVariable($name, $value);
 
 		$mainService->addLink($phpFpmService, 'phpfpm');
-		if ( $this->updateBackendEnvironment )
-			$mainService->setEnvironmentVariable( 'BACKEND_HOST', $name . ':9000' );
 
 		/**
 		 * Copy links from the main service so databases etc are available

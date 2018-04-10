@@ -2,6 +2,8 @@
 
 use Closure;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
+use Rancherize\Blueprint\Infrastructure\Service\NetworkMode\DefaultNetworkMode;
+use Rancherize\Blueprint\Infrastructure\Service\NetworkMode\NetworkMode;
 
 /**
  * Class Service
@@ -115,6 +117,15 @@ class Service {
 	 * @var bool
 	 */
 	protected $startFirst = true;
+
+	/**
+	 * @var NetworkMode
+	 */
+	protected $networkMode;
+
+	public function __construct() {
+		$this->networkMode = new DefaultNetworkMode();
+	}
 
 	/**
 	 * @return string
@@ -477,6 +488,20 @@ class Service {
 	 */
 	public function setWorkDir( string $workDir ) {
 		$this->workDir = $workDir;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getNetworkMode(): string {
+		return $this->networkMode->getNetworkMode();
+	}
+
+	/**
+	 * @param NetworkMode $networkMode
+	 */
+	public function setNetworkMode( NetworkMode $networkMode ) {
+		$this->networkMode = $networkMode;
 	}
 
 
