@@ -119,6 +119,12 @@ class ServiceWriter {
 		if($service->getRestart() == Service::RESTART_START_ONCE)
 			$labels['io.rancher.container.start_once'] = 'true';
 
+		$alwaysPulled = $service->isAlwaysPulled();
+		if ( $alwaysPulled === Service::ALWAYS_PULLED_DEFAULT )
+			$alwaysPulled = container( 'always-pulled-default' );
+		if ( $alwaysPulled === Service::ALWAYS_PULLED_TRUE )
+			$labels['io.rancher.container.pull_image'] = 'always';
+
 		if( !empty($service->getSidekicks()) ) {
 
 			$sidekickNames = [];

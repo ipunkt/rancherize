@@ -2,9 +2,13 @@
 
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\Events\ConfigurationLoadedEvent;
+use Rancherize\Configuration\Events\EnvironmentConfigurationLoadedEvent;
 use Rancherize\Configuration\LoadsConfiguration;
+use Rancherize\Configuration\PrefixConfigurationDecorator;
+use Rancherize\Configuration\Services\ConfigurationFallback;
 use Rancherize\Configuration\Services\ConfigWrapper;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -26,7 +30,7 @@ class LoadConfigurationForCommandEventHandler {
 	 * @param EventDispatcher $eventDispatcher
 	 * @param ConfigWrapper $configWrapper
 	 */
-	public function __construct( EventDispatcher $eventDispatcher, ConfigWrapper $configWrapper) {
+	public function __construct( EventDispatcher $eventDispatcher, ConfigWrapper $configWrapper ) {
 		$this->eventDispatcher = $eventDispatcher;
 		$this->configWrapper = $configWrapper;
 	}
@@ -34,16 +38,18 @@ class LoadConfigurationForCommandEventHandler {
 	/**
 	 * @param ConsoleCommandEvent $event
 	 */
-	public function prepareCommand(ConsoleCommandEvent $event) {
+	public function prepareCommand( ConsoleCommandEvent $event ) {
 
 		$command = $event->getCommand();
 
-		if(! $command instanceof LoadsConfiguration )
+		if ( !$command instanceof LoadsConfiguration )
 			return;
 
 		$configuration = $this->loadConfiguration();
 
-		$command->setConfiguration($configuration);
+		$this->environmentConfiguration( $configuration, $event->getInput() );
+
+		$command->setConfiguration( $configuration );
 
 	}
 
@@ -56,13 +62,34 @@ class LoadConfigurationForCommandEventHandler {
 
 		$config = $this->configWrapper->configuration();
 
-		$this->configWrapper->loadGlobalConfig($config);
-		$this->configWrapper->loadProjectConfig($config);
+		$this->configWrapper->loadGlobalConfig( $config );
+		$this->configWrapper->loadProjectConfig( $config );
 
 		$event = new ConfigurationLoadedEvent();
-		$event->setConfiguration($config);
-		$this->eventDispatcher->dispatch($event::NAME, $event);
+		$event->setConfiguration( $config );
+		$this->eventDispatcher->dispatch( $event::NAME, $event );
 
 		return $config;
+	}
+
+	/**
+	 * @param Configurable $configuration
+	 * @param InputInterface $input
+	 */
+	private function environmentConfiguration( Configurable $configuration, InputInterface $input ) {
+		if ( !$input->hasArgument( 'environment' ) )
+			return;
+
+		$environment = $input->getArgument( 'environment' );
+
+
+		$projectConfigurable = new PrefixConfigurationDecorator( $configuration, "project.default." );
+		$environmentConfigurable = new PrefixConfigurationDecorator( $configuration, "project.environments.$environment." );
+		$fallbackConfiguration = new ConfigurationFallback( $environmentConfigurable, $projectConfigurable );
+
+		$event = new EnvironmentConfigurationLoadedEvent();
+		$event->setConfiguration( $configuration );
+		$event->setEnvironmentConfiguration( $fallbackConfiguration );
+		$this->eventDispatcher->dispatch( $event::NAME, $event );
 	}
 }

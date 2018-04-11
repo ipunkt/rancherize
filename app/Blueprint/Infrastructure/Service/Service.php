@@ -20,6 +20,17 @@ class Service {
 	 */
 	protected $name = '';
 
+	const ALWAYS_PULLED_TRUE = true;
+	const ALWAYS_PULLED_DEFAULT = 'default';
+	const ALWAYS_PULLED_FALSE = false;
+
+	/**
+	 * Always pull Image on upgrades?
+	 *
+	 * @var bool
+	 */
+	protected $alwaysPulled = self::ALWAYS_PULLED_DEFAULT;
+
 	/**
 	 * @var int
 	 */
@@ -502,6 +513,20 @@ class Service {
 	 */
 	public function setNetworkMode( NetworkMode $networkMode ) {
 		$this->networkMode = $networkMode;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isAlwaysPulled() {
+		return $this->alwaysPulled;
+	}
+
+	/**
+	 * @param bool $alwaysPulled
+	 */
+	public function setAlwaysPulled( $alwaysPulled ) {
+		$this->alwaysPulled = $alwaysPulled;
 	}
 
 

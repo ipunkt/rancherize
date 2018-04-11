@@ -9,6 +9,10 @@ of of adding and connecting services.
 
 For a concrete example on how the configuration becomes easier through this see the example at the bottom of this page.
 
+# IMPORTANT UPDATE
+As of 2.23.0 the default behaviour for pushed services has changed to always pull images on an upgrade.  
+This can be disabled by setting `docker.always-pull: false` in either the defaults or the environment.
+
 # Usage as docker container (preferred)
 Rancherize comes bundled as Docker Container [`ipunktbs/rancherize`](https://hub.docker.com/r/ipunktbs/rancherize/).
 ## Requirements

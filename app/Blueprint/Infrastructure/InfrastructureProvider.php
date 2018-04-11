@@ -2,11 +2,15 @@
 
 use Rancherize\Blueprint\Infrastructure\Dockerfile\DockerfileWriter;
 use Rancherize\Blueprint\Infrastructure\Network\NetworkWriter;
+use Rancherize\Blueprint\Infrastructure\Service\Listeners\AlwaysPullDefaultFromConfigurationListener;
+use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\Infrastructure\Service\ServiceWriter;
 use Rancherize\Blueprint\Infrastructure\Volume\VolumeWriter;
+use Rancherize\Configuration\Events\EnvironmentConfigurationLoadedEvent;
 use Rancherize\File\FileLoader;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class InfrastructureProvider
@@ -56,11 +60,22 @@ class InfrastructureProvider implements Provider {
 			return $c[\Rancherize\Blueprint\Infrastructure\InfrastructureWriter::class];
 		};
 
+		$this->container[AlwaysPullDefaultFromConfigurationListener::class] = function ( $c ) {
+			return new AlwaysPullDefaultFromConfigurationListener( $c );
+		};
+
 		$this->container['shared-network-mode'] = 'container:';
+		$this->container['always-pulled-default'] = Service::ALWAYS_PULLED_TRUE;
 	}
 
 	/**
 	 */
 	public function boot() {
+		$listener = $this->container[AlwaysPullDefaultFromConfigurationListener::class];
+		/**
+		 * @var EventDispatcher $event
+		 */
+		$event = $this->container['event'];
+		$event->addListener( EnvironmentConfigurationLoadedEvent::NAME, [$listener, 'environmentConfigurationLoaded'] );
 	}
 }
