@@ -479,7 +479,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 			$nginxConfig = $config->get('nginx-config');
 			if (!empty($nginxConfig)) {
 				//$configName = basename($nginxConfig);
-				$serverService->addVolume(getcwd() . DIRECTORY_SEPARATOR . $nginxConfig, '/etc/nginx/conf.template.d/999-laravel.conf.tpl');
+				$serverService->addVolume( getcwd() . DIRECTORY_SEPARATOR . $nginxConfig, '/etc/nginx/conf.template.d/999-laravel.conf' );
 			}
 
 			$hostDirectory = getcwd() . $mountSuffix;
