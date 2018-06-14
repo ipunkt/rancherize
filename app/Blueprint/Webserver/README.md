@@ -16,6 +16,7 @@ This blueprint creates infrastructures to support apps using php7.
 - [External Service Options](../ExternalService/README.md)
 - [Cron Options](../Cron/README.md)
 - [PHP Options](../Infrastructure/Service/Maker/PhpFpm/README.md)
+- [PHP Commands](../PhpCommands/README.md)
 - [Volumes](../Volumes/README.md)
 
 #### Docker options
