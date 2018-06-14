@@ -12,7 +12,7 @@
     "ipunkt/rancherize-publish-traefik-rancher": "^1.0.1",
     "ipunkt/rancherize-ftp": "^0.1.0",
     "ipunkt/rancherize-blueprint-php-cli": "^1.0.1",
-    "ipunkt/rancherize-php53": "^1.2.1",
+    "ipunkt/rancherize-php53": "^1.2.2",
     "ipunkt/rancherize-php72": "^1.1.1"
   },
   "minimum-stability": "dev",
