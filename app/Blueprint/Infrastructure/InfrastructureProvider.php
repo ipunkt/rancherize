@@ -82,14 +82,15 @@ class InfrastructureProvider implements Provider {
 		$dispatcher = container('event');
 		$dispatcher->addListener(ConsoleEvents::COMMAND, function( ConsoleCommandEvent $event ) {
 
-			if( $event instanceof LocalCommand ) {
+			$command = $event->getCommand();
+			if( $command instanceof LocalCommand ) {
 				$container = container();
 				$container['shared-network-mode'] = 'service:';
 
 				return;
 			}
 
-			if( $event instanceof RancherCommand ) {
+			if( $command instanceof RancherCommand ) {
 				// shared-network-mode defaults to 'container:' in the register function
 				return;
 			}
