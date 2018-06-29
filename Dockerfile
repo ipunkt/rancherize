@@ -41,8 +41,13 @@ WORKDIR /opt/rancherize
 
 # install composer packages
 RUN cd /opt/rancherize-package \
+	&& CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD) \
+	&& if [ "${CURRENT_BRANCH}" = "HEAD" ] ; then CURRENT_TAG=$(git describe --tags) ; fi \
+	&& TARGET_VERSION="dev-${CURRENT_BRANCH} as 2.99.9" \
+	&& if [ ! -z "${CURRENT_TAG}" ] ; then TARGET_VERSION=$(git describe --tags) ; fi \
 	&& (git fetch --unshallow origin || echo "Not a shallow repository, continuing without fetch") \
 	&& cd /opt/rancherize \
+	&& sed -i "s/%TARGET_VERSION%/${TARGET_VERSION}/" composer.json  \
 	&& curl -sSL "https://gist.githubusercontent.com/justb81/1006b89e41e41e1c848fe91969af7a0b/raw/c12faf968e659356ec1cb53f313e7f8383836be3/getcomposer.sh" | sh \
     && COMPOSER_ALLOW_SUPERUSER=1 ./composer.phar  install \
     && rm composer.phar
