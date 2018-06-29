@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Commands;
 use Rancherize\Commands\Traits\ValidateTrait;
+use Rancherize\Commands\Types\LocalCommand;
 use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
 use Rancherize\Services\BlueprintService;
@@ -16,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * This command builds deployment files as if they were used in the start or push command.
  * Can be used to inspect the files for correctness before starting or pushing
  */
-class BuildCommand extends Command implements LoadsConfiguration {
+class BuildCommand extends Command implements LoadsConfiguration, LocalCommand {
 
 	use LoadsConfigurationTrait;
 	use ValidateTrait;

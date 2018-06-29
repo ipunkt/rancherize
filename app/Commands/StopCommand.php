@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Commands;
 
+use Rancherize\Commands\Types\LocalCommand;
 use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Services\EnvironmentConfigurationService;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
@@ -18,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Stop the given environment
  * This triggers the blueprint to build the infrastructure and uses docker to stop it
  */
-class StopCommand extends Command implements LoadsConfiguration {
+class StopCommand extends Command implements LoadsConfiguration, LocalCommand {
 
 	use LoadsConfigurationTrait;
 	/**

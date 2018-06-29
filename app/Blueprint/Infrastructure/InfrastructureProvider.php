@@ -6,10 +6,14 @@ use Rancherize\Blueprint\Infrastructure\Service\Listeners\AlwaysPullDefaultFromC
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\Infrastructure\Service\ServiceWriter;
 use Rancherize\Blueprint\Infrastructure\Volume\VolumeWriter;
+use Rancherize\Commands\Types\LocalCommand;
+use Rancherize\Commands\Types\RancherCommand;
 use Rancherize\Configuration\Events\EnvironmentConfigurationLoadedEvent;
 use Rancherize\File\FileLoader;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
+use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -66,11 +70,31 @@ class InfrastructureProvider implements Provider {
 
 		$this->container['shared-network-mode'] = 'container:';
 		$this->container['always-pulled-default'] = Service::ALWAYS_PULLED_TRUE;
+
 	}
 
 	/**
 	 */
 	public function boot() {
+		/**
+		 * @var EventDispatcher $dispatcher
+		 */
+		$dispatcher = container('event');
+		$dispatcher->addListener(ConsoleEvents::COMMAND, function( ConsoleCommandEvent $event ) {
+
+			if( $event instanceof LocalCommand ) {
+				$container = container();
+				$container['shared-network-mode'] = 'service:';
+
+				return;
+			}
+
+			if( $event instanceof RancherCommand ) {
+				// shared-network-mode defaults to 'container:' in the register function
+				return;
+			}
+		});
+
 		$listener = $this->container[AlwaysPullDefaultFromConfigurationListener::class];
 		/**
 		 * @var EventDispatcher $event

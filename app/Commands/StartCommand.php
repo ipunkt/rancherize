@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Commands;
 
+use Rancherize\Commands\Types\LocalCommand;
 use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Services\EnvironmentConfigurationService;
 use Rancherize\Configuration\Traits\LoadsConfigurationTrait;
@@ -19,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Start the given infrastructure on the local machine
  * Triggers the blueprint to build the environment and then starts it in docker
  */
-class StartCommand extends Command implements LoadsConfiguration {
+class StartCommand extends Command implements LoadsConfiguration, LocalCommand {
 
 	use LoadsConfigurationTrait;
 
@@ -82,9 +83,6 @@ class StartCommand extends Command implements LoadsConfiguration {
      * @see setCode()
      */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-
-		$container = container();
-		$container['shared-network-mode'] = 'service:';
 
 		$environment = $input->getArgument('environment');
 

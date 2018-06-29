@@ -27,12 +27,14 @@ class Rancherize {
 		 * @var EventDispatcher $dispatcher
 		 */
 		$dispatcher = $c['event'];
-		$this->application = new Application('rancherize');
-		$this->application->setDispatcher($dispatcher);
+		$this->application = new Application( 'rancherize' );
+		$this->application->setDispatcher( $dispatcher );
 		// register application in container
-		$c['app'] = function () { return $this->application; };
+		$c['app'] = function () {
+			return $this->application;
+		};
 
-		$dispatcher->addListener(\Symfony\Component\Console\ConsoleEvents::EXCEPTION, function(\Symfony\Component\Console\Event\ConsoleExceptionEvent $event) {
+		$dispatcher->addListener( \Symfony\Component\Console\ConsoleEvents::EXCEPTION, function ( \Symfony\Component\Console\Event\ConsoleExceptionEvent $event ) {
 
 			$e = $event->getException();
 			$output = $event->getOutput();
@@ -45,23 +47,24 @@ class Rancherize {
 				$headline = ' Validation failed ';
 				$output->writeln( [
 					'',
-					' ' . $formatter->format( sprintf( "<error> %s </error>", str_repeat(' ', strlen($headline)) ) ) . ' ',
-					$formatter->format(" <error> $headline </error>"),
-					' ' . $formatter->format( sprintf( "<error> %s </error>", str_repeat('=', strlen($headline)) ) ) . ' ',
-					' ' . $formatter->format( sprintf( "<error> %s </error>", str_repeat(' ', strlen($headline)) ) ) . ' ',
+					' ' . $formatter->format( sprintf( "<error> %s </error>", str_repeat( ' ', strlen( $headline ) ) ) ) . ' ',
+					$formatter->format( " <error> $headline </error>" ),
+					' ' . $formatter->format( sprintf( "<error> %s </error>", str_repeat( '=', strlen( $headline ) ) ) ) . ' ',
+					' ' . $formatter->format( sprintf( "<error> %s </error>", str_repeat( ' ', strlen( $headline ) ) ) ) . ' ',
 					"",
-				]);
+				] );
 
 				/**
 				 * @var \Rancherize\Services\ValidateService $validateService
 				 */
-				$validateService = container('validate-service');
-				$validateService->print($e, $output);
+				$validateService = container( 'validate-service' );
+				$validateService->print( $e, $output );
 			}
 
-		});
+		} );
 
-		$dispatcher->addListener(ConsoleEvents::COMMAND, function (ConsoleCommandEvent $event) {
+		$dispatcher->addListener( ConsoleEvents::COMMAND, function ( ConsoleCommandEvent $event ) {
+
 			// get the input instance
 			$input = $event->getInput();
 
@@ -75,20 +78,30 @@ class Rancherize {
 			$application = $command->getApplication();
 
 			$c = container();
-			$c['output'] = function() use ($output) { return $output; };
-			$c['input'] = function() use ($input) { return $input; };
-			$c['application'] = function() use ($application) { return $application; };
-			$c['command'] = function() use ($command) { return $command; };
-			$c['process-helper'] = function() use ($command) { return $command->getHelper('process'); };
-		});
+			$c['output'] = function () use ( $output ) {
+				return $output;
+			};
+			$c['input'] = function () use ( $input ) {
+				return $input;
+			};
+			$c['application'] = function () use ( $application ) {
+				return $application;
+			};
+			$c['command'] = function () use ( $command ) {
+				return $command;
+			};
+			$c['process-helper'] = function () use ( $command ) {
+				return $command->getHelper( 'process' );
+			};
+		} );
 
-		$internalPlugins = require_once __DIR__.'/../lists/plugins.php';
-		$pluginLoaderExtra = container(ExtraPluginLoaderDecorator::class);
-		foreach($internalPlugins as $internalPlugin) {
+		$internalPlugins = require_once __DIR__ . '/../lists/plugins.php';
+		$pluginLoaderExtra = container( ExtraPluginLoaderDecorator::class );
+		foreach ( $internalPlugins as $internalPlugin ) {
 			/**
 			 * @var \Rancherize\Plugin\Loader\ExtraPluginLoaderDecorator $pluginLoaderExtra
 			 */
-			$pluginLoaderExtra->registerExtra($internalPlugin);
+			$pluginLoaderExtra->registerExtra( $internalPlugin );
 		}
 
 		try {
@@ -96,14 +109,14 @@ class Rancherize {
 			/**
 			 * @var \Rancherize\Plugin\Loader\PluginLoader $pluginLoader
 			 */
-			$pluginLoader = container(PluginLoader::class);
+			$pluginLoader = container( PluginLoader::class );
 			$pluginLoader->load( $this->application, container() );
 
-		} catch(Exception $e) {
+		} catch ( Exception $e ) {
 
-			echo "Warning! Load Plugins failed: ".get_class($e).' '. $e->getMessage().PHP_EOL.PHP_EOL;
-			echo "Thrown by ".$e->getFile().';'.$e->getLine().' '.$e->getCode(). PHP_EOL;
-			echo "Trace: ".$e->getTraceAsString();
+			echo "Warning! Load Plugins failed: " . get_class( $e ) . ' ' . $e->getMessage() . PHP_EOL . PHP_EOL;
+			echo "Thrown by " . $e->getFile() . ';' . $e->getLine() . ' ' . $e->getCode() . PHP_EOL;
+			echo "Trace: " . $e->getTraceAsString();
 
 
 		}

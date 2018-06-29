@@ -2,6 +2,7 @@
 
 use Rancherize\Commands\Traits\EventTrait;
 use Rancherize\Commands\Traits\IoTrait;
+use Rancherize\Commands\Types\RancherCommand;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Configuration\LoadsConfiguration;
 use Rancherize\Configuration\Services\EnvironmentConfigurationService;
@@ -32,7 +33,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Push the given environment to rancher. This will trigger the blueprint to build the infrastructure and deploy or
  * upgrade it in the given stack in rancher
  */
-class PushCommand extends Command implements LoadsConfiguration {
+class PushCommand extends Command implements LoadsConfiguration, RancherCommand {
 
 	use IoTrait;
 	use LoadsConfigurationTrait;
