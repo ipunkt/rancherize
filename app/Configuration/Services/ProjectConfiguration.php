@@ -58,7 +58,7 @@ class ProjectConfiguration {
 			$this->loader->load( $prefixDecorator, $rancherizePath );
 
 			if ( $configuration instanceof HasSettableVersion )
-				$configuration->setVersion( $prefixDecorator->get('version') );
+				$configuration->setVersion( (int)$prefixDecorator->get('version', 1) );
 		} catch ( FileNotFoundException $e ) {
 			// No config yet, nothing to do
 		}
