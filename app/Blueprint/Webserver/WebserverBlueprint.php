@@ -108,6 +108,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 	 */
 	public function init(Configurable $configurable, string $environment, InputInterface $input, OutputInterface $output) {
 
+
 		$environmentConfigurable = new PrefixConfigurableDecorator($configurable, "project.environments.$environment.");
 		$projectConfigurable = new PrefixConfigurableDecorator($configurable, "project.default.");
 		$fallbackConfigurable = new ConfigurableFallback($environmentConfigurable, $projectConfigurable);

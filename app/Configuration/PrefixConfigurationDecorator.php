@@ -48,4 +48,11 @@ class PrefixConfigurationDecorator implements Configuration {
 		$prefixedKey = $this->prefix.$key;
 		return $this->configurable->get($prefixedKey, $default);
 	}
+
+	/**
+	 * @return int
+	 */
+	public function version(): int {
+		return $this->configurable->version();
+	}
 }

@@ -38,6 +38,12 @@ class InServiceChecker {
 		if( $upgradeModeValue === 'in-service' )
 			return true;
 
+		/**
+		 * New default from version 2 onwards is in-service
+		 */
+		if( $config->version() !== 1 )
+			return true;
+
 		return false;
 	}
 

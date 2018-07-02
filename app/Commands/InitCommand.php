@@ -118,6 +118,9 @@ class InitCommand extends Command implements LoadsConfiguration {
 			]);
 
 
+		if( !$configuration->has('project.version') )
+			$configuration->set('project.version', 2);
+
 		$blueprint->init($configuration, $environmentName, $this->getInput(), $this->getOutput());
 
 	}

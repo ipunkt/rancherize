@@ -32,4 +32,11 @@ class PrefixConfigurableDecorator extends PrefixConfigurationDecorator implement
 		$prefixedKey = $this->prefix.$key;
 		return $this->configurable->set($prefixedKey, $value);
 	}
+
+	/**
+	 * @return int
+	 */
+	public function version(): int {
+		return $this->configurable->version();
+	}
 }

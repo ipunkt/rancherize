@@ -21,7 +21,7 @@ class RollingUpgradeChecker {
 	 * @param InServiceChecker $inServiceChecker
 	 * @param ReplaceUpgradeChecker $replaceUpgradeChecker
 	 */
-	public function __construct( InServiceChecker $inServiceChecker, ReplaceUpgradeChecker $replaceUpgradeChecker) {
+	public function __construct( InServiceChecker $inServiceChecker, ReplaceUpgradeChecker $replaceUpgradeChecker ) {
 		$this->inServiceChecker = $inServiceChecker;
 		$this->replaceUpgradeChecker = $replaceUpgradeChecker;
 	}
@@ -31,10 +31,14 @@ class RollingUpgradeChecker {
 	 * @return bool
 	 */
 	public function isRollingUpgrade( Configuration $configuration ) {
-		if( $this->inServiceChecker->isInService($configuration) )
+		if ( $this->inServiceChecker->isInService( $configuration ) )
 			return false;
 
-		if( $this->replaceUpgradeChecker->isReplaceUpgrade($configuration) )
+		if ( $this->replaceUpgradeChecker->isReplaceUpgrade( $configuration ) )
+			return false;
+
+		// New default in version to is in-service
+		if ( $configuration->version() !== 1 )
 			return false;
 
 		return true;

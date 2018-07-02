@@ -44,4 +44,11 @@ class ConfigurationFallback implements Configuration {
 	public function has(string $key) : bool {
 		return $this->configuration->has($key) || $this->fallback->has($key);
 	}
+
+	/**
+	 * @return int
+	 */
+	public function version(): int {
+		return $this->configuration->version();
+	}
 }

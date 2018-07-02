@@ -6,7 +6,12 @@
  *
  * Implements Configurable using an array
  */
-class ArrayConfiguration implements Configurable  {
+class ArrayConfiguration implements Configurable, HasSettableVersion  {
+
+	/**
+	 * @var int
+	 */
+	protected $version = 1;
 
 	/**
 	 * @var mixed[]
@@ -97,5 +102,20 @@ class ArrayConfiguration implements Configurable  {
 		}
 
 		return $currentValues;
+	}
+
+	/**
+	 * @param int $version
+	 */
+	public function setVersion( int $version ) {
+		$this->version = $version;
+	}
+
+
+	/**
+	 * @return int
+	 */
+	public function version(): int {
+		return $this->version;
 	}
 }

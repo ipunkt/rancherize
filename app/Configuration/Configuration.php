@@ -10,6 +10,11 @@
 interface Configuration {
 
 	/**
+	 * @return int
+	 */
+	function version() : int;
+
+	/**
 	 * Returns true if the given key was found
 	 *
 	 * @param string $key
