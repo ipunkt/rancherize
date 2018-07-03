@@ -134,6 +134,11 @@ class Service {
 	 */
 	protected $networkMode;
 
+	/**
+	 * @var Closure|null
+	 */
+	protected $environmentVariablesCallback = null;
+
 	public function __construct() {
 		$this->networkMode = new DefaultNetworkMode();
 	}
@@ -280,7 +285,19 @@ class Service {
 	 * @return \string[]
 	 */
 	public function getEnvironmentVariables(): array {
+		if($this->environmentVariablesCallback instanceof Closure ) {
+			$callback = $this->environmentVariablesCallback;
+
+			return array_merge($this->environmentVariables, $callback($this));
+		}
 		return $this->environmentVariables;
+	}
+
+	/**
+	 * @param Closure $closure
+	 */
+	public function setEnvironmentVariablesCallback( Closure $closure = null ) {
+		$this->environmentVariablesCallback = $closure;
 	}
 
 	/**

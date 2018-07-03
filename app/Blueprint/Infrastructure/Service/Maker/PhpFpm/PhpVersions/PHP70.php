@@ -165,11 +165,10 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 		 */
 		$phpCommandService->addLinksFrom($mainService);
 
-		/**
-		 * Copy environment variables because environment variables are expected to be available in php
-		 */
-		foreach( $mainService->getEnvironmentVariables() as $name => $value )
-			$phpCommandService->setEnvironmentVariable($name, $value);
+
+		$phpCommandService->setEnvironmentVariablesCallback(function() use ($mainService) {
+			return $mainService->getEnvironmentVariables();
+		});
 
 		$mainService->addSidekick($phpCommandService);
 		return $phpCommandService;
