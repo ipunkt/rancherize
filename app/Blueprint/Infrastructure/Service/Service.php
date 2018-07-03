@@ -294,6 +294,11 @@ class Service {
 	}
 
 	/**
+	 * Set a callback which will be called by getEnvironmentVariable.
+	 * The callback receives this Service as parameter and must return an array ['environment_variable' => 'value'].
+	 * The returned values are merged with the environment variables set with `setEnvironmentVariable` with the ones from
+	 * the callback winning if both set the same value
+	 *
 	 * @param Closure $closure
 	 */
 	public function setEnvironmentVariablesCallback( Closure $closure = null ) {
