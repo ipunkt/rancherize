@@ -8,4 +8,8 @@ use Rancherize\Exceptions\Exception;
  */
 class RancherServiceException extends Exception {
 
+	public function __construct($message = "", int $code = 1, \Throwable $exception = null) {
+		parent::__construct($message, $code, $exception);
+	}
+
 }
