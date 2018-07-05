@@ -1,10 +1,16 @@
 <?php namespace Rancherize\RancherAccess;
 use Rancherize\RancherAccess\ApiService\ApiService;
+use Rancherize\RancherAccess\Exceptions\ConfirmFailedException;
+use Rancherize\RancherAccess\Exceptions\CreateFailedException;
 use Rancherize\RancherAccess\Exceptions\MissingDataException;
 use Rancherize\RancherAccess\Exceptions\MultipleActiveServicesException;
 use Rancherize\RancherAccess\Exceptions\NameNotFoundException;
 use Rancherize\RancherAccess\Exceptions\NoActiveServiceException;
+use Rancherize\RancherAccess\Exceptions\RemoveFailedException;
 use Rancherize\RancherAccess\Exceptions\StackNotFoundException;
+use Rancherize\RancherAccess\Exceptions\StartFailedException;
+use Rancherize\RancherAccess\Exceptions\StopFailedException;
+use Rancherize\RancherAccess\Exceptions\UpgradeFailedException;
 use Rancherize\RancherAccess\NameMatcher\NameMatcher;
 use Rancherize\Services\ProcessTrait;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -226,7 +232,9 @@ class RancherService {
 				'RANCHER_SECRET_KEY' => $this->account->getSecret(),
 			])->getProcess();
 
-		$this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+		$ran = $this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+		if( $ran->getExitCode() != 0 )
+			throw new StartFailedException("Command ".$ran->getCommandLine());
 	}
 
 	/**
@@ -258,7 +266,9 @@ class RancherService {
 				'RANCHER_SECRET_KEY' => $this->account->getSecret(),
 			])->getProcess();
 
-		$this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+		$ran = $this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+		if( $ran->getExitCode() != 0 )
+			throw new ConfirmFailedException("Command ".$ran->getCommandLine());
 	}
 
 	/**
@@ -295,7 +305,9 @@ class RancherService {
 				'RANCHER_SECRET_KEY' => $this->account->getSecret(),
 			])->getProcess();
 
-		$this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+		$ran = $this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+		if( $ran->getExitCode() != 0 )
+			throw new UpgradeFailedException("Command ".$ran->getCommandLine());
 	}
 
 	/**
@@ -431,7 +443,9 @@ class RancherService {
 				'RANCHER_SECRET_KEY' => $this->account->getSecret(),
 			])->getProcess();
 
-		$this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+		$ran = $this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+		if( $ran->getExitCode() != 0 )
+			throw new StopFailedException("Command ".$ran->getCommandLine());
 	}
 
 	/**
@@ -504,7 +518,9 @@ class RancherService {
 				'RANCHER_SECRET_KEY' => $this->account->getSecret(),
 			])->getProcess();
 
-		$this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+		$ran = $this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+		if( $ran->getExitCode() != 0 )
+			throw new RemoveFailedException("Command ".$ran->getCommandLine());
 	}
 
 	/**
@@ -531,6 +547,8 @@ class RancherService {
 				'RANCHER_SECRET_KEY' => $this->account->getSecret(),
 			])->getProcess();
 
-		$this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+		$ran = $this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
+		if( $ran->getExitCode() != 0 )
+			throw new CreateFailedException("Command ".$ran->getCommandLine());
 	}
 }
