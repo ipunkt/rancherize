@@ -35,8 +35,11 @@ class PhpCommandsParser {
 	public function parse( Configuration $configuration ) {
 		$commands = [];
 
-		if( !$configuration->has('php-commands') )
-			return $this->defaults();
+		if( !$configuration->has('php-commands') ) {
+			$isService = $configuration->version() >= 3;
+
+			return $this->defaults($isService);
+		}
 
 		foreach($configuration->get('php-commands') as $name => $command) {
 			if ( is_array( $command ) )
@@ -54,11 +57,12 @@ class PhpCommandsParser {
 	}
 
 	/**
+	 * @param $isService
 	 * @return PhpCommand[]
 	 */
-	private function defaults() {
+	private function defaults($isService) {
 		return [
-			new PhpCommand('migrate-seed', "sh -c 'php /var/www/app/artisan migrate && php /var/www/app/artisan db:seed'"),
+			new PhpCommand('migrate-seed', "sh -c 'php /var/www/app/artisan migrate && php /var/www/app/artisan db:seed'", $isService),
 		];
 	}
 }

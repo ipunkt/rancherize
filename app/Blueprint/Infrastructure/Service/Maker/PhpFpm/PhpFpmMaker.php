@@ -205,14 +205,15 @@ class PhpFpmMaker {
 			$data = new Service();
 			$data->setImage( $appTarget->getImage() );
 			$data->setName( function () use ( $phpFpmService, $appTarget ) {
-				return $phpFpmService->getName().'-'.$appTarget->getName();
+				return $phpFpmService->getName() . 'App';
 			} );
-			$data->setRestart($appTarget->getRestart());
+			$data->setRestart( $appTarget->getRestart() );
 			foreach ( $appTarget->getVolumeObjects() as $volume )
 				$data->addVolume( $volume );
 
 
 			$phpFpmService->addVolumeFrom( $data );
+			$phpFpmService->addSidekick( $data );
 			$infrastructure->addService( $data );
 			return;
 		}
