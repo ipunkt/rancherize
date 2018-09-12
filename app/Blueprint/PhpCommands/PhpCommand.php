@@ -25,6 +25,11 @@ class PhpCommand {
 	protected $restart = 'start-once';
 
 	/**
+	 * @var bool
+	 */
+	protected $service = false;
+
+	/**
 	 * @var Configuration
 	 */
 	protected $configuration;
@@ -33,11 +38,13 @@ class PhpCommand {
 	 * PhpCommand constructor.
 	 * @param string $name
 	 * @param string $command
+	 * @param $service
 	 */
-	public function __construct( $name = '', $command = '') {
+	public function __construct( $name = '', $command = '', $service = false) {
 		$this->name = $name;
 		$this->command = $command;
 		$this->configuration = new ArrayConfiguration( [] );
+		$this->service = $service;
 	}
 
 	/**
@@ -94,6 +101,13 @@ class PhpCommand {
 	 */
 	public function setRestart( string $restart ) {
 		$this->restart = $restart;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isService(): bool {
+		return $this->service;
 	}
 
 }

@@ -52,7 +52,9 @@ class PhpFpmMaker {
 
 		$phpVersion = $this->getPhpVersion( $config );
 
-		$phpVersion->make($config, $mainService, $infrastructure);
+		$phpVersion->make($config, $mainService, $infrastructure, function(Service $service) {
+			$this->addAppSource($service);
+		});
 	}
 
 	/**
@@ -66,7 +68,27 @@ class PhpFpmMaker {
 
 		$phpVersion = $this->getPhpVersion( $configuration );
 
-		return $phpVersion->makeCommand( $commandName, $command, $mainService);
+		$commandService =  $phpVersion->makeCommand( $commandName, $command, $mainService);
+		$this->addAppSource($commandService);
+		$mainService->addSidekick($commandService);
+
+		return $commandService;
+	}
+
+	/**
+	 * @param string $commandName
+	 * @param string $command
+	 * @param Service $mainService
+	 * @param Configuration $configuration
+	 * @return Service
+	 */
+	public function makeService( string $commandName, string $command, Service $mainService, Configuration $configuration ) {
+		$phpVersion = $this->getPhpVersion( $configuration );
+
+		$commandService =  $phpVersion->makeCommand( $commandName, $command, $mainService);
+		$this->addAppSource($commandService);
+
+		return $commandService;
 	}
 
 	/**
@@ -82,21 +104,6 @@ class PhpFpmMaker {
 		$this->phpVersions[$versionString] = $version;
 
 		return $this;
-	}
-
-	/**
-	 * @param $phpVersion
-	 */
-	protected function setAppSource(PhpVersion $phpVersion) {
-		$appTarget = $this->appTarget;
-
-		if ($appTarget instanceof Service) {
-			$phpVersion->setAppService($appTarget);
-			return;
-		}
-
-		list($hostDirectory, $containerDirectory) = $appTarget;
-		$phpVersion->setAppMount($hostDirectory, $containerDirectory);
 	}
 
 	/**
@@ -118,7 +125,6 @@ class PhpFpmMaker {
 
 		$phpVersion = $this->phpVersions[$phpVersionString];
 
-		$this->setAppSource( $phpVersion );
 		$this->setConfig($phpVersion, $config);
 
 		return $phpVersion;
@@ -172,4 +178,35 @@ class PhpFpmMaker {
 		if( $phpVersion instanceof UpdatesBackendEnvironment )
 			$phpVersion->enableUpdateEnvironment( $phpConfig->get('update-backend', true) );
 	}
+
+	/**
+	 * @param $phpFpmService
+	 */
+	protected function addAppSource(Service $phpFpmService) {
+		$appTarget = $this->appTarget;
+
+		if ($appTarget instanceof Service) {
+			$phpFpmService->addVolumeFrom($appTarget);
+			return;
+		}
+
+		list($hostDirectory, $containerDirectory) = $appTarget;
+		$phpFpmService->addVolume($hostDirectory, $containerDirectory);
+	}
+
+	/**
+	 * @param $phpFpmService
+	 */
+	protected function copyAppSource(Service $phpFpmService) {
+		$appTarget = $this->appTarget;
+
+		if ($appTarget instanceof Service) {
+			$phpFpmService->addVolumeFrom($appTarget);
+			return;
+		}
+
+		list($hostDirectory, $containerDirectory) = $appTarget;
+		$phpFpmService->addVolume($hostDirectory, $containerDirectory);
+	}
+
 }

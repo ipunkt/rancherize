@@ -7,6 +7,8 @@ use Rancherize\Blueprint\Events\MainServiceBuiltEvent;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMaker;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\PhpCommands\Parser\PhpCommandsParser;
+use Rancherize\Commands\Events\PushCommandInServiceUpgradeEvent;
+use Rancherize\Commands\Events\PushCommandStartEvent;
 
 /**
  * Class PhpCommandsEventHandler
@@ -45,6 +47,11 @@ class PhpCommandsEventHandler {
 	}
 
 	/**
+	 * @var Service[]
+	 */
+	protected $builtServices = [];
+
+	/**
 	 * @param MainServiceBuiltEvent $event
 	 */
 	public function mainServiceBuilt( MainServiceBuiltEvent $event ) {
@@ -57,7 +64,11 @@ class PhpCommandsEventHandler {
 
 		$commands = $this->commandsParser->parse( $config );
 		foreach ( $commands as $command ) {
-			$service = $this->fpmMaker->makeCommand( $command->getName(), $command->getCommand(), $mainService, $config );
+			if( $command->isService() ) {
+				$service = $this->fpmMaker->makeService( $command->getName(), $command->getCommand(), $mainService, $config );
+				$this->builtServices[] = $service;
+			} else
+				$service = $this->fpmMaker->makeCommand( $command->getName(), $command->getCommand(), $mainService, $config );
 
 			$restart = [
 				'never' => Service::RESTART_NEVER,
@@ -81,4 +92,30 @@ class PhpCommandsEventHandler {
 
 	}
 
+	/**
+	 * @param PushCommandInServiceUpgradeEvent $event
+	 */
+	public function inServiceUpgrade( PushCommandInServiceUpgradeEvent $event ) {
+
+		$serviceNames = $event->getServiceNames();
+
+		foreach($this->builtServices as $service)
+			$serviceNames[] = $service->getName();
+
+		$event->setServiceNames($serviceNames);
+	}
+
+
+	/**
+	 * @param PushCommandInServiceUpgradeEvent $event
+	 */
+	public function startService( PushCommandStartEvent $event ) {
+
+		$serviceNames = $event->getServiceNames();
+
+		foreach($this->builtServices as $service)
+			$serviceNames[] = $service->getName();
+
+		$event->setServiceNames($serviceNames);
+	}
 }

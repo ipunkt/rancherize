@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpVersions;
 
+use Closure;
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\AlpineDebugImageBuilder;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\Configurations\MailTarget;
@@ -38,10 +39,6 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 	use UpdatesBackendEnvironmentTrait;
 
 	/**
-	 * @var string|Service
-	 */
-	protected $appTarget;
-	/**
 	 * @var AlpineDebugImageBuilder
 	 */
 	private $debugImageBuilder;
@@ -54,7 +51,15 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 		$this->debugImageBuilder = $debugImageBuilder;
 	}
 
-	public function make( Configuration $config, Service $mainService, Infrastructure $infrastructure) {
+	/**
+	 * @param Configuration $config
+	 * @param Service $mainService
+	 * @param Infrastructure $infrastructure
+	 * @param Closure|null $customize
+	 */
+	public function make( Configuration $config, Service $mainService, Infrastructure $infrastructure, Closure $customize = null) {
+		if($customize === null)
+			$customize = function(Service $service) {};
 
 		$phpFpmService = new Service();
 		$phpFpmService->setNetworkMode( new ShareNetworkMode( $mainService ) );
@@ -103,13 +108,12 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 		if($mailPassword !== null)
 			$phpFpmService->setEnvironmentVariable('SMTP_PASSWORD', $mailPassword);
 
-		$this->addAppSource($phpFpmService);
-
 		$phpFpmService->setEnvironmentVariablesCallback(function() use ($mainService) {
 			return $mainService->getEnvironmentVariables();
 		});
 
 		$mainService->addSidekick($phpFpmService);
+		$customize($phpFpmService);
 		$infrastructure->addService($phpFpmService);
 	}
 
@@ -118,27 +122,6 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 	 */
 	public function getVersion() {
 		return '7.0';
-	}
-
-	/**
-	 * @param string $hostDirectory
-	 * @param string $containerDirectory
-	 * @return $this
-	 */
-	public function setAppMount(string $hostDirectory, string $containerDirectory) {
-		$this->appTarget = [$hostDirectory, $containerDirectory];
-
-		return $this;
-	}
-
-	/**
-	 * @param Service $appService
-	 * @return $this
-	 */
-	public function setAppService(Service $appService) {
-		$this->appTarget = $appService;
-
-		return $this;
 	}
 
 	/**
@@ -156,35 +139,17 @@ class PHP70 implements PhpVersion, MemoryLimit, PostLimit, UploadFileLimit, Defa
 		});
 		$this->setImage( $phpCommandService );
 		$phpCommandService->setRestart(Service::RESTART_START_ONCE);
-		$this->addAppSource($phpCommandService);
 
 		/**
 		 * Copy links from the main service so databases etc are available
 		 */
 		$phpCommandService->addLinksFrom($mainService);
 
-
 		$phpCommandService->setEnvironmentVariablesCallback(function() use ($mainService) {
 			return $mainService->getEnvironmentVariables();
 		});
 
-		$mainService->addSidekick($phpCommandService);
 		return $phpCommandService;
-	}
-
-	/**
-	 * @param $phpFpmService
-	 */
-	protected function addAppSource(Service $phpFpmService) {
-		$appTarget = $this->appTarget;
-
-		if ($appTarget instanceof Service) {
-			$phpFpmService->addVolumeFrom($appTarget);
-			return;
-		}
-
-		list($hostDirectory, $containerDirectory) = $appTarget;
-		$phpFpmService->addVolume($hostDirectory, $containerDirectory);
 	}
 
 	protected function setImage(Service $service) {

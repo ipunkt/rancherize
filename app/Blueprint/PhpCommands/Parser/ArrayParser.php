@@ -14,7 +14,7 @@ class ArrayParser implements PhpCommandParser {
 	 * @param $data
 	 * @return PhpCommand
 	 */
-	public function parse( string $name, $data ) {
+	public function parse( string $name, $data, $version ) {
 		$commandName = $name;
 		if ( array_key_exists( 'name', $data ) )
 			$commandName = $data['name'];
@@ -22,10 +22,16 @@ class ArrayParser implements PhpCommandParser {
 		if ( !array_key_exists( 'command', $data ) )
 			throw new NoCommandException( 'No command set for php-command ' . $name );
 
+		$isService = false;
+		if ($version >= 4)
+			$isService = true;
+
+		if(array_key_exists('is-service', $data) && is_bool($data['is-service']) )
+			$isService = $data['is-service'];
 
 		$command = $data['command'];
 
-		$phpCommand = new PhpCommand( $commandName, $command );
+		$phpCommand = new PhpCommand( $commandName, $command, $isService );
 
 		if ( array_key_exists( 'restart', $data ) )
 			$phpCommand->setRestart( $data['restart'] );

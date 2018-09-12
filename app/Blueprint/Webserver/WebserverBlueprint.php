@@ -2,6 +2,7 @@
 use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Cron\CronInit\CronInit;
 use Rancherize\Blueprint\Cron\CronParser\CronParser;
+use Rancherize\Blueprint\Events\AppServiceEvent;
 use Rancherize\Blueprint\Events\MainServiceBuiltEvent;
 use Rancherize\Blueprint\ExternalService\ExternalServiceParser\ExternalServiceParser;
 use Rancherize\Blueprint\Flags\HasFlagsTrait;
@@ -492,6 +493,9 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount {
 
 			$this->appContainer = $appService;
 		}
+
+		if( $appService instanceof Service)
+			$this->event->dispatch(AppServiceEvent::NAME, new AppServiceEvent($infrastructure, $appService, $config));
 	}
 
 	protected function applyServer(string $imageName) {

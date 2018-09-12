@@ -40,9 +40,9 @@ class PhpCommandsParser {
 
 		foreach($configuration->get('php-commands') as $name => $command) {
 			if ( is_array( $command ) )
-				$phpCommand = $this->arrayParser->parse( $name, $command );
+				$phpCommand = $this->arrayParser->parse( $name, $command, $configuration->version() );
 			else
-				$phpCommand = $this->nameParser->parse( $name, $command );
+				$phpCommand = $this->nameParser->parse( $name, $command, $configuration->version() );
 
 			$commandConfig = new PrefixConfigurationDecorator( $configuration, 'php-commands.' . $name . '.' );
 			$phpCommand->setConfiguration( $commandConfig );

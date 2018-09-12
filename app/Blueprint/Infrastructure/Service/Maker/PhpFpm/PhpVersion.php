@@ -1,4 +1,5 @@
 <?php namespace Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm;
+use Closure;
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Configuration\Configuration;
@@ -10,24 +11,13 @@ use Rancherize\Configuration\Configuration;
 interface PhpVersion {
 
 	/**
-	 * @param string $hostDirectory
-	 * @param string $containerContainerDirectory
-	 * @return $this
-	 */
-	function setAppMount(string $hostDirectory, string $containerContainerDirectory);
-
-	/**
-	 * @param Service $appService
-	 * @return $this
-	 */
-	function setAppService(Service $appService);
-
-	/**
 	 * @param Configuration $config
 	 * @param Service $mainService
 	 * @param Infrastructure $infrastructure
+	 * @param Closure|null $customize
+	 * @return
 	 */
-	function make(Configuration $config, Service $mainService, Infrastructure $infrastructure);
+	function make(Configuration $config, Service $mainService, Infrastructure $infrastructure, Closure $customize = null);
 
 	/**
 	 * @param $commandName

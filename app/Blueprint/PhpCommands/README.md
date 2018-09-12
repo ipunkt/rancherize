@@ -1,5 +1,7 @@
 # PHP-Commands
-Add sidekicks that perform php commands.
+Add services or sidekicks that perform php commands.
+Config versions up to 3 will default to sidekicks, while versions
+3 or above default to services.
 
 ## Defaults
 The default value for `php-commands` is artisan migrate and artisan seed.
@@ -28,6 +30,7 @@ Use for commands that need to be run periodically
 	"php-commands":{
 		"migrate":{
 			"command":"/var/www/app/artisan migrate && /var/www/app/artisan db:seed",
+			"is-service":false,
 			"schedule":{
 				"second":0,
 				"hour":18,

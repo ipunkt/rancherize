@@ -8,6 +8,8 @@ use Rancherize\Blueprint\PhpCommands\EventHandler\PhpCommandsEventHandler;
 use Rancherize\Blueprint\PhpCommands\Parser\ArrayParser;
 use Rancherize\Blueprint\PhpCommands\Parser\NameParser;
 use Rancherize\Blueprint\PhpCommands\Parser\PhpCommandsParser;
+use Rancherize\Commands\Events\PushCommandInServiceUpgradeEvent;
+use Rancherize\Commands\Events\PushCommandStartEvent;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -51,5 +53,7 @@ class PhpCommandsProvider implements Provider {
 		$eventHandler = $this->container[PhpCommandsEventHandler::class];
 
 		$event->addListener(MainServiceBuiltEvent::NAME, [$eventHandler, 'mainServiceBuilt']);
+		$event->addListener(PushCommandInServiceUpgradeEvent::NAME, [$eventHandler, 'inServiceUpgrade']);
+		$event->addListener(PushCommandStartEvent::NAME, [$eventHandler, 'startService']);
 	}
 }

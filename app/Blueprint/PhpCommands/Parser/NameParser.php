@@ -11,9 +11,16 @@ class NameParser implements PhpCommandParser {
 	/**
 	 * @param string $name
 	 * @param $data
+	 * @param $version
 	 * @return PhpCommand
 	 */
-	public function parse( string $name, $data ) {
-		return new PhpCommand( $name, $data );
+	public function parse( string $name, $data, $version ) {
+
+		$isService = false;
+		if ($version >= 4)
+			$isService = true;
+
+
+		return new PhpCommand( $name, $data, $isService );
 	}
 }

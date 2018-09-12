@@ -12,8 +12,9 @@ interface PhpCommandParser {
 	/**
 	 * @param string $name
 	 * @param $data
+	 * @param $configVersion
 	 * @return PhpCommand
 	 */
-	function parse( string $name, $data );
+	function parse( string $name, $data, $configVersion );
 
 }
