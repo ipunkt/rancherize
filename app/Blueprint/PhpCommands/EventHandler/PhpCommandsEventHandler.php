@@ -65,7 +65,7 @@ class PhpCommandsEventHandler {
 		$commands = $this->commandsParser->parse( $config );
 		foreach ( $commands as $command ) {
 			if( $command->isService() ) {
-				$service = $this->fpmMaker->makeService( $command->getName(), $command->getCommand(), $mainService, $config );
+				$service = $this->fpmMaker->makeService( $command->getName(), $command->getCommand(), $mainService, $config, $infrastructure );
 				$this->builtServices[] = $service;
 			} else
 				$service = $this->fpmMaker->makeCommand( $command->getName(), $command->getCommand(), $mainService, $config );

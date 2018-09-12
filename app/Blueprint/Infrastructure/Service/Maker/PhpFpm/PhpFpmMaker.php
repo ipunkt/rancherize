@@ -32,14 +32,14 @@ class PhpFpmMaker {
 	 * @param string $hostDirectory
 	 * @param string $containerDirectory
 	 */
-	public function setAppMount(string $hostDirectory, string $containerDirectory) {
+	public function setAppMount( string $hostDirectory, string $containerDirectory ) {
 		$this->appTarget = [$hostDirectory, $containerDirectory];
 	}
 
 	/**
 	 * @param Service $service
 	 */
-	public function setAppService(Service $service) {
+	public function setAppService( Service $service ) {
 		$this->appTarget = $service;
 	}
 
@@ -48,13 +48,13 @@ class PhpFpmMaker {
 	 * @param Service $mainService
 	 * @param Infrastructure $infrastructure
 	 */
-	public function make(Configuration $config, Service $mainService, Infrastructure $infrastructure) {
+	public function make( Configuration $config, Service $mainService, Infrastructure $infrastructure ) {
 
 		$phpVersion = $this->getPhpVersion( $config );
 
-		$phpVersion->make($config, $mainService, $infrastructure, function(Service $service) {
-			$this->addAppSource($service);
-		});
+		$phpVersion->make( $config, $mainService, $infrastructure, function ( Service $service ) {
+			$this->addAppSource( $service );
+		} );
 	}
 
 	/**
@@ -68,9 +68,9 @@ class PhpFpmMaker {
 
 		$phpVersion = $this->getPhpVersion( $configuration );
 
-		$commandService =  $phpVersion->makeCommand( $commandName, $command, $mainService);
-		$this->addAppSource($commandService);
-		$mainService->addSidekick($commandService);
+		$commandService = $phpVersion->makeCommand( $commandName, $command, $mainService );
+		$this->addAppSource( $commandService );
+		$mainService->addSidekick( $commandService );
 
 		return $commandService;
 	}
@@ -82,11 +82,11 @@ class PhpFpmMaker {
 	 * @param Configuration $configuration
 	 * @return Service
 	 */
-	public function makeService( string $commandName, string $command, Service $mainService, Configuration $configuration ) {
+	public function makeService( string $commandName, string $command, Service $mainService, Configuration $configuration, Infrastructure $infrastructure ) {
 		$phpVersion = $this->getPhpVersion( $configuration );
 
-		$commandService =  $phpVersion->makeCommand( $commandName, $command, $mainService);
-		$this->addAppSource($commandService);
+		$commandService = $phpVersion->makeCommand( $commandName, $command, $mainService );
+		$this->copyAppSource( $commandService, $infrastructure );
 
 		return $commandService;
 	}
@@ -98,7 +98,7 @@ class PhpFpmMaker {
 	 * @param PhpVersion $version
 	 * @return $this
 	 */
-	public function addVersion(PhpVersion $version) {
+	public function addVersion( PhpVersion $version ) {
 		$versionString = $version->getVersion();
 
 		$this->phpVersions[$versionString] = $version;
@@ -116,16 +116,16 @@ class PhpFpmMaker {
 
 		$phpVersionString = $config->get( 'php', '7.0' );
 
-		$advancedConfig = is_array($phpVersionString);
-		if( $advancedConfig )
-			$phpVersionString = $config->get('php.version', '7.0');
+		$advancedConfig = is_array( $phpVersionString );
+		if ( $advancedConfig )
+			$phpVersionString = $config->get( 'php.version', '7.0' );
 
 		if ( !array_key_exists( $phpVersionString, $this->phpVersions ) )
 			throw new PhpVersionNotAvailableException( $phpVersionString );
 
 		$phpVersion = $this->phpVersions[$phpVersionString];
 
-		$this->setConfig($phpVersion, $config);
+		$this->setConfig( $phpVersion, $config );
 
 		return $phpVersion;
 	}
@@ -144,69 +144,81 @@ class PhpFpmMaker {
 			return;
 		}
 
-		$phpConfig = new PrefixConfigurationDecorator($config, 'php.');
-		if( $phpVersion instanceof MemoryLimit && $phpConfig->has('memory-limit')  )
-			$phpVersion->setMemoryLimit( $phpConfig->get('memory-limit') );
+		$phpConfig = new PrefixConfigurationDecorator( $config, 'php.' );
+		if ( $phpVersion instanceof MemoryLimit && $phpConfig->has( 'memory-limit' ) )
+			$phpVersion->setMemoryLimit( $phpConfig->get( 'memory-limit' ) );
 
-		if( $phpVersion instanceof PostLimit && $phpConfig->has('post-limit')  )
-			$phpVersion->setPostLimit( $phpConfig->get('post-limit') );
+		if ( $phpVersion instanceof PostLimit && $phpConfig->has( 'post-limit' ) )
+			$phpVersion->setPostLimit( $phpConfig->get( 'post-limit' ) );
 
-		if( $phpVersion instanceof UploadFileLimit && $phpConfig->has('upload-file-limit')  )
-			$phpVersion->setUploadFileLimit( $phpConfig->get('upload-file-limit') );
+		if ( $phpVersion instanceof UploadFileLimit && $phpConfig->has( 'upload-file-limit' ) )
+			$phpVersion->setUploadFileLimit( $phpConfig->get( 'upload-file-limit' ) );
 
-		if( $phpVersion instanceof DefaultTimezone && $phpConfig->has('default-timezone')  )
-			$phpVersion->setDefaultTimezone( $phpConfig->get('default-timezone') );
+		if ( $phpVersion instanceof DefaultTimezone && $phpConfig->has( 'default-timezone' ) )
+			$phpVersion->setDefaultTimezone( $phpConfig->get( 'default-timezone' ) );
 
-		if( $phpVersion instanceof MailTarget && $phpConfig->has('mail.host')  )
-			$phpVersion->setMailHost( $phpConfig->get('mail.host', 'mail') );
+		if ( $phpVersion instanceof MailTarget && $phpConfig->has( 'mail.host' ) )
+			$phpVersion->setMailHost( $phpConfig->get( 'mail.host', 'mail' ) );
 
-		if( $phpVersion instanceof MailTarget && $phpConfig->has('mail.port')  )
-			$phpVersion->setMailPort( $phpConfig->get('mail.port', 'mail') );
+		if ( $phpVersion instanceof MailTarget && $phpConfig->has( 'mail.port' ) )
+			$phpVersion->setMailPort( $phpConfig->get( 'mail.port', 'mail' ) );
 
-		if( $phpVersion instanceof MailTarget && $phpConfig->has('mail.auth')  ) {
-			$phpVersion->setMailAuthentication( $phpConfig->get('mail.auth') );
-			$phpVersion->setMailUsername( $phpConfig->get('mail.username', 'smtp') );
-			$phpVersion->setMailPassword( $phpConfig->get('mail.password', 'smtp') );
+		if ( $phpVersion instanceof MailTarget && $phpConfig->has( 'mail.auth' ) ) {
+			$phpVersion->setMailAuthentication( $phpConfig->get( 'mail.auth' ) );
+			$phpVersion->setMailUsername( $phpConfig->get( 'mail.username', 'smtp' ) );
+			$phpVersion->setMailPassword( $phpConfig->get( 'mail.password', 'smtp' ) );
 
 		}
 
-		if( $phpVersion instanceof DebugImage ) {
-			$phpVersion->setDebug( $phpConfig->get('debug', false) );
-			$phpVersion->setDebugListener( $phpConfig->get('debug-listener', null) );
+		if ( $phpVersion instanceof DebugImage ) {
+			$phpVersion->setDebug( $phpConfig->get( 'debug', false ) );
+			$phpVersion->setDebugListener( $phpConfig->get( 'debug-listener', null ) );
 		}
 
-		if( $phpVersion instanceof UpdatesBackendEnvironment )
-			$phpVersion->enableUpdateEnvironment( $phpConfig->get('update-backend', true) );
+		if ( $phpVersion instanceof UpdatesBackendEnvironment )
+			$phpVersion->enableUpdateEnvironment( $phpConfig->get( 'update-backend', true ) );
 	}
 
 	/**
 	 * @param $phpFpmService
 	 */
-	protected function addAppSource(Service $phpFpmService) {
+	protected function addAppSource( Service $phpFpmService ) {
 		$appTarget = $this->appTarget;
 
-		if ($appTarget instanceof Service) {
-			$phpFpmService->addVolumeFrom($appTarget);
+		if ( $appTarget instanceof Service ) {
+			$phpFpmService->addVolumeFrom( $appTarget );
 			return;
 		}
 
-		list($hostDirectory, $containerDirectory) = $appTarget;
-		$phpFpmService->addVolume($hostDirectory, $containerDirectory);
+		list( $hostDirectory, $containerDirectory ) = $appTarget;
+		$phpFpmService->addVolume( $hostDirectory, $containerDirectory );
 	}
 
 	/**
-	 * @param $phpFpmService
+	 * @param Service $phpFpmService
+	 * @param Infrastructure $infrastructure
 	 */
-	protected function copyAppSource(Service $phpFpmService) {
+	protected function copyAppSource( Service $phpFpmService, Infrastructure $infrastructure ) {
 		$appTarget = $this->appTarget;
 
-		if ($appTarget instanceof Service) {
-			$phpFpmService->addVolumeFrom($appTarget);
+		if ( $appTarget instanceof Service ) {
+			$data = new Service();
+			$data->setImage( $appTarget->getImage() );
+			$data->setName( function () use ( $phpFpmService, $appTarget ) {
+				return $phpFpmService->getName().'-'.$appTarget->getName();
+			} );
+			$data->setRestart($appTarget->getRestart());
+			foreach ( $appTarget->getVolumeObjects() as $volume )
+				$data->addVolume( $volume );
+
+
+			$phpFpmService->addVolumeFrom( $data );
+			$infrastructure->addService( $data );
 			return;
 		}
 
-		list($hostDirectory, $containerDirectory) = $appTarget;
-		$phpFpmService->addVolume($hostDirectory, $containerDirectory);
+		list( $hostDirectory, $containerDirectory ) = $appTarget;
+		$phpFpmService->addVolume( $hostDirectory, $containerDirectory );
 	}
 
 }
