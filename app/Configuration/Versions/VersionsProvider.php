@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Configuration\Versions;
 
+use Rancherize\Commands\Events\InitCommandEvent;
 use Rancherize\Configuration\Events\ConfigurationLoadedEvent;
 use Rancherize\Configuration\Versions\StaticVersion\ConfigurationEventHandler;
 use Rancherize\Configuration\Versions\StaticVersion\StaticConfigurationVersionService;
@@ -31,6 +32,10 @@ class VersionsProvider implements Provider {
 		$this->container['configuration-version'] = function($c) {
 			return $c['static-configuration-version'];
 		};
+
+		$this->container[DefaultVersionSetter::class] = function() {
+			return DefaultVersionSetter::class;
+		};
 	}
 
 	/**
@@ -48,5 +53,11 @@ class VersionsProvider implements Provider {
 		$listener->setStaticConfigurationService( $this->container['static-configuration-version'] );
 
 		$event->addListener(ConfigurationLoadedEvent::NAME, [$listener, 'configurationLoaded']);
+
+		/**
+		 * @var DefaultVersionSetter $defaultVersionSetter
+		 */
+		$defaultVersionSetter = $this->container[DefaultVersionSetter::class];
+		$event->addListener(InitCommandEvent::NAME, [$defaultVersionSetter, 'initEvent']);
 	}
 }

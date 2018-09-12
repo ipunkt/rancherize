@@ -17,7 +17,7 @@ class NameParser implements PhpCommandParser {
 	public function parse( string $name, $data, $version ) {
 
 		$isService = false;
-		if ($version >= 4)
+		if ($version >= 3)
 			$isService = true;
 
 

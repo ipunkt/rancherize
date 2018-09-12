@@ -23,7 +23,7 @@ class ArrayParser implements PhpCommandParser {
 			throw new NoCommandException( 'No command set for php-command ' . $name );
 
 		$isService = false;
-		if ($version >= 4)
+		if ($version >= 3)
 			$isService = true;
 
 		if(array_key_exists('is-service', $data) && is_bool($data['is-service']) )

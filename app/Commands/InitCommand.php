@@ -1,6 +1,8 @@
 <?php namespace Rancherize\Commands;
 
 use Rancherize\Blueprint\Blueprint;
+use Rancherize\Commands\Events\InitCommandEvent;
+use Rancherize\Commands\Traits\EventTrait;
 use Rancherize\Commands\Traits\IoTrait;
 use Rancherize\Configuration\Configurable;
 use Rancherize\Configuration\LoadsConfiguration;
@@ -26,6 +28,7 @@ class InitCommand extends Command implements LoadsConfiguration {
 
 	use IoTrait;
 	use LoadsConfigurationTrait;
+	use EventTrait;
 
 	/**
 	 * @var RancherAccessService
@@ -91,6 +94,9 @@ class InitCommand extends Command implements LoadsConfiguration {
 		if (!$configuration->has('project.default.docker.account'))
 			$configuration->set('project.default.docker.account', reset($dockerAccounts));
 
+		$initEvent = new InitCommandEvent($configuration);
+		$this->getEventDispatcher()->dispatch($initEvent::NAME, $initEvent);
+
 		foreach ($environments as $environment) {
 
 			$this->initEnvironment($blueprint, $configuration, $environment);
@@ -117,9 +123,6 @@ class InitCommand extends Command implements LoadsConfiguration {
 				"=========================================",
 			]);
 
-
-		if( !$configuration->has('project.version') )
-			$configuration->set('project.version', 2);
 
 		$blueprint->init($configuration, $environmentName, $this->getInput(), $this->getOutput());
 
