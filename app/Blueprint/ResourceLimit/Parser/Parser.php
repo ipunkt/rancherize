@@ -36,8 +36,8 @@ class Parser {
 			return;
 
 		$information = new ResourceLimitExtraInformation();
-		$this->cpuLimits( $information, $configuration );
-		$this->memoryLimits( $information, $configuration );
+		$this->cpuLimits( $information, $resourceLimitConfig );
+		$this->memoryLimits( $information, $resourceLimitConfig );
 
 		$service->addExtraInformation( $information );
 
