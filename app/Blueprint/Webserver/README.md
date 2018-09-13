@@ -18,6 +18,7 @@ This blueprint creates infrastructures to support apps using php7.
 - [PHP Options](../Infrastructure/Service/Maker/PhpFpm/README.md)
 - [PHP Commands](../PhpCommands/README.md)
 - [Volumes](../Volumes/README.md)
+- [ResourceLimit](../ResourceLimit/README.md)
 
 #### Docker options
 | Option | Defaults to | Explanation |
