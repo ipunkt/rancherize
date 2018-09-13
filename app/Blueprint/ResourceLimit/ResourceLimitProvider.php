@@ -70,7 +70,7 @@ class ResourceLimitProvider implements Provider {
 		$event = $this->container['event'];
 
 		$serviceWriteListener = $this->container[ServiceWriteListener::class];
-		$event->addListener( ServiceWriterServicePreparedEvent::NAME, [$serviceWriteListener, 'writeServices'] );
+		$event->addListener( ServiceWriterServicePreparedEvent::NAME, [$serviceWriteListener, 'writeService'] );
 		$mainServiceBuiltListener = $this->container[MainServiceBuiltListener::class];
 		$event->addListener( MainServiceBuiltEvent::NAME, [$mainServiceBuiltListener, 'mainServiceBuilt'] );
 	}
