@@ -13,7 +13,7 @@ class HighCpuMode implements CpuLimitMode {
 	 * @param ResourceLimitExtraInformation $extraInformation
 	 */
 	public function setLimit( ResourceLimitExtraInformation $extraInformation ) {
-		$extraInformation->setCpuPeriod(1000);
-		$extraInformation->setCpuQuota(700);
+		$extraInformation->setCpuPeriod(4000);
+		$extraInformation->setCpuQuota(2800);
 	}
 }
