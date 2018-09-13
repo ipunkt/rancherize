@@ -1,5 +1,7 @@
 <?php
 
+
+
 return [
 
 	Rancherize\File\FileProvider::class,
@@ -32,6 +34,7 @@ return [
 	Rancherize\Push\PushProvider::class,
 	Rancherize\Blueprint\Network\NetworkProvider::class,
 	Rancherize\Blueprint\PhpCommands\PhpCommandsProvider::class,
+	Rancherize\Blueprint\ResourceLimit\ResourceLimitProvider::class,
 
 	Rancherize\Commands\CommandsProvider::class,
 
