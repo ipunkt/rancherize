@@ -28,7 +28,7 @@ class ExtraInformation implements ServiceExtraInformation {
 	protected $cpuQuota = null;
 
 	/**
-	 * @var float
+	 * @var int
 	 */
 	protected $memoryLimit = null;
 
@@ -61,14 +61,14 @@ class ExtraInformation implements ServiceExtraInformation {
 	}
 
 	/**
-	 * @return float
+	 * @return int
 	 */
-	public function getMemoryLimit(): float {
+	public function getMemoryLimit(): int {
 		return $this->memoryLimit;
 	}
 
 	/**
-	 * @param float $memoryLimit
+	 * @param int $memoryLimit
 	 */
 	public function setMemoryLimit( $memoryLimit ) {
 		$this->memoryLimit = $memoryLimit;
