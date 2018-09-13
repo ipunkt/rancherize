@@ -26,7 +26,11 @@ class MainServiceBuiltListener {
 	 */
 	public function mainserviceBuilt( MainServiceBuiltEvent $event ) {
 
-		$this->parser->parse( $event->getMainService(), $event->getEnvironmentConfiguration() );
+		$mainService = $event->getMainService();
+		$this->parser->parse( $mainService, $event->getEnvironmentConfiguration() );
+
+		foreach($mainService->getSidekicks() as $sidekick)
+			$this->parser->parse( $sidekick, $event->getEnvironmentConfiguration() );
 
 	}
 }
