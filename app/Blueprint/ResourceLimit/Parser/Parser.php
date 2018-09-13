@@ -1,4 +1,6 @@
-<?php namespace Rancherize\Blueprint\ResourceLimit\Parser;
+<?php /** @noinspection PhpMissingBreakStatementInspection */
+
+namespace Rancherize\Blueprint\ResourceLimit\Parser;
 
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\ResourceLimit\Exceptions\ZeroMemoryLimitException;
@@ -64,7 +66,26 @@ class Parser {
 		if ( !$configuration->has( 'memory' ) )
 			return;
 
-		$memory = (int)$configuration->get( 'memory' );
+		$memory = $configuration->get( 'memory' );
+		preg_match('~(\d+)([gGmM]?)~', $memory, $matches);
+		$memory = (int)$matches[0][0];
+		$modifier = $matches[1][0];
+		switch($modifier) {
+			case 'g':
+			case 'G':
+				$memory *= 1024;
+
+			case 'm':
+			case 'M':
+				$memory *= 1024;
+
+			case 'k':
+			case 'K':
+				$memory *= 1024;
+
+			default:
+				break;
+		}
 
 		if ( $memory === 0 )
 			throw new ZeroMemoryLimitException( 'Attempting to set the memory limit to zero' );
