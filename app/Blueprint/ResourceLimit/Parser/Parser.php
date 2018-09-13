@@ -68,9 +68,8 @@ class Parser {
 
 		$memory = $configuration->get( 'memory' );
 		preg_match('~(\d+)([gGmM]?)~', $memory, $matches);
-		var_dump($matches); echo PHP_EOL;
-		$memory = (int)$matches[0][0];
-		$modifier = $matches[1][0];
+		$memory = (int)$matches[1];
+		$modifier = $matches[2];
 		switch($modifier) {
 			case 'g':
 			case 'G':
