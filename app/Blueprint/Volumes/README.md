@@ -21,11 +21,15 @@ Possible keys:
 - `path` REQUIRED! Path inside the Container
 - `driver` Volume driver to use for this volume. Defaults to `local`
 - `driver-options` Pass additional driver options to the driver.
+- `mount-options` Add additional mount options like `rw` or a mount propagation.
 ```json
 "volumes":{
 	"volume-name":{
 	  "name":"volume-name",
 	  "path":"/path/in/volume",
+	  "mount-options":[
+	 	 'rshared'
+	  ],
 	  "driver":"rancher-nfs",
 	  "driver-options":{
 	    "some-option":"1000"
