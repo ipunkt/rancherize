@@ -18,6 +18,13 @@ class Volume {
 	 */
 	protected $internalPath;
 
+	/**
+	 * Mount options to add after the mountpoint
+	 * external_path:internal_path:mountOptions
+	 *
+	 * @var string[]
+	 */
+	protected $mountOptions = [];
 
 	/**
 	 * @var string
@@ -84,5 +91,19 @@ class Volume {
 	 */
 	public function getOptions(): array {
 		return $this->options;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getMountOptions(): array {
+		return $this->mountOptions;
+	}
+
+	/**
+	 * @param string[] $mountOptions
+	 */
+	public function setMountOptions( array $mountOptions ) {
+		$this->mountOptions = $mountOptions;
 	}
 }

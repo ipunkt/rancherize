@@ -89,8 +89,13 @@ class ServiceWriter {
 		$this->addNonEmpty('command', $service->getCommand(), $content);
 
 		$volumes = [];
-		foreach($service->getVolumes() as $name => $value)
-			$volumes[] = "$name:$value";
+		foreach($service->getVolumeObjects() as $volume) {
+			$volumeLine = $volume->getExternalPath().':'.$volume->getInternalPath();
+			$mountOptions = $volume->getMountOptions();
+			if( !empty($mountOptions) )
+				$volumeLine .= ':'.implode(',', $mountOptions);
+			$volumes[] = $volumeLine;
+		}
 		$this->addNonEmpty('volumes', $volumes, $content);
 
 		$volumesFrom = [];

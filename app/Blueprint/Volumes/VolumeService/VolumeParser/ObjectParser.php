@@ -29,6 +29,9 @@ class ObjectParser implements VolumeParser {
 		if( array_key_exists('driver', $data) )
 			$volume->setDriver($data['driver']);
 
+		if( array_key_exists('mount-options', $data) )
+			$volume->setMountOptions($data['mount-options']);
+
 		if( array_key_exists('driver-options', $data) )
 		$volume->setOptions($data['driver-options']);
 
