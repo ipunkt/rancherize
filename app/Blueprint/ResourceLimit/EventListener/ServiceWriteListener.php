@@ -15,6 +15,7 @@ class ServiceWriteListener {
 	 */
 	public function writeService( ServiceWriterServicePreparedEvent $event ) {
 		$dockerData = $event->getDockerContent();
+		$rancherData = $event->getRancherContent();
 
 		$service = $event->getService();
 		try {
@@ -26,10 +27,13 @@ class ServiceWriteListener {
 		if ( !$extraInformation instanceof ResourceLimitExtraInformation )
 			return;
 
+		$rancherData = $this->addCpuReservation( $rancherData, $extraInformation );
 		$dockerData = $this->addCpuLImit( $dockerData, $extraInformation );
 		$dockerData = $this->addMemoryLimit( $dockerData, $extraInformation );
+		$dockerData = $this->addMemoryReservation( $dockerData, $extraInformation );
 
 		$event->setDockerContent( $dockerData );
+		$event->setRancherContent( $rancherData );
 	}
 
 	/**
@@ -59,6 +63,31 @@ class ServiceWriteListener {
 			return $dockerData;
 
 		$dockerData['mem_limit'] = (int)$extraInformation->getMemoryLimit();
+
+		return $dockerData;
+	}
+
+	/**
+	 * @param array $rancherData
+	 * @param $extraInformation
+	 * @return array
+	 */
+	private function addCpuReservation( array $rancherData, ResourceLimitExtraInformation $extraInformation ) {
+
+		if ( $extraInformation->getCpuReservation() === null )
+			return $rancherData;
+
+		$rancherData['milli_cpu_reservation'] = $extraInformation->getCpuReservation();
+
+		return $rancherData;
+	}
+
+	private function addMemoryReservation( $dockerData, ResourceLimitExtraInformation $extraInformation ) {
+
+		if( $extraInformation->getMemoryReservation() === null)
+			return $dockerData;
+
+		$dockerData['mem_reservation'] = $extraInformation->getMemoryReservation();
 
 		return $dockerData;
 	}

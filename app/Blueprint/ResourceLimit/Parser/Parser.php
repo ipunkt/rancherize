@@ -17,13 +17,19 @@ class Parser {
 	 * @var CpuLimitModeFactory
 	 */
 	private $modeFactory;
+	/**
+	 * @var MemLimitModeFactory
+	 */
+	private $memModeFactory;
 
 	/**
 	 * Parser constructor.
 	 * @param CpuLimitModeFactory $modeFactory
+	 * @param MemLimitModeFactory $memModeFactory
 	 */
-	public function __construct( CpuLimitModeFactory $modeFactory ) {
+	public function __construct( CpuLimitModeFactory $modeFactory, MemLimitModeFactory $memModeFactory ) {
 		$this->modeFactory = $modeFactory;
+		$this->memModeFactory = $memModeFactory;
 	}
 
 	/**
@@ -38,11 +44,35 @@ class Parser {
 			return;
 
 		$information = new ResourceLimitExtraInformation();
+		$this->cpuReservations( $information, $resourceLimitConfig );
+		$this->memoryReservations( $information, $resourceLimitConfig );
+
+		$this->parseLimit( $service, $configuration, $information );
+
+		$service->addExtraInformation( $information );
+
+
+	}
+
+	/**
+	 * @param Service $service
+	 * @param Configuration $configuration
+	 * @param ResourceLimitExtraInformation|null $information
+	 */
+	public function parseLimit( Service $service, Configuration $configuration, ResourceLimitExtraInformation $information = null ) {
+
+		if ( $information === null )
+			$information = new ResourceLimitExtraInformation();
+
+		$resourceLimitConfig = new PrefixConfigurationDecorator( $configuration, 'resource-limit.' );
+
+		if ( !$resourceLimitConfig->get( 'enable', true ) )
+			return;
+
 		$this->cpuLimits( $information, $resourceLimitConfig );
 		$this->memoryLimits( $information, $resourceLimitConfig );
 
 		$service->addExtraInformation( $information );
-
 
 	}
 
@@ -51,11 +81,13 @@ class Parser {
 	 * @param Configuration $configuration
 	 */
 	private function cpuLimits( ResourceLimitExtraInformation $information, Configuration $configuration ) {
+
 		if ( !$configuration->has( 'cpu' ) )
 			return;
 
 		$mode = $this->modeFactory->make( $configuration->get( 'cpu' ) );
 		$mode->setLimit( $information );
+
 	}
 
 	/**
@@ -63,14 +95,22 @@ class Parser {
 	 * @param Configuration $configuration
 	 */
 	private function memoryLimits( ResourceLimitExtraInformation $information, Configuration $configuration ) {
+		if( $configuration->has('mem') ) {
+
+			$memMode = $this->memModeFactory->make( $configuration->get( 'mem' ) );
+			$memMode->setLimit( $information );
+
+			return;
+		}
+
 		if ( !$configuration->has( 'memory' ) )
 			return;
 
 		$memory = $configuration->get( 'memory' );
-		preg_match('~(\d+)([gGmM]?)~', $memory, $matches);
+		preg_match( '~(\d+)([gGmM]?)~', $memory, $matches );
 		$memory = (int)$matches[1];
 		$modifier = $matches[2];
-		switch($modifier) {
+		switch ( $modifier ) {
 			case 'g':
 			case 'G':
 				$memory *= 1024;
@@ -91,6 +131,30 @@ class Parser {
 			throw new ZeroMemoryLimitException( 'Attempting to set the memory limit to zero' );
 
 		$information->setMemoryLimit( $memory );
+	}
+
+	/**
+	 * @param ResourceLimitExtraInformation $information
+	 * @param PrefixConfigurationDecorator $resourceLimitConfig
+	 */
+	private function cpuReservations( ResourceLimitExtraInformation $information, PrefixConfigurationDecorator $configuration ) {
+		if ( !$configuration->has( 'cpu' ) )
+			return;
+
+		$mode = $this->modeFactory->make( $configuration->get( 'cpu' ) );
+		$mode->setReservation( $information );
+	}
+
+	/**
+	 * @param ResourceLimitExtraInformation $information
+	 * @param PrefixConfigurationDecorator $resourceLimitConfig
+	 */
+	private function memoryReservations( ResourceLimitExtraInformation $information, PrefixConfigurationDecorator $configuration ) {
+		if ( !$configuration->has( 'mem' ) )
+			return;
+
+		$memMode = $this->memModeFactory->make( $configuration->get( 'mem' ) );
+		$memMode->setReservation( $information );
 	}
 
 }

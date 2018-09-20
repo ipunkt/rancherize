@@ -13,7 +13,14 @@ class FullCpuMode implements CpuLimitMode {
 	 * @param ResourceLimitExtraInformation $extraInformation
 	 */
 	public function setLimit( ResourceLimitExtraInformation $extraInformation ) {
-		$extraInformation->setCpuPeriod(null);
-		$extraInformation->setCpuQuota(null);
+		$extraInformation->setCpuPeriod( null );
+		$extraInformation->setCpuQuota( null );
+	}
+
+	/**
+	 * @param ResourceLimitExtraInformation $extraInformation
+	 */
+	public function setReservation( ResourceLimitExtraInformation $extraInformation ) {
+		$extraInformation->setCpuReservation( null );
 	}
 }

@@ -30,7 +30,7 @@ class MainServiceBuiltListener {
 		$this->parser->parse( $mainService, $event->getEnvironmentConfiguration() );
 
 		foreach($mainService->getSidekicks() as $sidekick)
-			$this->parser->parse( $sidekick, $event->getEnvironmentConfiguration() );
+			$this->parser->parseLimit( $sidekick, $event->getEnvironmentConfiguration() );
 
 	}
 }

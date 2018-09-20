@@ -3,10 +3,11 @@
 use Rancherize\Blueprint\ResourceLimit\ExtraInformation\ExtraInformation as ResourceLimitExtraInformation;
 
 /**
- * Interface CpuLimitMode
+ * Interface MemLimitMode
  * @package Rancherize\Blueprint\ResourceLimit\Parser
  */
-interface CpuLimitMode {
+interface MemLimitMode {
+
 
 	/**
 	 * @param ResourceLimitExtraInformation $extraInformation

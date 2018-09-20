@@ -28,9 +28,22 @@ class ExtraInformation implements ServiceExtraInformation {
 	protected $cpuQuota = null;
 
 	/**
+	 * Cpu limit in mCPU - thousandth of cpu
+	 * 1000 = one full cpu
+	 *
+	 * @var null|int
+	 */
+	protected $cpuReservation = null;
+
+	/**
 	 * @var int
 	 */
 	protected $memoryLimit = null;
+
+	/**
+	 * @var null|int
+	 */
+	protected $memoryReservation = null;
 
 	/**
 	 * @return int
@@ -73,6 +86,35 @@ class ExtraInformation implements ServiceExtraInformation {
 	public function setMemoryLimit( $memoryLimit ) {
 		$this->memoryLimit = $memoryLimit;
 	}
+
+	/**
+	 * @return null
+	 */
+	public function getMemoryReservation() {
+		return $this->memoryReservation;
+	}
+
+	/**
+	 * @param null $memoryReservation
+	 */
+	public function setMemoryReservation( $memoryReservation ) {
+		$this->memoryReservation = $memoryReservation;
+	}
+
+	/**
+	 * @return null
+	 */
+	public function getCpuReservation() {
+		return $this->cpuReservation;
+	}
+
+	/**
+	 * @param null $cpuReservation
+	 */
+	public function setCpuReservation( $cpuReservation ) {
+		$this->cpuReservation = $cpuReservation;
+	}
+
 
 
 }

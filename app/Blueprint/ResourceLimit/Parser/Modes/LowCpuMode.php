@@ -16,4 +16,11 @@ class LowCpuMode implements CpuLimitMode {
 		$extraInformation->setCpuPeriod(4000);
 		$extraInformation->setCpuQuota(1200);
 	}
+
+	/**
+	 * @param ResourceLimitExtraInformation $extraInformation
+	 */
+	public function setReservation( ResourceLimitExtraInformation $extraInformation ) {
+		$extraInformation->setCpuReservation( 200 );
+	}
 }
