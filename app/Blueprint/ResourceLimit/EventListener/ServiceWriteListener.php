@@ -99,7 +99,17 @@ class ServiceWriteListener {
 		if ( $extraInformation->getCpuReservation() === null )
 			return $rancherData;
 
-		$memory = $extraInformation->getCpuReservation();
+		$rancherData['milli_cpu_reservation'] = $extraInformation->getCpuReservation();
+
+		return $rancherData;
+	}
+
+	private function addMemoryReservation( $dockerData, ResourceLimitExtraInformation $extraInformation ) {
+
+		if( $extraInformation->getMemoryReservation() === null)
+			return $dockerData;
+
+		$memory = $extraInformation->getMemoryReservation();
 		preg_match( '~(\d+)([gGmM]?)~', $memory, $matches );
 		$memory = (int)$matches[1];
 		$modifier = $matches[2];
@@ -119,17 +129,7 @@ class ServiceWriteListener {
 			default:
 				break;
 		}
-		$rancherData['milli_cpu_reservation'] = $memory;
-
-		return $rancherData;
-	}
-
-	private function addMemoryReservation( $dockerData, ResourceLimitExtraInformation $extraInformation ) {
-
-		if( $extraInformation->getMemoryReservation() === null)
-			return $dockerData;
-
-		$dockerData['mem_reservation'] = $extraInformation->getMemoryReservation();
+		$dockerData['mem_reservation'] = $memory;
 
 		return $dockerData;
 	}
