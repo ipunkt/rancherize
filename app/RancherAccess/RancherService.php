@@ -64,6 +64,13 @@ class RancherService {
 	}
 
 	/**
+	 * @return array
+	 */
+	protected function baseCommand($directory, $stackName) {
+		return [ $this->account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName ];
+	}
+
+	/**
 	 * Retrieve the docker-compose.yml and rancher-compose.yml for the given stack
 	 *
 	 * @param string $stackName
@@ -214,7 +221,7 @@ class RancherService {
 			$serviceNames = [$serviceNames];
 
 		$url = $this->getUrl();
-		$command = [ $this->account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName, 'up', '-d' ];
+		$command = $this->baseCommand($directory, $stackName);
 
 		if($upgrade)
 			$command = array_merge($command, ['--upgrade']);
@@ -251,10 +258,10 @@ class RancherService {
 			$serviceNames = [$serviceNames];
 
 		$url = $this->getUrl();
-		$command = [
-			$this->account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r',
-			"$directory/rancher-compose.yml", '-p', $stackName, 'up', '-d', '--upgrade', '--confirm-upgrade'
-		];
+		$command = array_merge(
+			$this->baseCommand($directory, $stackName),
+			['up', '-d', '--upgrade', '--confirm-upgrade']
+		);
 
 		$command = array_merge($command, $serviceNames);
 
@@ -282,9 +289,7 @@ class RancherService {
 	 */
 	public function upgrade(string $directory, string $stackName, string $activeService, string $replacementService) {
 
-		$baseCommand = [
-			$this->account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName
-		];
+		$baseCommand = $this->baseCommand($directory, $stackName);
 
 		$commands = [
 			'upgrade' => array_merge($baseCommand, ['upgrade', '-w', '-c', $activeService, $replacementService]),
