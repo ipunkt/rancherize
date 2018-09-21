@@ -1,4 +1,6 @@
-<?php namespace Rancherize\Blueprint\ResourceLimit\EventListener;
+<?php /** @noinspection PhpMissingBreakStatementInspection */
+
+namespace Rancherize\Blueprint\ResourceLimit\EventListener;
 
 use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterServicePreparedEvent;
 use Rancherize\Blueprint\Infrastructure\Service\ExtraInformationNotFoundException;
@@ -62,7 +64,27 @@ class ServiceWriteListener {
 		if ( $extraInformation->getCpuPeriod() === null || $extraInformation->getCpuQuota() === null )
 			return $dockerData;
 
-		$dockerData['mem_limit'] = $extraInformation->getMemoryLimit();
+		$memory = $extraInformation->getMemoryLimit();
+		preg_match( '~(\d+)([gGmM]?)~', $memory, $matches );
+		$memory = (int)$matches[1];
+		$modifier = $matches[2];
+		switch ( $modifier ) {
+			case 'g':
+			case 'G':
+				$memory *= 1024;
+
+			case 'm':
+			case 'M':
+				$memory *= 1024;
+
+			case 'k':
+			case 'K':
+				$memory *= 1024;
+
+			default:
+				break;
+		}
+		$dockerData['mem_limit'] = $memory;
 
 		return $dockerData;
 	}
