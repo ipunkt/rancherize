@@ -13,13 +13,13 @@ class LowMemMode implements MemLimitMode {
 	 * @param ResourceLimitExtraInformation $extraInformation
 	 */
 	public function setLimit( ResourceLimitExtraInformation $extraInformation ) {
-		$extraInformation->setMemoryLimit(512);
+		$extraInformation->setMemoryLimit('512m' );
 	}
 
 	/**
 	 * @param ResourceLimitExtraInformation $extraInformation
 	 */
 	public function setReservation( ResourceLimitExtraInformation $extraInformation ) {
-		$extraInformation->setMemoryReservation(256);
+		$extraInformation->setMemoryReservation('256m');
 	}
 }

@@ -20,6 +20,6 @@ class MinimalMemMode implements MemLimitMode {
 	 * @param ResourceLimitExtraInformation $extraInformation
 	 */
 	public function setReservation( ResourceLimitExtraInformation $extraInformation ) {
-		$extraInformation->setMemoryReservation(64);
+		$extraInformation->setMemoryReservation('64m');
 	}
 }

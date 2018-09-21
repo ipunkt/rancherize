@@ -62,7 +62,7 @@ class ServiceWriteListener {
 		if ( $extraInformation->getCpuPeriod() === null || $extraInformation->getCpuQuota() === null )
 			return $dockerData;
 
-		$dockerData['mem_limit'] = (int)$extraInformation->getMemoryLimit();
+		$dockerData['mem_limit'] = $extraInformation->getMemoryLimit();
 
 		return $dockerData;
 	}

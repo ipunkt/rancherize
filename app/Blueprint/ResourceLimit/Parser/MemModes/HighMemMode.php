@@ -20,6 +20,6 @@ class HighMemMode implements MemLimitMode {
 	 * @param ResourceLimitExtraInformation $extraInformation
 	 */
 	public function setReservation( ResourceLimitExtraInformation $extraInformation ) {
-		$extraInformation->setMemoryReservation(1024);
+		$extraInformation->setMemoryReservation('1024m' );
 	}
 }

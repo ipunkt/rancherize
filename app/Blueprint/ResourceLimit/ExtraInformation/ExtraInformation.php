@@ -76,7 +76,7 @@ class ExtraInformation implements ServiceExtraInformation {
 	/**
 	 * @return int
 	 */
-	public function getMemoryLimit(): int {
+	public function getMemoryLimit() {
 		return $this->memoryLimit;
 	}
 
