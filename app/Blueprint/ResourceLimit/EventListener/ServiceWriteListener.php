@@ -99,7 +99,27 @@ class ServiceWriteListener {
 		if ( $extraInformation->getCpuReservation() === null )
 			return $rancherData;
 
-		$rancherData['milli_cpu_reservation'] = $extraInformation->getCpuReservation();
+		$memory = $extraInformation->getCpuReservation();
+		preg_match( '~(\d+)([gGmM]?)~', $memory, $matches );
+		$memory = (int)$matches[1];
+		$modifier = $matches[2];
+		switch ( $modifier ) {
+			case 'g':
+			case 'G':
+				$memory *= 1024;
+
+			case 'm':
+			case 'M':
+				$memory *= 1024;
+
+			case 'k':
+			case 'K':
+				$memory *= 1024;
+
+			default:
+				break;
+		}
+		$rancherData['milli_cpu_reservation'] = $memory;
 
 		return $rancherData;
 	}
