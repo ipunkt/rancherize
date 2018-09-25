@@ -17,6 +17,7 @@ use Rancherize\Blueprint\ResourceLimit\Parser\Modes\MinimalCpuMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\Parser;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
+use Rancherize\RancherAccess\RancherService;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -95,8 +96,8 @@ class ResourceLimitProvider implements Provider {
 			return new Parser( $c[CpuLimitModeFactory::class], $c[MemLimitModeFactory::class] );
 		};
 
-		$this->container[ServiceWriteListener::class] = function () {
-			return new ServiceWriteListener();
+		$this->container[ServiceWriteListener::class] = function ($c) {
+			return new ServiceWriteListener( $c[RancherService::class] );
 		};
 		$this->container[MainServiceBuiltListener::class] = function ( $c ) {
 			return new MainServiceBuiltListener( $c[Parser::class] );

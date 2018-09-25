@@ -38,6 +38,11 @@ class RancherService {
 	 */
 	private $byNameService;
 
+	/**
+	 * @var bool
+	 */
+	private $cliMode = false;
+
 	use ProcessTrait;
 
 
@@ -214,7 +219,11 @@ class RancherService {
 			$serviceNames = [$serviceNames];
 
 		$url = $this->getUrl();
-		$command = [ $this->account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName, 'up', '-d' ];
+		$account = $this->account;
+		if ($this->cliMode && $account instanceof RancherCliAccount)
+			$command = [ $account->getCliVersion(), "-f", "$directory/docker-compose.yml", '--rancher-file', "$directory/rancher-compose.yml", '-s', $stackName, 'up', '-d' ];
+		else
+			$command = [ $account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName, 'up', '-d' ];
 
 		if($upgrade)
 			$command = array_merge($command, ['--upgrade']);
@@ -550,5 +559,19 @@ class RancherService {
 		$ran = $this->processHelper->run($this->output, $process, null, null, OutputInterface::VERBOSITY_NORMAL);
 		if( $ran->getExitCode() != 0 )
 			throw new CreateFailedException("Command ".$ran->getCommandLine());
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isCliMode(): bool {
+		return $this->cliMode;
+	}
+
+	/**
+	 * @param bool $cliMode
+	 */
+	public function setCliMode( bool $cliMode ) {
+		$this->cliMode = $cliMode;
 	}
 }

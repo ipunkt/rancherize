@@ -6,7 +6,7 @@
  *
  * Provides RancherAccount using an array with the keys Key -> `key` and Secret -> `secret`
  */
-class ArrayRancherAccount implements RancherAccount {
+class ArrayRancherAccount implements RancherAccount, RancherCliAccount {
 	/**
 	 * @var array
 	 */
@@ -68,4 +68,12 @@ class ArrayRancherAccount implements RancherAccount {
 	}
 
 
+	/**
+	 * returns the name of the rancher exectuable, e.g. `rancher`
+	 *
+	 * @return string
+	 */
+	public function getCliVersion() {
+		return $this->get('rancher-cli', 'rancher');
+	}
 }
