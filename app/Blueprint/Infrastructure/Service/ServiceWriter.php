@@ -243,7 +243,7 @@ class ServiceWriter {
 		try {
 			$dockerData = Yaml::parse($this->fileLoader->get($targetFile));
 			if(!is_array($dockerData))
-				$dockerData = [ 'version' => '2' ];
+				$dockerData = [ 'version' => '2.1' ];
 
 			// handle v2 format
 			if ( array_key_exists('version', $dockerData) ) {

@@ -35,6 +35,11 @@ RUN curl -sSL "https://github.com/rancher/rancher-compose/releases/download/v$RA
 	&& mv rancher-compose-*/rancher-compose /usr/local/bin/ \
 	&& cp /usr/local/bin/rancher-compose /usr/local/bin/rancher-compose-$RANCHER_COMPOSE_VERSION
 
+RUN curl -sSL "https://github.com/rancher/rancher-compose/releases/download/v$RANCHER_COMPOSE_VERSION/rancher-compose-linux-amd64-v$RANCHER_COMPOSE_VERSION.tar.gz" \
+	| tar xz \
+	&& mv rancher-compose-*/rancher-compose /usr/local/bin/ \
+	&& cp /usr/local/bin/rancher-compose /usr/local/bin/rancher-compose-$RANCHER_COMPOSE_VERSION
+
 COPY ["docker", "/opt/rancherize"]
 COPY [".", "/opt/rancherize-package"]
 WORKDIR /opt/rancherize
