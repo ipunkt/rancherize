@@ -221,7 +221,7 @@ class RancherService {
 		$url = $this->getUrl();
 		$account = $this->account;
 		if ($this->cliMode && $account instanceof RancherCliAccount)
-			$command = [ $account->getCliVersion(), "-f", "$directory/docker-compose.yml", '--rancher-file', "$directory/rancher-compose.yml", '-s', $stackName, 'up', '-d' ];
+			$command = [ $account->getCliVersion(), 'up', "-f", "$directory/docker-compose.yml", '--rancher-file', "$directory/rancher-compose.yml", '-s', $stackName,  '-d' ];
 		else
 			$command = [ $account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName, 'up', '-d' ];
 
