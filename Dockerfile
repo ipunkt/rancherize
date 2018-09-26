@@ -2,6 +2,7 @@ FROM php:7.2-cli-alpine
 
 ARG DOCKER_COMPOSE_VERSION=1.21.2
 ARG RANCHER_COMPOSE_VERSION=0.12.5
+ARG RANCHER_CLI_VERSION=0.6.9
 ARG RANCHERIZE_HOME=/home/rancherize
 ARG DEFAULT_EDITOR=vi
 
@@ -35,10 +36,11 @@ RUN curl -sSL "https://github.com/rancher/rancher-compose/releases/download/v$RA
 	&& mv rancher-compose-*/rancher-compose /usr/local/bin/ \
 	&& cp /usr/local/bin/rancher-compose /usr/local/bin/rancher-compose-$RANCHER_COMPOSE_VERSION
 
-RUN curl -sSL "https://github.com/rancher/rancher-compose/releases/download/v$RANCHER_COMPOSE_VERSION/rancher-compose-linux-amd64-v$RANCHER_COMPOSE_VERSION.tar.gz" \
+
+RUN curl -sSL "https://releases.rancher.com/cli/v$RANCHER_CLI_VERSION/rancher-linux-amd64-v$RANCHER_CLI_VERSION.tar.gz" \
 	| tar xz \
-	&& mv rancher-compose-*/rancher-compose /usr/local/bin/ \
-	&& cp /usr/local/bin/rancher-compose /usr/local/bin/rancher-compose-$RANCHER_COMPOSE_VERSION
+	&& mv rancher-v*/rancher /usr/local/bin/ \
+	&& cp /usr/local/bin/rancher /usr/local/bin/rancher-$RANCHER_CLI_VERSION
 
 COPY ["docker", "/opt/rancherize"]
 COPY [".", "/opt/rancherize-package"]
