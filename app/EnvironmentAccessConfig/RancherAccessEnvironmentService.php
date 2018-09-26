@@ -36,6 +36,14 @@ class RancherAccessEnvironmentService implements RancherAccessService
      * @return ArrayRancherAccount
      */
 	public function getAccount(string $name) : ArrayRancherAccount {
+		$capitalName = strtoupper($name);
+		if( !empty( getenv('RANCHER_'.$capitalName.'_URL') ) )
+			return new ArrayRancherAccount([
+				'url' => getenv('RANCHER_'.$capitalName.'_URL'),
+				'key' => getenv('RANCHER_'.$capitalName.'_KEY'),
+				'secret' => getenv('RANCHER_'.$capitalName.'_SECRET')
+			]);
+
 		return new ArrayRancherAccount($this->account);
 	}
 }
