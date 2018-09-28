@@ -11,7 +11,7 @@
     "ipunkt/rancherize-ecr": "^1.0.0",
     "ipunkt/rancherize-publish-traefik-rancher": "^1.0.1",
     "ipunkt/rancherize-ftp": "^0.1.0",
-    "ipunkt/rancherize-blueprint-php-cli": "^1.0.1",
+    "ipunkt/rancherize-blueprint-php-cli": "^1.1.1",
     "ipunkt/rancherize-php53": "^1.5.1",
     "ipunkt/rancherize-php72": "^1.4.3",
     "ipunkt/rancherize-mailhog": "^1.0.1"
