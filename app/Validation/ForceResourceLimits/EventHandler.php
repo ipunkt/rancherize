@@ -42,7 +42,10 @@ class EventHandler {
 
 		$configuration = $e->getConfiguration();
 		if (!$configuration->has('resource-limit') )
-			throw new ValidationFailedException([ 'resource-limit' => 'Missing, but required according to resource-limit settings ('.implode(', ', $this->reason).')' ]);
+			throw new ValidationFailedException([ 'resource-limit' => [
+				'Missing, but required according to resource-limit settings ('.implode(', ', $this->reason).')'
+				]
+			]);
 
 	}
 }
