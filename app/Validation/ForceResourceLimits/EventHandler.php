@@ -20,13 +20,6 @@ class EventHandler {
 	protected $reason = [];
 
 	/**
-	 * @return bool
-	 */
-	public function isForceResourceLimits(): bool {
-		return $this->forceResourceLimits;
-	}
-
-	/**
 	 * @param bool $forceResourceLimits
 	 * @param string $reason
 	 * @return EventHandler
@@ -44,6 +37,7 @@ class EventHandler {
 
 	public function validate( ValidatingEvent $e ) {
 
+		die( 'force resource limit: '. $this->forceResourceLimits );
 		if ( !$this->forceResourceLimits )
 			return;
 
