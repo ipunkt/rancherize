@@ -39,6 +39,12 @@ With build tools like jenkins or gitlab-ci, you cannot rely on the presence of a
 - `RANCHER_URL` - rancher environment api-url
 - `RANCHER_KEY` - rancher api-key
 - `RANCHER_SECRET` - rancher api-secret
+- `RANCHER_ACCOUNTNAME_URL` - alternative rancher environment api-url when using rancher.account = 'ACCOUNTNAME'
+- `RANCHER_ACCOUNTNAME_KEY` - alternative rancher api-key when using rancher.account = 'ACCOUNTNAME'
+- `RANCHER_ACCOUNTNAME_SECRET` - alternative rancher api-secret when using rancher.account = 'ACCOUNTNAME'
+
+Note that `RANCHER_ACCOUNTNAME_{URL,KEY,SECRET}` are only parsed when `RANCHER_URL` is set. Setting them without default
+account will NOT work.
 
 # Usage in project
 ## Requirements
