@@ -1,6 +1,7 @@
 <?php
 
 
+use Rancherize\Validation\ValidationProvider;
 
 return [
 
@@ -35,6 +36,7 @@ return [
 	Rancherize\Blueprint\Network\NetworkProvider::class,
 	Rancherize\Blueprint\PhpCommands\PhpCommandsProvider::class,
 	Rancherize\Blueprint\ResourceLimit\ResourceLimitProvider::class,
+	ValidationProvider::class,
 
 	Rancherize\Commands\CommandsProvider::class,
 

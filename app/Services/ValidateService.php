@@ -1,9 +1,14 @@
 <?php namespace Rancherize\Services;
+
 use Rancherize\Blueprint\Blueprint;
 use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Configuration\Configuration;
+use Rancherize\Configuration\PrefixConfigurationDecorator;
+use Rancherize\Configuration\Services\ConfigurationFallback;
+use Rancherize\Events\ValidatingEvent;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class ValidateService
@@ -12,6 +17,18 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Trigger the given blueprint to validate the given configuration
  */
 class ValidateService {
+	/**
+	 * @var EventDispatcher
+	 */
+	private $eventDispatcher;
+
+	/**
+	 * ValidateService constructor.
+	 * @param EventDispatcher $eventDispatcher
+	 */
+	public function __construct( EventDispatcher $eventDispatcher) {
+		$this->eventDispatcher = $eventDispatcher;
+	}
 
 	/**
 	 * validate the configuration for the given environment
@@ -21,6 +38,19 @@ class ValidateService {
 	 * @param Configuration $configuration
 	 */
 	public function validate(Blueprint $blueprint, Configuration $configuration, string $environment) {
+
+		$projectConfigurable = new PrefixConfigurationDecorator($configuration, "project.default.");
+		$environmentConfigurable = new PrefixConfigurationDecorator($configuration, "project.environments.$environment.");
+		$fallbackConfiguration = new ConfigurationFallback($environmentConfigurable, $projectConfigurable);
+
+		$event = ValidatingEvent::make()
+			->setBlueprint($blueprint)
+			->setConfiguration($fallbackConfiguration)
+			->setEnvironment($environment)
+			;
+
+		$this->eventDispatcher->dispatch($event::NAME, $event);
+
 		$blueprint->validate($configuration, $environment);
 	}
 
