@@ -19,7 +19,7 @@ class ValidationFailedException extends Exception  {
 	 * @param int $code
 	 * @param \Exception|null $e
 	 */
-	public function __construct(array $failures, $code = 0, \Exception $e = null) {
+	public function __construct(array $failures, $code = 1, \Exception $e = null) {
 		parent::__construct("Validation failed", $code, $e);
 		$this->failures = $failures;
 	}

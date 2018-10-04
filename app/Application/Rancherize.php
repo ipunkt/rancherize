@@ -60,7 +60,6 @@ class Rancherize {
 				$validateService = container( 'validate-service' );
 				$validateService->print( $e, $output );
 			}
-
 		} );
 
 		$dispatcher->addListener( ConsoleEvents::COMMAND, function ( ConsoleCommandEvent $event ) {
