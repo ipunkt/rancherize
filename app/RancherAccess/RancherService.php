@@ -262,7 +262,7 @@ class RancherService {
 		$url = $this->getUrl();
 		$command = [
 			$this->account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r',
-			"$directory/rancher-compose.yml", '-p', $stackName, 'up', '-d', '--upgrade', '--confirm-upgrade'
+			"$directory/rancher-compose.yml", '-p', $stackName, 'up', '-d', '--confirm-upgrade'
 		];
 
 		$command = array_merge($command, $serviceNames);
