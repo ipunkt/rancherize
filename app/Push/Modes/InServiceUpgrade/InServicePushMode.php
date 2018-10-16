@@ -49,6 +49,7 @@ class InServicePushMode implements PushMode {
 		$this->eventDispatcher->dispatch( PushCommandInServiceUpgradeEvent::NAME, $startEvent );
 		$serviceNames = $startEvent->getServiceNames();
 		$forcedUpgrade = $startEvent->isForceUpgrade();
+		$serviceNames = array_unique($serviceNames);
 
 		$rancherService->start( './.rancherize', $stackName, $serviceNames, true, $forcedUpgrade );
 
@@ -60,10 +61,10 @@ class InServicePushMode implements PushMode {
 		foreach($serviceNames as $serviceName) {
 
 			$rancherService->wait( $stackName, $serviceName, $stateMatcher );
+            $rancherService->confirm( './.rancherize', $stackName,  [$serviceName]);
 			// TODO: set timeout and roll back the upgrade if the timeout is reached without health confirmation.
 
 		}
-		$rancherService->confirm( './.rancherize', $stackName,  $serviceNames);
 		return array($serviceNames, $startEvent);
 
 	}
