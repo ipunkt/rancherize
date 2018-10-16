@@ -34,7 +34,7 @@ class ExternalServiceProvider implements Provider {
 			$rancherBuilder->setHealthcheckParser($c['healthcheck-parser']);
 			$rancherBuilder->setPublishParser($c['publish-urls-parser']);
 
-			return ;
+			return $rancherBuilder;
 		};
 
 		$this->container['external-service-builder.builder-types.tcp-proxy'] = function($c) {
