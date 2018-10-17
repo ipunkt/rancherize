@@ -1,25 +1,26 @@
-<?php namespace Rancherize\Blueprint\ResourceLimit\Parser\MemModes;
+<?php namespace Rancherize\Blueprint\ResourceLimit\Parser\Modes;
 
 use Rancherize\Blueprint\ResourceLimit\ExtraInformation\ExtraInformation as ResourceLimitExtraInformation;
-use Rancherize\Blueprint\ResourceLimit\Parser\MemLimitMode;
+use Rancherize\Blueprint\ResourceLimit\Parser\CpuLimitMode;
 
 /**
- * Class HighMemMode
- * @package Rancherize\Blueprint\ResourceLimit\Parser\MemModes
+ * Class HighCpuMode
+ * @package Rancherize\Blueprint\ResourceLimit\Parser\Modes
  */
-class HighMemMode implements MemLimitMode {
+class VeryHighCpuMode implements CpuLimitMode {
 
 	/**
 	 * @param ResourceLimitExtraInformation $extraInformation
 	 */
 	public function setLimit( ResourceLimitExtraInformation $extraInformation ) {
-		$extraInformation->setMemoryLimit('1536m');
+		$extraInformation->setCpuPeriod(4000);
+		$extraInformation->setCpuQuota(3500);
 	}
 
 	/**
 	 * @param ResourceLimitExtraInformation $extraInformation
 	 */
 	public function setReservation( ResourceLimitExtraInformation $extraInformation ) {
-		$extraInformation->setMemoryReservation('1024m' );
+		$extraInformation->setCpuReservation(1000);
 	}
 }
