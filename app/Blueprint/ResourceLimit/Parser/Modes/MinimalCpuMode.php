@@ -13,7 +13,7 @@ class MinimalCpuMode implements CpuLimitMode {
 	 * @param ResourceLimitExtraInformation $extraInformation
 	 */
 	public function setLimit( ResourceLimitExtraInformation $extraInformation ) {
-		$extraInformation->setCpuPeriod(8000);
+		$extraInformation->setCpuPeriod(4000);
 		$extraInformation->setCpuQuota(1000);
 	}
 
@@ -21,6 +21,6 @@ class MinimalCpuMode implements CpuLimitMode {
 	 * @param ResourceLimitExtraInformation $extraInformation
 	 */
 	public function setReservation( ResourceLimitExtraInformation $extraInformation ) {
-		$extraInformation->setCpuReservation(50);
+		$extraInformation->setCpuReservation(250);
 	}
 }
