@@ -5,6 +5,7 @@ use Rancherize\Blueprint\Cron\CronService\CronService;
 use Rancherize\Blueprint\Cron\Schedule\Exceptions\NoScheduleConfiguredException;
 use Rancherize\Blueprint\Cron\Schedule\ScheduleParser;
 use Rancherize\Blueprint\Events\ServiceBuiltEvent;
+use Rancherize\Blueprint\Events\SidekickBuiltEvent;
 
 /**
  * Class ServiceBuiltListener
@@ -51,4 +52,19 @@ class ServiceBuiltListener
 
     }
 
+    public function sidekickBuilt(SidekickBuiltEvent $event)
+    {
+
+        $service = $event->getService();
+
+        $config = $event->getConfiguration();
+
+        try {
+            $schedule = $this->scheduleParser->parseSchedule($config);
+            $this->cronService->makeCron($service, $schedule);
+        } catch (NoScheduleConfiguredException $e) {
+            // no schedule, don't make it into a cronjob
+        }
+
+    }
 }

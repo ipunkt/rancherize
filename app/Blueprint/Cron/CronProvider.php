@@ -7,6 +7,7 @@ use Rancherize\Blueprint\Cron\CronService\CronService;
 use Rancherize\Blueprint\Cron\EventListener\ServiceBuiltListener;
 use Rancherize\Blueprint\Cron\Schedule\ScheduleParser;
 use Rancherize\Blueprint\Events\ServiceBuiltEvent;
+use Rancherize\Blueprint\Events\SidekickBuiltEvent;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -73,5 +74,6 @@ class CronProvider implements Provider
         $serviceBuiltListener = $this->container[ServiceBuiltListener::class];
 
         $event->addListener(ServiceBuiltEvent::NAME, [$serviceBuiltListener, 'serviceBuilt']);
+        $event->addListener(SidekickBuiltEvent::NAME, [$serviceBuiltListener, 'sidekickBuilt']);
     }
 }
