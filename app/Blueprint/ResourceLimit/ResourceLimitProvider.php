@@ -12,8 +12,10 @@ use Rancherize\Blueprint\ResourceLimit\Parser\MemModes\FullMemMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\MemModes\HighMemMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\MemModes\LowMemMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\MemModes\MinimalMemMode;
+use Rancherize\Blueprint\ResourceLimit\Parser\Modes\CronCpuMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\Modes\FullCpuMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\Modes\HighCpuMode;
+use Rancherize\Blueprint\ResourceLimit\Parser\Modes\InteractiveCpuMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\Modes\LowCpuMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\Modes\MinimalCpuMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\Parser;
@@ -27,99 +29,116 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  * Class ResourceLimitProvider
  * @package Rancherize\Blueprint\ResourceLimit
  */
-class ResourceLimitProvider implements Provider {
+class ResourceLimitProvider implements Provider
+{
 
-	use ProviderTrait;
+    use ProviderTrait;
 
-	/**
-	 */
-	public function register() {
-		$this->container[FullCpuMode::class] = function () {
-			return new FullCpuMode();
-		};
-		$this->container['resource-limit.cpu-limit.full'] = function ( $c ) {
-			return $c[FullCpuMode::class];
-		};
+    /**
+     */
+    public function register()
+    {
+        $this->container[FullCpuMode::class] = function () {
+            return new FullCpuMode();
+        };
+        $this->container['resource-limit.cpu-limit.full'] = function ($c) {
+            return $c[FullCpuMode::class];
+        };
 
-		$this->container[HighCpuMode::class] = function () {
-			return new HighCpuMode();
-		};
-		$this->container['resource-limit.cpu-limit.high'] = function ( $c ) {
-			return $c[HighCpuMode::class];
-		};
+        $this->container[HighCpuMode::class] = function () {
+            return new HighCpuMode();
+        };
+        $this->container['resource-limit.cpu-limit.high'] = function ($c) {
+            return $c[HighCpuMode::class];
+        };
 
-		$this->container[LowCpuMode::class] = function () {
-			return new LowCpuMode();
-		};
-		$this->container['resource-limit.cpu-limit.low'] = function ( $c ) {
-			return $c[LowCpuMode::class];
-		};
+        $this->container[LowCpuMode::class] = function () {
+            return new LowCpuMode();
+        };
+        $this->container['resource-limit.cpu-limit.low'] = function ($c) {
+            return $c[LowCpuMode::class];
+        };
 
-		$this->container[MinimalCpuMode::class] = function () {
-			return new MinimalCpuMode();
-		};
-		$this->container['resource-limit.cpu-limit.minimal'] = function ( $c ) {
-			return $c[MinimalCpuMode::class];
-		};
+        $this->container[MinimalCpuMode::class] = function () {
+            return new MinimalCpuMode();
+        };
+        $this->container['resource-limit.cpu-limit.minimal'] = function ($c) {
+            return $c[MinimalCpuMode::class];
+        };
 
-		$this->container[CpuLimitModeFactory::class] = function ( $c ) {
-			return new CpuLimitModeFactory( $c );
-		};
+        $this->container[InteractiveCpuMode::class] = function () {
+            return new InteractiveCpuMode();
+        };
+        $this->container['resource-limit.cpu-limit.interactive'] = function ($c) {
+            return $c[InteractiveCpuMode::class];
+        };
 
-		$this->container[FullMemMode::class] = function () {
-			return new FullMemMode();
-		};
-		$this->container['resource-limit.mem-limit.full'] = function ( $c ) {
-			return $c[FullMemMode::class];
-		};
-		$this->container[HighMemMode::class] = function () {
-			return new HighMemMode();
-		};
-		$this->container['resource-limit.mem-limit.high'] = function ( $c ) {
-			return $c[HighMemMode::class];
-		};
-		$this->container[LowMemMode::class] = function () {
-			return new LowMemMode();
-		};
-		$this->container['resource-limit.mem-limit.low'] = function ( $c ) {
-			return $c[LowMemMode::class];
-		};
-		$this->container[MinimalMemMode::class] = function () {
-			return new MinimalMemMode();
-		};
-		$this->container['resource-limit.mem-limit.minimal'] = function ( $c ) {
-			return $c[MinimalMemMode::class];
-		};
+        $this->container[CronCpuMode::class] = function () {
+            return new CronCpuMode();
+        };
+        $this->container['resource-limit.cpu-limit.cron'] = function ($c) {
+            return $c[CronCpuMode::class];
+        };
 
-		$this->container[MemLimitModeFactory::class] = function($c) {
-			return new MemLimitModeFactory( $c );
-		};
+        $this->container[CpuLimitModeFactory::class] = function ($c) {
+            return new CpuLimitModeFactory($c);
+        };
 
-		$this->container[Parser::class] = function ( $c ) {
-			return new Parser( $c[CpuLimitModeFactory::class], $c[MemLimitModeFactory::class] );
-		};
+        $this->container[FullMemMode::class] = function () {
+            return new FullMemMode();
+        };
+        $this->container['resource-limit.mem-limit.full'] = function ($c) {
+            return $c[FullMemMode::class];
+        };
+        $this->container[HighMemMode::class] = function () {
+            return new HighMemMode();
+        };
+        $this->container['resource-limit.mem-limit.high'] = function ($c) {
+            return $c[HighMemMode::class];
+        };
+        $this->container[LowMemMode::class] = function () {
+            return new LowMemMode();
+        };
+        $this->container['resource-limit.mem-limit.low'] = function ($c) {
+            return $c[LowMemMode::class];
+        };
+        $this->container[MinimalMemMode::class] = function () {
+            return new MinimalMemMode();
+        };
+        $this->container['resource-limit.mem-limit.minimal'] = function ($c) {
+            return $c[MinimalMemMode::class];
+        };
 
-		$this->container[ServiceWriteListener::class] = function ($c) {
-			return new ServiceWriteListener( $c[RancherService::class], $c[UnitConversionService::class] );
-		};
-		$this->container[ServiceBuiltListener::class] = function ( $c ) {
-			return new ServiceBuiltListener( $c[Parser::class] );
-		};
-	}
+        $this->container[MemLimitModeFactory::class] = function ($c) {
+            return new MemLimitModeFactory($c);
+        };
 
-	/**
-	 */
-	public function boot() {
-		/**
-		 * @var EventDispatcher $event
-		 */
-		$event = $this->container['event'];
+        $this->container[Parser::class] = function ($c) {
+            return new Parser($c[CpuLimitModeFactory::class], $c[MemLimitModeFactory::class]);
+        };
 
-		$serviceWriteListener = $this->container[ServiceWriteListener::class];
-		$event->addListener( ServiceWriterServicePreparedEvent::NAME, [$serviceWriteListener, 'writeService'] );
-		$serviceBuiltListener = $this->container[ServiceBuiltListener::class];
-		$event->addListener( MainServiceBuiltEvent::NAME, [$serviceBuiltListener, 'mainServiceBuilt'] );
-        $event->addListener( ServiceBuiltEvent::NAME, [$serviceBuiltListener, 'serviceBuilt'] );
-        $event->addListener( SidekickBuiltEvent::NAME, [$serviceBuiltListener, 'sidekickBuilt'] );
-	}
+        $this->container[ServiceWriteListener::class] = function ($c) {
+            return new ServiceWriteListener($c[RancherService::class], $c[UnitConversionService::class]);
+        };
+        $this->container[ServiceBuiltListener::class] = function ($c) {
+            return new ServiceBuiltListener($c[Parser::class]);
+        };
+    }
+
+    /**
+     */
+    public function boot()
+    {
+        /**
+         * @var EventDispatcher $event
+         */
+        $event = $this->container['event'];
+
+        $serviceWriteListener = $this->container[ServiceWriteListener::class];
+        $event->addListener(ServiceWriterServicePreparedEvent::NAME, [$serviceWriteListener, 'writeService']);
+        $serviceBuiltListener = $this->container[ServiceBuiltListener::class];
+        $event->addListener(MainServiceBuiltEvent::NAME, [$serviceBuiltListener, 'mainServiceBuilt']);
+        $event->addListener(ServiceBuiltEvent::NAME, [$serviceBuiltListener, 'serviceBuilt']);
+        $event->addListener(SidekickBuiltEvent::NAME, [$serviceBuiltListener, 'sidekickBuilt']);
+    }
 }
