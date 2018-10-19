@@ -14,13 +14,13 @@ class VeryHighCpuMode implements CpuLimitMode {
 	 */
 	public function setLimit( ResourceLimitExtraInformation $extraInformation ) {
 		$extraInformation->setCpuPeriod(4000);
-		$extraInformation->setCpuQuota(3500);
+		$extraInformation->setCpuQuota(8000);
 	}
 
 	/**
 	 * @param ResourceLimitExtraInformation $extraInformation
 	 */
 	public function setReservation( ResourceLimitExtraInformation $extraInformation ) {
-		$extraInformation->setCpuReservation(1000);
+		$extraInformation->setCpuReservation(2000);
 	}
 }
