@@ -6,10 +6,11 @@ use Rancherize\Configuration\Configuration;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Class ServiceBuildEvent
+ * Class ServiceBuiltEvent
  * @package Rancherize\Blueprint\Events
  */
-class ServiceBuildEvent extends Event {
+class ServiceBuiltEvent extends Event
+{
 
     const NAME = 'blueprint.service.built';
     /**
@@ -26,12 +27,13 @@ class ServiceBuildEvent extends Event {
     private $configuration;
 
     /**
-     * ServiceBuildEvent constructor.
+     * ServiceBuiltEvent constructor.
      * @param Infrastructure $infrastructure
      * @param Service $service
      * @param Configuration $configuration
      */
-    public function __construct(Infrastructure $infrastructure, Service $service, Configuration $configuration) {
+    public function __construct(Infrastructure $infrastructure, Service $service, Configuration $configuration)
+    {
         $this->infrastructure = $infrastructure;
         $this->service = $service;
         $this->configuration = $configuration;

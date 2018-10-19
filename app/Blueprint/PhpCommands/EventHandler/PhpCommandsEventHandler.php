@@ -4,7 +4,8 @@ use Rancherize\Blueprint\Cron\CronService\CronService;
 use Rancherize\Blueprint\Cron\Schedule\Exceptions\NoScheduleConfiguredException;
 use Rancherize\Blueprint\Cron\Schedule\ScheduleParser;
 use Rancherize\Blueprint\Events\MainServiceBuiltEvent;
-use Rancherize\Blueprint\Events\ServiceBuildEvent;
+use Rancherize\Blueprint\Events\ServiceBuiltEvent;
+use Rancherize\Blueprint\Events\SidekickBuiltEvent;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMaker;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\PhpCommands\Parser\PhpCommandsParser;
@@ -97,8 +98,11 @@ class PhpCommandsEventHandler {
 				// do nothing, no schedule configurated
 			}
 
-			$event = new ServiceBuildEvent($infrastructure, $service, $command->getConfiguration());
-			$this->eventDispatcher->dispatch($event::NAME, $event);
+            $event = new SidekickBuiltEvent($infrastructure, $service, $command->getConfiguration());
+			if( $command->isService() )
+                $event = new ServiceBuiltEvent($infrastructure, $service, $command->getConfiguration());
+            $this->eventDispatcher->dispatch($event::NAME, $event);
+
 			$infrastructure->addService( $service );
 		}
 

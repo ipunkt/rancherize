@@ -1,7 +1,7 @@
 <?php namespace Rancherize\Blueprint\ResourceLimit\EventListener;
 
 use Rancherize\Blueprint\Events\MainServiceBuiltEvent;
-use Rancherize\Blueprint\Events\ServiceBuildEvent;
+use Rancherize\Blueprint\Events\ServiceBuiltEvent;
 use Rancherize\Blueprint\ResourceLimit\Parser\Parser;
 
 /**
@@ -35,7 +35,7 @@ class ServiceBuiltListener {
 
 	}
 
-    public function serviceBuilt(ServiceBuildEvent $event) {
+    public function serviceBuilt(ServiceBuiltEvent $event) {
 
 	    $service = $event->getService();
 
