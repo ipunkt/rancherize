@@ -2,6 +2,7 @@
 
 use Rancherize\Blueprint\Events\MainServiceBuiltEvent;
 use Rancherize\Blueprint\Events\ServiceBuiltEvent;
+use Rancherize\Blueprint\Events\SidekickBuiltEvent;
 use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterServicePreparedEvent;
 use Rancherize\Blueprint\ResourceLimit\EventListener\ServiceBuiltListener;
 use Rancherize\Blueprint\ResourceLimit\EventListener\ServiceWriteListener;
@@ -119,5 +120,6 @@ class ResourceLimitProvider implements Provider {
 		$serviceBuiltListener = $this->container[ServiceBuiltListener::class];
 		$event->addListener( MainServiceBuiltEvent::NAME, [$serviceBuiltListener, 'mainServiceBuilt'] );
         $event->addListener( ServiceBuiltEvent::NAME, [$serviceBuiltListener, 'serviceBuilt'] );
+        $event->addListener( SidekickBuiltEvent::NAME, [$serviceBuiltListener, 'sidekickBuilt'] );
 	}
 }

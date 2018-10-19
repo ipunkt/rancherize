@@ -2,6 +2,7 @@
 
 use Rancherize\Blueprint\Events\MainServiceBuiltEvent;
 use Rancherize\Blueprint\Events\ServiceBuiltEvent;
+use Rancherize\Blueprint\Events\SidekickBuiltEvent;
 use Rancherize\Blueprint\ResourceLimit\Parser\Parser;
 
 /**
@@ -35,6 +36,9 @@ class ServiceBuiltListener {
 
 	}
 
+    /**
+     * @param ServiceBuiltEvent $event
+     */
     public function serviceBuilt(ServiceBuiltEvent $event) {
 
 	    $service = $event->getService();
@@ -45,4 +49,18 @@ class ServiceBuiltListener {
 	    foreach( $service->getSidekicks() as $sidekick )
             $this->parser->parseLimit( $sidekick, $config );
 	}
+
+    /**
+     * This allows overriding the limits inherited by the main service
+     *
+     * @param SidekickBuiltEvent $event
+     */
+    public function sidekickBuilt(SidekickBuiltEvent $event) {
+
+        $service = $event->getService();
+
+        $config = $event->getConfiguration();
+
+        $this->parser->parseLimit( $service, $config );
+    }
 }

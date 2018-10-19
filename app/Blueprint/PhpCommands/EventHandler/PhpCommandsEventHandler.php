@@ -90,14 +90,6 @@ class PhpCommandsEventHandler {
 			if ( array_key_exists( $command->getRestart(), $restart ) )
 				$service->setRestart( $restart[$command->getRestart()] );
 
-			// TODO: move to ServiceBuiltEvent
-			try {
-				$schedule = $this->scheduleParser->parseSchedule( $command->getConfiguration() );
-				$this->cronService->makeCron( $service, $schedule );
-			} catch ( NoScheduleConfiguredException $e ) {
-				// do nothing, no schedule configurated
-			}
-
             $event = new SidekickBuiltEvent($infrastructure, $service, $command->getConfiguration());
 			if( $command->isService() )
                 $event = new ServiceBuiltEvent($infrastructure, $service, $command->getConfiguration());
