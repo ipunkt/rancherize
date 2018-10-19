@@ -8,7 +8,7 @@ class UnitConversionService {
 
     public function convert(string $value) : int {
 
-        preg_match( '~(\d+)([gGmM]?)~', $$value, $matches );
+        preg_match( '~(\d+)([gGmM]?)~', $value, $matches );
         $convertedValue = (int)$matches[ 1 ];
         $modifier = $matches[ 2 ];
         switch ($modifier) {
