@@ -4,11 +4,13 @@ use Rancherize\Blueprint\Cron\CronService\CronService;
 use Rancherize\Blueprint\Cron\Schedule\Exceptions\NoScheduleConfiguredException;
 use Rancherize\Blueprint\Cron\Schedule\ScheduleParser;
 use Rancherize\Blueprint\Events\MainServiceBuiltEvent;
+use Rancherize\Blueprint\Events\ServiceBuildEvent;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMaker;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Blueprint\PhpCommands\Parser\PhpCommandsParser;
 use Rancherize\Commands\Events\PushCommandInServiceUpgradeEvent;
 use Rancherize\Commands\Events\PushCommandStartEvent;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class PhpCommandsEventHandler
@@ -31,20 +33,27 @@ class PhpCommandsEventHandler {
 	 * @var CronService
 	 */
 	private $cronService;
+    /**
+     * @var EventDispatcher
+     */
+    private $eventDispatcher;
 
-	/**
-	 * PhpCommandsEventHandler constructor.
-	 * @param PhpFpmMaker $fpmMaker
-	 * @param PhpCommandsParser $commandsParser
-	 * @param CronService $cronService
-	 * @param ScheduleParser $scheduleParser
-	 */
-	public function __construct( PhpFpmMaker $fpmMaker, PhpCommandsParser $commandsParser, CronService $cronService, ScheduleParser $scheduleParser ) {
+    /**
+     * PhpCommandsEventHandler constructor.
+     * @param PhpFpmMaker $fpmMaker
+     * @param PhpCommandsParser $commandsParser
+     * @param CronService $cronService
+     * @param ScheduleParser $scheduleParser
+     * @param EventDispatcher $eventDispatcher
+     */
+	public function __construct( PhpFpmMaker $fpmMaker, PhpCommandsParser $commandsParser, CronService $cronService,
+        ScheduleParser $scheduleParser, EventDispatcher $eventDispatcher ) {
 		$this->fpmMaker = $fpmMaker;
 		$this->commandsParser = $commandsParser;
 		$this->scheduleParser = $scheduleParser;
 		$this->cronService = $cronService;
-	}
+        $this->eventDispatcher = $eventDispatcher;
+    }
 
 	/**
 	 * @var Service[]
@@ -80,6 +89,7 @@ class PhpCommandsEventHandler {
 			if ( array_key_exists( $command->getRestart(), $restart ) )
 				$service->setRestart( $restart[$command->getRestart()] );
 
+			// TODO: move to ServiceBuiltEvent
 			try {
 				$schedule = $this->scheduleParser->parseSchedule( $command->getConfiguration() );
 				$this->cronService->makeCron( $service, $schedule );
@@ -87,6 +97,8 @@ class PhpCommandsEventHandler {
 				// do nothing, no schedule configurated
 			}
 
+			$event = new ServiceBuildEvent($infrastructure, $service, $command->getConfiguration());
+			$this->eventDispatcher->dispatch($event::NAME, $event);
 			$infrastructure->addService( $service );
 		}
 

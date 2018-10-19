@@ -1,13 +1,14 @@
 <?php namespace Rancherize\Blueprint\ResourceLimit\EventListener;
 
 use Rancherize\Blueprint\Events\MainServiceBuiltEvent;
+use Rancherize\Blueprint\Events\ServiceBuildEvent;
 use Rancherize\Blueprint\ResourceLimit\Parser\Parser;
 
 /**
  * Class MainServiceBuiltListener
  * @package Rancherize\Blueprint\ResourceLimit\EventListener
  */
-class MainServiceBuiltListener {
+class ServiceBuiltListener {
 	/**
 	 * @var Parser
 	 */
@@ -32,5 +33,16 @@ class MainServiceBuiltListener {
 		foreach($mainService->getSidekicks() as $sidekick)
 			$this->parser->parseLimit( $sidekick, $event->getEnvironmentConfiguration() );
 
+	}
+
+    public function serviceBuilt(ServiceBuildEvent $event) {
+
+	    $service = $event->getService();
+
+	    $config = $event->getConfiguration();
+
+	    $this->parser->parse( $service, $config );
+	    foreach( $service->getSidekicks() as $sidekick )
+            $this->parser->parseLimit( $sidekick, $config );
 	}
 }

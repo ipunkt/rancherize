@@ -38,7 +38,7 @@ class PhpCommandsProvider implements Provider {
 		};
 
 		$this->container[PhpCommandsEventHandler::class] = function( $c) {
-			return new PhpCommandsEventHandler( $c[PhpFpmMaker::class], $c[PhpCommandsParser::class], $c[CronService::class], $c[ScheduleParser::class] );
+			return new PhpCommandsEventHandler( $c[PhpFpmMaker::class], $c[PhpCommandsParser::class], $c[CronService::class], $c[ScheduleParser::class], $c[EventDispatcher::class] );
 		};
 	}
 

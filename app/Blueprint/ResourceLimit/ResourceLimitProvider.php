@@ -1,8 +1,9 @@
 <?php namespace Rancherize\Blueprint\ResourceLimit;
 
 use Rancherize\Blueprint\Events\MainServiceBuiltEvent;
+use Rancherize\Blueprint\Events\ServiceBuildEvent;
 use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterServicePreparedEvent;
-use Rancherize\Blueprint\ResourceLimit\EventListener\MainServiceBuiltListener;
+use Rancherize\Blueprint\ResourceLimit\EventListener\ServiceBuiltListener;
 use Rancherize\Blueprint\ResourceLimit\EventListener\ServiceWriteListener;
 use Rancherize\Blueprint\ResourceLimit\Parser\CpuLimitModeFactory;
 use Rancherize\Blueprint\ResourceLimit\Parser\MemLimitModeFactory;
@@ -100,8 +101,8 @@ class ResourceLimitProvider implements Provider {
 		$this->container[ServiceWriteListener::class] = function ($c) {
 			return new ServiceWriteListener( $c[RancherService::class], $c[UnitConversionService::class] );
 		};
-		$this->container[MainServiceBuiltListener::class] = function ( $c ) {
-			return new MainServiceBuiltListener( $c[Parser::class] );
+		$this->container[ServiceBuiltListener::class] = function ( $c ) {
+			return new ServiceBuiltListener( $c[Parser::class] );
 		};
 	}
 
@@ -115,7 +116,8 @@ class ResourceLimitProvider implements Provider {
 
 		$serviceWriteListener = $this->container[ServiceWriteListener::class];
 		$event->addListener( ServiceWriterServicePreparedEvent::NAME, [$serviceWriteListener, 'writeService'] );
-		$mainServiceBuiltListener = $this->container[MainServiceBuiltListener::class];
-		$event->addListener( MainServiceBuiltEvent::NAME, [$mainServiceBuiltListener, 'mainServiceBuilt'] );
+		$serviceBuiltListener = $this->container[ServiceBuiltListener::class];
+		$event->addListener( MainServiceBuiltEvent::NAME, [$serviceBuiltListener, 'mainServiceBuilt'] );
+        $event->addListener( ServiceBuildEvent::NAME, [$serviceBuiltListener, 'serviceBuilt'] );
 	}
 }
