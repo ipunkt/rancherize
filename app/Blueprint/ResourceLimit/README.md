@@ -11,8 +11,10 @@ Notable services supporting this:
 - resource-limit.cpu
   - full: no limit
   - high: cap at 150% cpu - that is 1.5 CPUs
+  - interactive: cap at 100% cpu
   - low: cap at 50% cpu
   - minimal: cap at 25% cpu
+  - cron: cap at 25% cpu - subject to change
 - resource-limit.mem
   - full: no limit
   - high: cap at 1.5GiB cap, 1GiB reservation
