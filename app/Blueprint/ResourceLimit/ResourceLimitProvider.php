@@ -18,6 +18,7 @@ use Rancherize\Blueprint\ResourceLimit\Parser\Parser;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Rancherize\RancherAccess\RancherService;
+use Rancherize\Services\UnitConversionService\UnitConversionService;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -97,7 +98,7 @@ class ResourceLimitProvider implements Provider {
 		};
 
 		$this->container[ServiceWriteListener::class] = function ($c) {
-			return new ServiceWriteListener( $c[RancherService::class] );
+			return new ServiceWriteListener( $c[RancherService::class], $c[UnitConversionService::class] );
 		};
 		$this->container[MainServiceBuiltListener::class] = function ( $c ) {
 			return new MainServiceBuiltListener( $c[Parser::class] );

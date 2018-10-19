@@ -6,6 +6,7 @@ use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterServicePrepa
 use Rancherize\Blueprint\Infrastructure\Service\ExtraInformationNotFoundException;
 use Rancherize\Blueprint\ResourceLimit\ExtraInformation\ExtraInformation as ResourceLimitExtraInformation;
 use Rancherize\RancherAccess\RancherService;
+use Rancherize\Services\UnitConversionService\UnitConversionService;
 
 /**
  * Class ServiceWriteListener
@@ -16,15 +17,21 @@ class ServiceWriteListener {
 	 * @var RancherService
 	 */
 	private $rancherService;
+    /**
+     * @var UnitConversionService
+     */
+    private $unitConversionService;
 
-	/**
-	 * ServiceWriteListener constructor.
-	 * @param RancherService $rancherService
-	 */
+    /**
+     * ServiceWriteListener constructor.
+     * @param RancherService $rancherService
+     * @param UnitConversionService $unitConversionService
+     */
 
-	public function __construct( RancherService $rancherService ) {
+	public function __construct( RancherService $rancherService, UnitConversionService $unitConversionService ) {
 		$this->rancherService = $rancherService;
-	}
+        $this->unitConversionService = $unitConversionService;
+    }
 
 	/**
 	 * @param ServiceWriterServicePreparedEvent $event
@@ -81,29 +88,7 @@ class ServiceWriteListener {
 			return $dockerData;
 
 		$memory = $extraInformation->getMemoryLimit();
-		preg_match( '~(\d+)([gGmM]?)~', $memory, $matches );
-		$memory = (int)$matches[ 1 ];
-		$modifier = $matches[ 2 ];
-		switch ($modifier) {
-			case 'g':
-			/** @noinspection PhpMissingBreakStatementInspection */
-			case 'G':
-				$memory *= 1024;
-
-			case 'm':
-			/** @noinspection PhpMissingBreakStatementInspection */
-			case 'M':
-				$memory *= 1024;
-
-			case 'k':
-			/** @noinspection PhpMissingBreakStatementInspection */
-			case 'K':
-				$memory *= 1024;
-
-			default:
-				break;
-		}
-		$dockerData[ 'mem_limit' ] = $memory;
+		$dockerData[ 'mem_limit' ] = $this->unitConversionService->convert($memory);
 
 		return $dockerData;
 	}
@@ -129,29 +114,7 @@ class ServiceWriteListener {
 			return $dockerData;
 
 		$memory = $extraInformation->getMemoryReservation();
-		preg_match( '~(\d+)([gGmM]?)~', $memory, $matches );
-		$memory = (int)$matches[ 1 ];
-		$modifier = $matches[ 2 ];
-		switch ($modifier) {
-			case 'g':
-			/** @noinspection PhpMissingBreakStatementInspection */
-			case 'G':
-				$memory *= 1024;
-
-			case 'm':
-			/** @noinspection PhpMissingBreakStatementInspection */
-			case 'M':
-				$memory *= 1024;
-
-			case 'k':
-			/** @noinspection PhpMissingBreakStatementInspection */
-			case 'K':
-				$memory *= 1024;
-
-			default:
-				break;
-		}
-		$dockerData[ 'mem_reservation' ] = $memory;
+		$dockerData[ 'mem_reservation' ] = $this->unitConversionService->convert($memory);
 
 		return $dockerData;
 	}

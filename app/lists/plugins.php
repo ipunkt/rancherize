@@ -37,6 +37,7 @@ return [
 	Rancherize\Blueprint\PhpCommands\PhpCommandsProvider::class,
 	Rancherize\Blueprint\ResourceLimit\ResourceLimitProvider::class,
 	ValidationProvider::class,
+    Rancherize\Services\Provider::class,
 
 	Rancherize\Commands\CommandsProvider::class,
 

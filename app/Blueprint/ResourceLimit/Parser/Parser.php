@@ -107,30 +107,14 @@ class Parser {
 			return;
 
 		$memory = $configuration->get( 'memory' );
-		preg_match( '~(\d+)([gGmM]?)~', $memory, $matches );
-		$memory = (int)$matches[1];
-		$modifier = $matches[2];
-		switch ( $modifier ) {
-			case 'g':
-			case 'G':
-				$memory *= 1024;
-
-			case 'm':
-			case 'M':
-				$memory *= 1024;
-
-			case 'k':
-			case 'K':
-				$memory *= 1024;
-
-			default:
-				break;
-		}
-
+        /**
+         * Removed unit version to bytes as this is now done in the ServiceWriter
+         */
 		if ( $memory === 0 )
 			throw new ZeroMemoryLimitException( 'Attempting to set the memory limit to zero' );
 
 		$information->setMemoryLimit( $memory );
+        $information->setMemoryReservation( $memory );
 	}
 
 	/**
