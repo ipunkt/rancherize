@@ -23,7 +23,7 @@ class EventHandler
         $name = $configuration->get('service-name');
 
         $matches = [];
-        if( !preg_match_all($name, '~([^a-zA-Z0-9\._\-]+)~g', $name, $matches) )
+        if (!preg_match_all('~([^a-zA-Z0-9\._\-]+)~g', $name, $matches))
             return;
 
         $errors = [
