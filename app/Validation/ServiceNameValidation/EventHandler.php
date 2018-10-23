@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Validation\ServiceNameValidation;
 
+use Rancherize\Blueprint\Validation\Exceptions\ValidationFailedException;
 use Rancherize\Events\ValidatingEvent;
 
 /**
