@@ -4,6 +4,7 @@ use Rancherize\Events\ValidatingEvent;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
 use Rancherize\Validation\ForceResourceLimits\EventHandler as ForceResourceLimitEventHandler;
+use Rancherize\Validation\ServiceNameValidation\EventHandler as ServiceNameEventHandler;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -20,11 +21,16 @@ class ValidationProvider implements Provider {
 		$this->container[ForceResourceLimitEventHandler::class] = function () {
 			return new ForceResourceLimitEventHandler();
 		};
+		$this->container[ServiceNameEventHandler::class] = function() {
+		    return new ServiceNameEventHandler();
+        };
 	}
 
 	/**
 	 */
 	public function boot() {
+        $event = $this->container[EventDispatcher::class];
+
 		/**
 		 * @var ForceResourceLimitEventHandler $eventHandler
 		 */
@@ -36,7 +42,12 @@ class ValidationProvider implements Provider {
 		/**
 		 * @var EventDispatcher $event
 		 */
-		$event = $this->container[EventDispatcher::class];
 		$event->addListener(ValidatingEvent::NAME, [$eventHandler, 'validate']);
+
+        /**
+         * @var ForceResourceLimitEventHandler $eventHandler
+         */
+        $serviceNameEventHandler = $this->container[ServiceNameEventHandler::class];
+        $event->addListener(ValidatingEvent::NAME, [$serviceNameEventHandler, 'validate']);
 	}
 }
