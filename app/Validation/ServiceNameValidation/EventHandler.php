@@ -13,7 +13,7 @@ class EventHandler
     public function validate( ValidatingEvent $e ) {
 
         $configuration = $e->getConfiguration();
-        if( $configuration->has('service-name') )
+        if (!$configuration->has('service-name'))
             throw new ValidationFailedException([ 'service-name' => [
                 'service-name is not set. This sets the name of the service inside Rancher'
             ]
