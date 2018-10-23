@@ -1,6 +1,7 @@
 <?php namespace Rancherize\Push\Modes\RollingUpgrade;
 
 use Rancherize\Configuration\Configuration;
+use Rancherize\Exceptions\RemoveException;
 use Rancherize\Push\Modes\PushMode;
 use Rancherize\RancherAccess\NameMatcher\PrefixNameMatcher;
 use Rancherize\RancherAccess\RancherService;
@@ -19,10 +20,7 @@ class RollingPushMode implements PushMode {
 	 * @param RancherService $rancherService
 	 */
 	public function push( Configuration $configuration, string $stackName, string $serviceName, string $version, RancherService $rancherService ) {
-		$matcher = new PrefixNameMatcher($serviceName);
-		$activeStack = $rancherService->getActiveService($stackName, $matcher);
 
-		$versionizedName = $serviceName.'-'.$version;
-		$rancherService->upgrade( './.rancherize', $stackName, $activeStack, $versionizedName );
+	    throw new RemoveException('Rolling upgrade is no longer supported. Please use in-service upgrade by setting config version 2+ or rancher.upgrade-mode = in-service');
 	}
 }

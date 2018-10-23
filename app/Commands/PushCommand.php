@@ -147,17 +147,13 @@ class PushCommand extends Command implements LoadsConfiguration, RancherCommand 
 
 		$stackName = $environmentConfig->get('rancher.stack');
 		try {
-			list($composerConfig, $rancherConfig) = $rancher->retrieveConfig($stackName);
-
-			$this->buildService->createDockerCompose($composerConfig);
-			$this->buildService->createRancherCompose($rancherConfig);
+			list($composerConfig, $rancherConfig) = $rancher->assertStackExists($stackName);
 		} catch(StackNotFoundException $e) {
 			$output->writeln("Stack not found, creating", OutputInterface::VERBOSITY_NORMAL);
 			$rancher->createStack($stackName);
-
-			$this->buildService->createDockerCompose('');
-			$this->buildService->createRancherCompose('');
 		}
+        $this->buildService->createDockerCompose('');
+        $this->buildService->createRancherCompose('');
 
 		$repository = $environmentConfig->get('docker.repository');
 		$versionPrefix = $environmentConfig->get('docker.version-prefix', '');

@@ -574,4 +574,12 @@ class RancherService {
 	public function setCliMode( bool $cliMode ) {
 		$this->cliMode = $cliMode;
 	}
+
+    /**
+     * @param $stackName
+     * @throws StackNotFoundException
+     */
+    public function assertStackExists($stackName) {
+        $this->getStackIdByName($stackName);
+    }
 }

@@ -35,7 +35,7 @@ class InfrastructureProvider implements Provider {
 		};
 
 		$this->container[ServiceWriter::class] = function($c) {
-			return new ServiceWriter($c[FileLoader::class], $c['event'], $c[DockerfileWriter::class]);
+			return new ServiceWriter($c[FileLoader::class], $c['event'], $c[DockerfileWriter::class], $c['docker-compose.version']);
 		};
 		$this->container['service-writer'] = function($c) {
 			return $c[ServiceWriter::class];
@@ -68,6 +68,7 @@ class InfrastructureProvider implements Provider {
 			return new AlwaysPullDefaultFromConfigurationListener( $c );
 		};
 
+		$this->container['docker-compose.version'] = '2';
 		$this->container['shared-network-mode'] = 'container:';
 		$this->container['always-pulled-default'] = Service::ALWAYS_PULLED_TRUE;
 
@@ -86,6 +87,7 @@ class InfrastructureProvider implements Provider {
 			if( $command instanceof LocalCommand ) {
 				$container = container();
 				$container['shared-network-mode'] = 'service:';
+                $container['docker-compose.version'] = '2.1';
 
 				return;
 			}
