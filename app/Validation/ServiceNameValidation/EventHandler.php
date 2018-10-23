@@ -30,7 +30,7 @@ class EventHandler
 
         ];
         foreach($matches[0] as $match)
-            $errors[] = 'Invalid characters '.implode(', ', "'$match'");
+            $errors[] = "Invalid characters '$match'";
 
         throw new ValidationFailedException([ 'service-name' => $errors ]);
     }
