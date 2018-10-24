@@ -1,6 +1,6 @@
 <?php namespace Rancherize\Blueprint\ProjectName\ProjectNameService;
-use Rancherize\Blueprint\ProjectName\ProjectNameService\Exceptions\ComposerProjectParseException;
 use Rancherize\Configuration\Configuration;
+use Rancherize\Configuration\Exceptions\FileNotFoundException;
 use Rancherize\File\FileLoader;
 use Rancherize\Plugin\Composer\ComposerPacketNameParser;
 
@@ -54,7 +54,11 @@ class ComposerProjectNameService implements ProjectNameService {
 
 		$composerString = $this->fileLoader->get( $this->composerPath );
 
-		$composerData = json_decode($composerString, true);
+        try {
+            $composerData = json_decode($composerString, true);
+        } catch (FileNotFoundException $e) {
+            return 'ProjectName';
+        }
 
 		if( !array_key_exists('name', $composerData) )
 			return $default;
