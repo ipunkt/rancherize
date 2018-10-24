@@ -52,13 +52,13 @@ class ComposerProjectNameService implements ProjectNameService {
 		if($default === null)
 			$default = '';
 
-		$composerString = $this->fileLoader->get( $this->composerPath );
 
         try {
-            $composerData = json_decode($composerString, true);
+            $composerString = $this->fileLoader->get($this->composerPath);
         } catch (FileNotFoundException $e) {
             return 'ProjectName';
         }
+            $composerData = json_decode($composerString, true);
 
 		if( !array_key_exists('name', $composerData) )
 			return $default;
