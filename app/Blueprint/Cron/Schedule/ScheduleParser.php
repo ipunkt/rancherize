@@ -46,7 +46,7 @@ class ScheduleParser {
 		$scheduleConfiguration = new PrefixConfigurationDecorator($configuration, 'schedule.');
 		$schedule->setHour( $scheduleConfiguration->get('hour', '*') );
 		$schedule->setMinute( $scheduleConfiguration->get('minute', '*') );
-		$schedule->setSeconds( $scheduleConfiguration->get('second', '*') );
+        $schedule->setSeconds($scheduleConfiguration->get('second', '0'));
 		$schedule->setMonth( $scheduleConfiguration->get('month', '*') );
 		$schedule->setDayOfMonth( $scheduleConfiguration->get('dayOfMonth', '*') );
 		$schedule->setDayOfWeek( $scheduleConfiguration->get('dayOfWeek', '*') );
