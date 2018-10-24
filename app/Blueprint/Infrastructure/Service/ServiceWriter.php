@@ -29,28 +29,15 @@ class ServiceWriter {
 	private $dockerfileWriter;
 
     /**
-     * Config version to use
-     * This exists because rancher-compose and rancher-cli only accept `2` while supporting parts of `2.1`
-     * Using resource limits with a set version will break one or the other
-     * -> push uses `2`
-     * -> everything else uses `2.1`
-     *
-     * @var string
-     */
-    private $composerVersion;
-
-    /**
      * ServiceWriter constructor.
      * @param FileLoader $fileLoader
      * @param EventDispatcher $event
      * @param DockerfileWriter $dockerfileWriter
-     * @param string $composerVersion
      */
-	public function __construct(FileLoader $fileLoader, EventDispatcher $event, DockerfileWriter $dockerfileWriter, $composerVersion) {
+	public function __construct(FileLoader $fileLoader, EventDispatcher $event, DockerfileWriter $dockerfileWriter) {
 		$this->fileLoader = $fileLoader;
 		$this->event = $event;
 		$this->dockerfileWriter = $dockerfileWriter;
-        $this->composerVersion = $composerVersion;
     }
 
 	/**
@@ -255,7 +242,7 @@ class ServiceWriter {
 		try {
 			$dockerData = Yaml::parse($this->fileLoader->get($targetFile));
 			if(!is_array($dockerData))
-				$dockerData = [ 'version' => $this->composerVersion ];
+				$dockerData = [ 'version' => container('docker-compose.version') ];
 
 			// handle v2 format
 			if ( array_key_exists('version', $dockerData) ) {

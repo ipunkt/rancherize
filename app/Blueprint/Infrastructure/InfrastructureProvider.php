@@ -35,7 +35,7 @@ class InfrastructureProvider implements Provider {
 		};
 
 		$this->container[ServiceWriter::class] = function($c) {
-			return new ServiceWriter($c[FileLoader::class], $c['event'], $c[DockerfileWriter::class], $c['docker-compose.version']);
+			return new ServiceWriter($c[FileLoader::class], $c['event'], $c[DockerfileWriter::class]);
 		};
 		$this->container['service-writer'] = function($c) {
 			return $c[ServiceWriter::class];
