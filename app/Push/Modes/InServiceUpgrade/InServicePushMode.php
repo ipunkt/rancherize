@@ -6,7 +6,7 @@ use Rancherize\Push\Modes\PushMode;
 use Rancherize\RancherAccess\HealthStateMatcher;
 use Rancherize\RancherAccess\NameMatcher\CompleteNameMatcher;
 use Rancherize\RancherAccess\RancherService;
-use Rancherize\RancherAccess\SingleStateMatcher;
+use Rancherize\RancherAccess\StateInMatcher;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -54,7 +54,7 @@ class InServicePushMode implements PushMode {
 		$rancherService->start( './.rancherize', $stackName, $serviceNames, true, $forcedUpgrade );
 
 		// Use default Matcher
-		$stateMatcher = new SingleStateMatcher( 'upgraded' );
+        $stateMatcher = new StateInMatcher(['upgraded', 'active']);
 		if ( $configuration->get( 'rancher.upgrade-healthcheck', false ) )
 			$stateMatcher = new HealthStateMatcher( 'healthy' );
 
