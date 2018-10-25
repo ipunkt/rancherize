@@ -125,6 +125,7 @@ set to mount your work directory directly. For the WebserverBlueprint this means
 Theses settings are included when initializing with the `--dev` flag
 
 ## Deploy
+### Push
 The command `push` exists to deploy the current state of your work directory into Rancher.  
 
 	vendor/bin/rancherize push ENVIRONEMNT VERSION
@@ -147,6 +148,11 @@ The command `push` exists to deploy the current state of your work directory int
   - In case of an in-service upgrade rancherize waits for the stack to reach `upgraded` and confirms the upgrade.  
     You can set `rancher.upgrade-healthcheck` to `true` to wait for it to report `healthy` instead. Not that this only
     works if a service has a health-check is defined(not yet supported through rancherize)
+    
+### Build image
+The command `build-image` exists to build the current state of your work directory into the docker registry, then deploy
+them via `push -i`.
+It is essentially the `push` command without any interaction with rancher.
   
 # Blueprints
 ## Blueprint neutral configuration
