@@ -78,7 +78,7 @@ class InServicePushMode implements PushMode {
 		$inServiceUpgradeEvent = new PushCommandInServiceUpgradeEvent();
 		$inServiceUpgradeEvent->setServiceNames( $serviceNames );
 		$inServiceUpgradeEvent->setConfiguration( $config );
-		$inServiceUpgradeEvent->setForceUpgrade( false );
+        $inServiceUpgradeEvent->setForceUpgrade(true);
 		return $inServiceUpgradeEvent;
 	}
 

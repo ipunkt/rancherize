@@ -221,9 +221,31 @@ class RancherService {
 		$url = $this->getUrl();
 		$account = $this->account;
 		if ($this->cliMode && $account instanceof RancherCliAccount)
-			$command = [ $account->getCliVersion(), 'up', "-f", "$directory/docker-compose.yml", '--rancher-file', "$directory/rancher-compose.yml", '-s', $stackName,  '-d' ];
+            $command = [
+                $account->getCliVersion(),
+                'up',
+                "-f",
+                "$directory/docker-compose.yml",
+                '--rancher-file',
+                "$directory/rancher-compose.yml",
+                '-s',
+                $stackName,
+                '-d',
+                '-p'
+            ];
 		else
-			$command = [ $account->getRancherCompose(), "-f", "$directory/docker-compose.yml", '-r', "$directory/rancher-compose.yml", '-p', $stackName, 'up', '-d' ];
+            $command = [
+                $account->getRancherCompose(),
+                "-f",
+                "$directory/docker-compose.yml",
+                '-r',
+                "$directory/rancher-compose.yml",
+                '-p',
+                $stackName,
+                'up',
+                '-d',
+                '-p'
+            ];
 
 		if($upgrade)
 			$command = array_merge($command, ['--upgrade']);
