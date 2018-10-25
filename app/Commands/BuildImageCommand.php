@@ -197,15 +197,6 @@ class BuildImageCommand extends Command implements LoadsConfiguration, RancherCo
      */
     protected function buildImage(DockerService $dockerService, $image, DockerAccount $dockerAccount)
     {
-
-        if ($this->getInput()->getOption('image-exists')) {
-            $this->getOutput()->writeln("Option image-exists was set, skipping build.",
-                OutputInterface::VERBOSITY_VERBOSE);
-
-            return;
-        }
-
-
         $server = $dockerAccount->getServer();
         if (!empty($server)) {
             $serverHost = parse_url($server, PHP_URL_HOST);
