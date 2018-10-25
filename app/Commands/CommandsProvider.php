@@ -50,6 +50,15 @@ class CommandsProvider implements Provider {
 			return $pushCommand;
 		};
 
+        $this->container['command.build-image'] = function ($c) {
+            $buildImageCommand = new BuildImageCommand($c[RancherAccessService::class], $c[DockerService::class],
+                $c[BuildService::class], $c[BlueprintService::class], $c[EnvironmentConfigurationService::class],
+                $c[DockerAccessService::class], $c[RancherService::class],
+                $c[ReplaceUpgradeChecker::class], $c[PushModeFactory::class], $c[CreateModeFactory::class]);
+
+            return $buildImageCommand;
+        };
+
 		$this->container['command.build'] = function($c) {
 			$buildCommand = new BuildCommand( $c[BuildService::class], $c[BlueprintService::class]  );
 
@@ -118,6 +127,7 @@ class CommandsProvider implements Provider {
 		$app = $this->container['app'];
 
 		$app->add( $this->container['command.push'] );
+        $app->add($this->container['command.build-image']);
 		$app->add( $this->container['command.build'] );
 		$app->add( $this->container['command.start'] );
 		$app->add( $this->container['command.stop'] );
