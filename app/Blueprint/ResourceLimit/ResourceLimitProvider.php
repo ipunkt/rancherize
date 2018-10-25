@@ -17,6 +17,7 @@ use Rancherize\Blueprint\ResourceLimit\Parser\Modes\FullCpuMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\Modes\HighCpuMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\Modes\InteractiveCpuMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\Modes\LowCpuMode;
+use Rancherize\Blueprint\ResourceLimit\Parser\Modes\LowInteractiveCpuMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\Modes\MinimalCpuMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\Parser;
 use Rancherize\Plugin\Provider;
@@ -71,6 +72,12 @@ class ResourceLimitProvider implements Provider
         };
         $this->container['resource-limit.cpu-limit.interactive'] = function ($c) {
             return $c[InteractiveCpuMode::class];
+        };
+        $this->container[LowInteractiveCpuMode::class] = function () {
+            return new LowInteractiveCpuMode();
+        };
+        $this->container['resource-limit.cpu-limit.low-interactive'] = function ($c) {
+            return $c[LowInteractiveCpuMode::class];
         };
 
         $this->container[CronCpuMode::class] = function () {
