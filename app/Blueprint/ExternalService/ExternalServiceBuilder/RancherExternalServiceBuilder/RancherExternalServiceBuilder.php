@@ -26,7 +26,6 @@ class RancherExternalServiceBuilder implements ExternalServiceBuilder {
 	 * @param $serviceName
 	 * @param Configuration $serviceConfig
 	 * @param Infrastructure $infrastructure
-	 * @return mixed
 	 */
 	public function build( $serviceName, Configuration $serviceConfig, Infrastructure $infrastructure ) {
 		$service = new Service();

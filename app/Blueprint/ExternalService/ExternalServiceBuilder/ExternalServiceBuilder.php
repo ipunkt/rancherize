@@ -13,7 +13,6 @@ interface ExternalServiceBuilder {
 	 * @param $serviceName
 	 * @param Configuration $serviceConfig
 	 * @param Infrastructure $infrastructure
-	 * @return mixed
 	 */
 	function build( $serviceName, Configuration $serviceConfig, Infrastructure $infrastructure);
 }

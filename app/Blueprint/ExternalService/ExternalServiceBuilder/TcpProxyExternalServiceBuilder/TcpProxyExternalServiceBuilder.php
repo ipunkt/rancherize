@@ -32,13 +32,12 @@ class TcpProxyExternalServiceBuilder implements ExternalServiceBuilder {
 	 * @param $serviceName
 	 * @param Configuration $serviceConfig
 	 * @param Infrastructure $infrastructure
-	 * @return mixed
 	 */
 	public function build( $serviceName, Configuration $serviceConfig, Infrastructure $infrastructure ) {
 		$service = new Service();
 
 		$service->setName($serviceName);
-		$service->setImage( 'demandbase/docker-tcp-proxy' );
+        $service->setImage('amaysim/docker-tcp-proxy');
 		$ip = $serviceConfig->get( 'ip' );
 		$port = $serviceConfig->get( 'port', 80 );
 
@@ -51,8 +50,9 @@ class TcpProxyExternalServiceBuilder implements ExternalServiceBuilder {
 		if( $this->schedulerParser !== null )
 			$this->schedulerParser->parse($service, $serviceConfig);
 
-		$service->setEnvironmentVariable('BACKEND_HOST', $ip);
-		$service->setEnvironmentVariable('BACKEND_PORT', $port);
+        $service->setEnvironmentVariable('REMOTE_HOST', $ip);
+        $service->setEnvironmentVariable('REMOTE_PORT', $port);
+        $service->setEnvironmentVariable('CONTAINER_PORT', $port);
 		$infrastructure->addService($service);
 	}
 
