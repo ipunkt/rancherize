@@ -106,15 +106,14 @@ class Parser {
 		if ( !$configuration->has( 'memory' ) )
 			return;
 
+
 		$memory = $configuration->get( 'memory' );
         /**
          * Removed unit version to bytes as this is now done in the ServiceWriter
          */
 		if ( $memory === 0 )
 			throw new ZeroMemoryLimitException( 'Attempting to set the memory limit to zero' );
-
-		$information->setMemoryLimit( $memory );
-        $information->setMemoryReservation( $memory );
+        $information->setMemoryLimit($memory);
 	}
 
 	/**
@@ -139,6 +138,20 @@ class Parser {
 
 		$memMode = $this->memModeFactory->make( $configuration->get( 'mem' ) );
 		$memMode->setReservation( $information );
+
+        if (!$configuration->has('memory')) {
+            return;
+        }
+
+
+        $memory = $configuration->get('memory');
+        /**
+         * Removed unit version to bytes as this is now done in the ServiceWriter
+         */
+        if ($memory === 0) {
+            throw new ZeroMemoryLimitException('Attempting to set the memory limit to zero');
+        }
+        $information->setMemoryReservation($memory);
 	}
 
 }
