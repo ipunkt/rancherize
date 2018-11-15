@@ -133,11 +133,14 @@ class Parser {
 	 * @param PrefixConfigurationDecorator $resourceLimitConfig
 	 */
 	private function memoryReservations( ResourceLimitExtraInformation $information, PrefixConfigurationDecorator $configuration ) {
-		if ( !$configuration->has( 'mem' ) )
-			return;
+        if ($configuration->has('mem')) {
 
-		$memMode = $this->memModeFactory->make( $configuration->get( 'mem' ) );
-		$memMode->setReservation( $information );
+
+            $memMode = $this->memModeFactory->make($configuration->get('mem'));
+            $memMode->setReservation($information);
+
+            return;
+        }
 
         if (!$configuration->has('memory')) {
             return;
