@@ -1,6 +1,7 @@
 <?php
 
 
+use Rancherize\Blueprint\DataImages\DataImageProvider;
 use Rancherize\Validation\ValidationProvider;
 
 return [
@@ -38,6 +39,7 @@ return [
 	Rancherize\Blueprint\ResourceLimit\ResourceLimitProvider::class,
 	ValidationProvider::class,
     Rancherize\Services\Provider::class,
+    DataImageProvider::class,
 
 	Rancherize\Commands\CommandsProvider::class,
 
