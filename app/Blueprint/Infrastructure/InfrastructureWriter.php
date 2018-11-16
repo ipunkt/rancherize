@@ -148,15 +148,22 @@ class InfrastructureWriter {
                     $service->addVolume($volume);
                 }
 
-                foreach ($copyFromService->getVolumesFrom() as $volumesFromService) {
+                $copySidekicks = $copyFromService->getSidekicks();
+                if (in_array($service, $copySidekicks)) {
+                    foreach ($copyFromService->getVolumesFrom() as $volumesFromService) {
+                        $service->addVolumeFrom($volumesFromService);
+                    }
+                } else {
+                    foreach ($copyFromService->getVolumesFrom() as $volumesFromService) {
 
-                    $copiedService = $this->serviceCopier->copy($volumesFromService);
-                    $copiedService->setName(function () use ($volumesFromService, $service) {
-                        return $volumesFromService->getName() . $service->getName();
-                    });
-                    $service->addVolumeFrom($copiedService);
-                    $infrastructure->addService($copiedService);
+                        $copiedService = $this->serviceCopier->copy($volumesFromService);
+                        $copiedService->setName(function () use ($volumesFromService, $service) {
+                            return $volumesFromService->getName() . $service->getName();
+                        });
+                        $service->addVolumeFrom($copiedService);
+                        $infrastructure->addService($copiedService);
 
+                    }
                 }
 
             }

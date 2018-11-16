@@ -52,8 +52,8 @@ class PhpFpmMaker {
 
 		$phpVersion = $this->getPhpVersion( $config );
 
-		$phpVersion->make( $config, $mainService, $infrastructure, function ( Service $service ) {
-			$this->addAppSource( $service );
+        $phpVersion->make($config, $mainService, $infrastructure, function (Service $service) use ($mainService) {
+            $service->addCopyVolumesFrom($mainService);
 		} );
 	}
 
@@ -69,7 +69,7 @@ class PhpFpmMaker {
 		$phpVersion = $this->getPhpVersion( $configuration );
 
 		$commandService = $phpVersion->makeCommand( $commandName, $command, $mainService );
-		$this->addAppSource( $commandService );
+        $commandService->addCopyVolumesFrom($mainService);
 		$mainService->addSidekick( $commandService );
 
 		return $commandService;
@@ -87,7 +87,6 @@ class PhpFpmMaker {
 
 		$commandService = $phpVersion->makeCommand( $commandName, $command, $mainService );
         $commandService->addCopyVolumesFrom($mainService);
-        //$this->copyAppSource( $commandService, $infrastructure );
 
 		return $commandService;
 	}
@@ -178,49 +177,6 @@ class PhpFpmMaker {
 
 		if ( $phpVersion instanceof UpdatesBackendEnvironment )
 			$phpVersion->enableUpdateEnvironment( $phpConfig->get( 'update-backend', true ) );
-	}
-
-	/**
-	 * @param $phpFpmService
-	 */
-	protected function addAppSource( Service $phpFpmService ) {
-		$appTarget = $this->appTarget;
-
-		if ( $appTarget instanceof Service ) {
-			$phpFpmService->addVolumeFrom( $appTarget );
-			return;
-		}
-
-		list( $hostDirectory, $containerDirectory ) = $appTarget;
-		$phpFpmService->addVolume( $hostDirectory, $containerDirectory );
-	}
-
-	/**
-	 * @param Service $phpFpmService
-	 * @param Infrastructure $infrastructure
-	 */
-	protected function copyAppSource( Service $phpFpmService, Infrastructure $infrastructure ) {
-		$appTarget = $this->appTarget;
-
-		if ( $appTarget instanceof Service ) {
-			$data = new Service();
-			$data->setImage( $appTarget->getImage() );
-			$data->setName( function () use ( $phpFpmService, $appTarget ) {
-				return $phpFpmService->getName() . 'App';
-			} );
-			$data->setRestart( $appTarget->getRestart() );
-			foreach ( $appTarget->getVolumeObjects() as $volume )
-				$data->addVolume( $volume );
-
-
-			$phpFpmService->addVolumeFrom( $data );
-			$phpFpmService->addSidekick( $data );
-			$infrastructure->addService( $data );
-			return;
-		}
-
-		list( $hostDirectory, $containerDirectory ) = $appTarget;
-		$phpFpmService->addVolume( $hostDirectory, $containerDirectory );
 	}
 
 }
