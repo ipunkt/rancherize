@@ -20,6 +20,8 @@ class ServiceCopier
         $newService->setName($service->getName());
         $newService->setImage($service->getImage());
         $newService->setRestart($service->getRestart());
+        $newService->setCommand($service->getCommand());
+        $newService->setKeepStdin($service->isKeepStdin());
 
         return $newService;
     }
