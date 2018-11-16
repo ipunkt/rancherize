@@ -1,6 +1,7 @@
 <?php namespace Rancherize\Blueprint\DataImages\Parser;
 
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
+use Rancherize\Blueprint\Infrastructure\Service\NetworkMode\NoNetworkMode;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Docker\NameCleaner\NameCleaner;
@@ -48,6 +49,7 @@ class Parser
             $service->setImage($dataImage);
             $service->setCommand('/bin/true');
             $service->setRestart(Service::RESTART_START_ONCE);
+            $service->setNetworkMode(new NoNetworkMode());
             $mainService->addVolumeFrom($service);
             $infrastructure->addService($service);
             $mainService->addSidekick($service);
