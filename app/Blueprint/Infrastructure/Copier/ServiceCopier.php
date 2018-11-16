@@ -19,6 +19,7 @@ class ServiceCopier
         $newService = new Service();
         $newService->setName($service->getName());
         $newService->setImage($service->getImage());
+        $newService->setRestart($service->getRestart());
 
         return $newService;
     }
