@@ -24,7 +24,7 @@ class NameCleaner
         while (preg_match($characterRegex, $cleanedName)) {
             $cleanedName = preg_replace($characterRegex, '', $cleanedName);
         }
-        $shortenedName = substr($cleanedName, 0, min(strlen($cleanedName), 30));
+        $shortenedName = substr($cleanedName, -30);
 
         return $shortenedName;
     }

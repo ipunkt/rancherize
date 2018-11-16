@@ -144,7 +144,7 @@ class InfrastructureWriter {
         foreach ($infrastructure->getServices() as $service) {
             foreach ($service->getCopyVolumesFrom() as $copyFromService) {
 
-                foreach ($copyFromService->getVolumes() as $volume) {
+                foreach ($copyFromService->getVolumeObjects() as $volume) {
                     $service->addVolume($volume);
                 }
 
