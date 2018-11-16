@@ -18,7 +18,7 @@ class NameCleaner
             throw new UncleanableImageNameException($name);
         }
 
-        $characterRegex = '[^a-zA-Z0-9]';
+        $characterRegex = '~[^a-zA-Z0-9]~';
 
         $cleanedName = $name;
         while (preg_match($characterRegex, $cleanedName)) {
