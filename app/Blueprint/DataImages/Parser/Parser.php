@@ -46,6 +46,7 @@ class Parser
             $service = new Service();
             $service->setName($this->nameCleaner->cleanName($dataImage));
             $service->setImage($dataImage);
+            $mainService->addVolumeFrom($service);
             $infrastructure->addService($service);
             $mainService->addSidekick($service);
         }
