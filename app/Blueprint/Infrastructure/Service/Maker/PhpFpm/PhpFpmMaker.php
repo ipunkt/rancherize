@@ -86,7 +86,8 @@ class PhpFpmMaker {
 		$phpVersion = $this->getPhpVersion( $configuration );
 
 		$commandService = $phpVersion->makeCommand( $commandName, $command, $mainService );
-		$this->copyAppSource( $commandService, $infrastructure );
+        $commandService->addCopyVolumesFrom($mainService);
+        //$this->copyAppSource( $commandService, $infrastructure );
 
 		return $commandService;
 	}

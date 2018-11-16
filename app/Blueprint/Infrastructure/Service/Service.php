@@ -83,6 +83,11 @@ class Service {
 	 */
 	protected $workDir = '';
 
+    /**
+     * @var Service[]
+     */
+    protected $copyVolumesFrom = [];
+
 	const RESTART_UNLESS_STOPPED = 0;
 	const RESTART_NEVER = 1;
 	/**
@@ -550,6 +555,22 @@ class Service {
 	public function setAlwaysPulled( $alwaysPulled ) {
 		$this->alwaysPulled = $alwaysPulled;
 	}
+
+    /**
+     * @return Service[]
+     */
+    public function getCopyVolumesFrom(): array
+    {
+        return $this->copyVolumesFrom;
+    }
+
+    /**
+     * @param Service $service
+     */
+    public function addCopyVolumesFrom(Service $service)
+    {
+        $this->copyVolumesFrom[] = $service;
+    }
 
 
 }
