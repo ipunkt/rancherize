@@ -19,7 +19,7 @@ class NameCleaner
         }
 
         $firstCharacterRegex = '[^a-zA-Z0-9]';
-        $characterRegex = '~[^a-zA-Z0-9_.-]~g';
+        $characterRegex = '~[^a-zA-Z0-9_.-]~';
 
         if (preg_match($firstCharacterRegex, $name[0])) {
             $name = substr($name, 1);
