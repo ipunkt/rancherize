@@ -18,12 +18,7 @@ class NameCleaner
             throw new UncleanableImageNameException($name);
         }
 
-        $firstCharacterRegex = '[^a-zA-Z0-9]';
-        $characterRegex = '~[^a-zA-Z0-9_.-]~';
-
-        if (preg_match($firstCharacterRegex, $name[0])) {
-            $name = substr($name, 1);
-        }
+        $characterRegex = '[^a-zA-Z0-9]';
 
         $cleanedName = preg_replace($characterRegex, '', $name);
         $shortenedName = substr($cleanedName, 0, min(strlen($cleanedName), 30));
