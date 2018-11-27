@@ -160,6 +160,7 @@ class InfrastructureWriter {
                         $copiedService->setName(function () use ($volumesFromService, $service) {
                             return $volumesFromService->getName() . $service->getName();
                         });
+                        $service->addSidekick($copiedService);
                         $service->addVolumeFrom($copiedService);
                         $infrastructure->addService($copiedService);
 
