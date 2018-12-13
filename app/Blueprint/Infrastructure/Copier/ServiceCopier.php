@@ -30,6 +30,7 @@ class ServiceCopier
 		    $newVolume->setInternalPath($volumeObject->getInternalPath());
 		    $newVolume->setMountOptions($volumeObject->getMountOptions());
 		    $newVolume->setOptions($volumeObject->getOptions());
+		    $newService->addVolume($newVolume);
         }
 
         return $newService;
