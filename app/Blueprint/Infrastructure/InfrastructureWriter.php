@@ -1,11 +1,13 @@
 <?php namespace Rancherize\Blueprint\Infrastructure;
 
+use Rancherize\Blueprint\Events\InfrastructureCompletedEvent;
 use Rancherize\Blueprint\Infrastructure\Copier\ServiceCopier;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\DockerfileWriter;
 use Rancherize\Blueprint\Infrastructure\Network\NetworkWriter;
 use Rancherize\Blueprint\Infrastructure\Service\ServiceWriter;
 use Rancherize\Blueprint\Infrastructure\Volume\VolumeWriter;
 use Rancherize\File\FileWriter;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class InfrastructureWriter
@@ -43,6 +45,10 @@ class InfrastructureWriter {
      * @var ServiceCopier
      */
     private $serviceCopier;
+    /**
+     * @var EventDispatcher
+     */
+    private $eventDispatcher;
 
     /**
      * InfrastructureWriter constructor.
@@ -51,19 +57,22 @@ class InfrastructureWriter {
      * @param VolumeWriter $volumeWriter
      * @param NetworkWriter $networkWriter
      * @param ServiceCopier $serviceCopier
+     * @param EventDispatcher $eventDispatcher
      */
     public function __construct(
         DockerfileWriter $dockerfileWriter,
         ServiceWriter $serviceWriter,
         VolumeWriter $volumeWriter,
         NetworkWriter $networkWriter,
-        ServiceCopier $serviceCopier
+        ServiceCopier $serviceCopier,
+        EventDispatcher $eventDispatcher
     ) {
         $this->dockerfileWriter = $dockerfileWriter;
         $this->serviceWriter = $serviceWriter;
         $this->volumeWriter = $volumeWriter;
         $this->networkWriter = $networkWriter;
         $this->serviceCopier = $serviceCopier;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -86,6 +95,8 @@ class InfrastructureWriter {
         }
 
         $this->copyVolumesFromForServices($infrastructure);
+        $this->eventDispatcher->dispatch(InfrastructureCompletedEvent::NAME,
+            new InfrastructureCompletedEvent($infrastructure));
 
         foreach ($infrastructure->getServices() as $service) {
             $serviceWriter->write($service, $fileWriter);
@@ -155,7 +166,6 @@ class InfrastructureWriter {
                     }
                 } else {
                     foreach ($copyFromService->getVolumesFrom() as $volumesFromService) {
-
                         $copiedService = $this->serviceCopier->copy($volumesFromService);
                         $copiedService->setName(function () use ($volumesFromService, $service) {
                             return $volumesFromService->getName() . $service->getName();

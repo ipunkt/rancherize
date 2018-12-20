@@ -63,7 +63,8 @@ class InfrastructureProvider implements Provider {
                 $c[ServiceWriter::class],
                 $c[VolumeWriter::class],
                 $c[NetworkWriter::class],
-                $c[ServiceCopier::class]);
+                $c[ServiceCopier::class],
+                $c[EventDispatcher::class]);
         };
 
         $this->container['infrastructure-writer'] = function($c) {
