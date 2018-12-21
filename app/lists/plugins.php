@@ -2,6 +2,7 @@
 
 
 use Rancherize\Blueprint\DataImages\DataImageProvider;
+use Rancherize\Blueprint\UpgradeAll\Provider;
 use Rancherize\Validation\ValidationProvider;
 
 return [
@@ -40,6 +41,7 @@ return [
 	ValidationProvider::class,
     Rancherize\Services\Provider::class,
     DataImageProvider::class,
+    Provider::class,
 
 	Rancherize\Commands\CommandsProvider::class,
 
