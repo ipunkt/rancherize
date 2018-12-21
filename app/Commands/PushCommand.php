@@ -147,7 +147,7 @@ class PushCommand extends Command implements LoadsConfiguration, RancherCommand 
 
 		$stackName = $environmentConfig->get('rancher.stack');
 		try {
-			list($composerConfig, $rancherConfig) = $rancher->assertStackExists($stackName);
+            $rancher->assertStackExists($stackName);
 		} catch(StackNotFoundException $e) {
 			$output->writeln("Stack not found, creating", OutputInterface::VERBOSITY_NORMAL);
 			$rancher->createStack($stackName);

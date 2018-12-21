@@ -1,6 +1,7 @@
 <?php namespace Rancherize\Blueprint\Events;
 
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
+use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class InfrastructureCompletedEvent
@@ -8,7 +9,7 @@ use Rancherize\Blueprint\Infrastructure\Infrastructure;
  *
  * This event is sent when the infrastructure writer completes the infrastructure. Mostly filling in copying sidekicks from other services
  */
-class InfrastructureCompletedEvent
+class InfrastructureCompletedEvent extends Event
 {
     const NAME = 'infrastructure.completed';
     /**
