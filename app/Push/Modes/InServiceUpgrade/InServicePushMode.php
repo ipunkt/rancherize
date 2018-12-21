@@ -3,6 +3,7 @@
 use Rancherize\Commands\Events\PushCommandInServiceUpgradeEvent;
 use Rancherize\Configuration\Configuration;
 use Rancherize\Push\Modes\PushMode;
+use Rancherize\RancherAccess\Exceptions\NameNotFoundException;
 use Rancherize\RancherAccess\HealthStateMatcher;
 use Rancherize\RancherAccess\NameMatcher\CompleteNameMatcher;
 use Rancherize\RancherAccess\RancherService;
@@ -60,8 +61,13 @@ class InServicePushMode implements PushMode {
 
 		foreach($serviceNames as $serviceName) {
 
-			$rancherService->wait( $stackName, $serviceName, $stateMatcher );
-            $rancherService->confirm( './.rancherize', $stackName,  [$serviceName]);
+            try {
+                $rancherService->wait($stackName, $serviceName, $stateMatcher);
+                $rancherService->confirm('./.rancherize', $stackName, [$serviceName]);
+            } catch (NameNotFoundException $e) {
+                // Name not found means the stack either got deleted or it is a sidekick which internally has the main
+                // service prefixed
+            }
 			// TODO: set timeout and roll back the upgrade if the timeout is reached without health confirmation.
 
 		}
