@@ -54,7 +54,7 @@ RUN cd /opt/rancherize-package \
 	&& if [ ! -z "${CURRENT_TAG}" ] ; then TARGET_VERSION=$(git describe --tags) ; fi \
 	&& (git fetch --unshallow origin || echo "Not a shallow repository, continuing without fetch") \
 	&& cd /opt/rancherize \
-	&& echo "Target version: ${TARGET_VERSION}"
+	&& echo "Target version: ${TARGET_VERSION}" \
 	&& sed -i "s/%TARGET_VERSION%/${TARGET_VERSION}/" composer.json  \
 	&& curl -sSL "https://gist.githubusercontent.com/justb81/1006b89e41e41e1c848fe91969af7a0b/raw/c12faf968e659356ec1cb53f313e7f8383836be3/getcomposer.sh" | sh \
     && COMPOSER_ALLOW_SUPERUSER=1 ./composer.phar  install \
