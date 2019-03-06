@@ -8,6 +8,11 @@
  */
 class Volume {
 
+    /**
+     * @var bool
+     */
+    protected $external = false;
+
 	/**
 	 * @var
 	 */
@@ -106,4 +111,20 @@ class Volume {
 	public function setMountOptions( array $mountOptions ) {
 		$this->mountOptions = $mountOptions;
 	}
+
+    /**
+     * @return bool
+     */
+    public function isExternal(): bool
+    {
+        return $this->external;
+    }
+
+    /**
+     * @param bool $external
+     */
+    public function setExternal(bool $external)
+    {
+        $this->external = $external;
+    }
 }

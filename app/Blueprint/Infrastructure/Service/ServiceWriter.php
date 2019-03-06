@@ -313,7 +313,12 @@ class ServiceWriter {
 			if( is_array($options) && !empty($options) )
 				$volumeDefinition['driver_opts'] = $options;
 
+            if ($volumeObject->isExternal()) {
+                $volumeDefinition['external'] = true;
+            }
+
 			$volumeDefinitions[ $volumeObject->getExternalPath() ] = $volumeDefinition;
+
 		}
 
 		return $volumeDefinitions;
