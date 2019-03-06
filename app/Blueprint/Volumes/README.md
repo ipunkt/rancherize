@@ -22,6 +22,7 @@ Possible keys:
 - `driver` Volume driver to use for this volume. Defaults to `local`
 - `driver-options` Pass additional driver options to the driver.
 - `mount-options` Add additional mount options like `rw` or a mount propagation.
+- `external` If set to true `external: true` is added to the volume definition. This causes rancher to use a global volume rather than create its own stack-prefixed volume
 ```json
 "volumes":{
 	"volume-name":{
@@ -52,3 +53,4 @@ Possible keys:
 
 ### Known Blueprints to support this
 - [WebserverBlueprint](../Webserver/README.md)
+- [PHP Cli Blueprint](https://github.com/ipunkt/rancherize-blueprint-php-cli) as of 1.2.0
