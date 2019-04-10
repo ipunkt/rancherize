@@ -15,6 +15,7 @@ class SharedImportantCpuMode implements CpuLimitMode
      */
     public function setLimit(ResourceLimitExtraInformation $extraInformation)
     {
+        $extraInformation->setCpuShares(2048);
     }
 
     /**
@@ -22,6 +23,5 @@ class SharedImportantCpuMode implements CpuLimitMode
      */
     public function setReservation(ResourceLimitExtraInformation $extraInformation)
     {
-        $extraInformation->setCpuShares(2048);
     }
 }
