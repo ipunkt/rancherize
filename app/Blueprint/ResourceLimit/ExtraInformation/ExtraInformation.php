@@ -35,6 +35,11 @@ class ExtraInformation implements ServiceExtraInformation {
 	 */
 	protected $cpuReservation = null;
 
+    /**
+     * @var null
+     */
+	protected $cpuShares = null;
+
 	/**
 	 * @var int
 	 */
@@ -115,6 +120,21 @@ class ExtraInformation implements ServiceExtraInformation {
 		$this->cpuReservation = $cpuReservation;
 	}
 
+    /**
+     * @return null
+     */
+    public function getCpuShares()
+    {
+        return $this->cpuShares;
+    }
+
+    /**
+     * @param null $cpuShares
+     */
+    public function setCpuShares($cpuShares)
+    {
+        $this->cpuShares = $cpuShares;
+    }
 
 
 }
