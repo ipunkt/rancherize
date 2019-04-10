@@ -33,7 +33,11 @@ class ObjectParser implements VolumeParser {
 			$volume->setMountOptions($data['mount-options']);
 
 		if( array_key_exists('driver-options', $data) )
-		$volume->setOptions($data['driver-options']);
+            $volume->setOptions($data['driver-options']);
+
+        if (array_key_exists('external', $data)) {
+            $volume->setExternal((bool)$data['external']);
+        }
 
 		return $volume;
 	}

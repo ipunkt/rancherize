@@ -3,6 +3,8 @@
 /**
  * Class Volume
  * @package Rancherize\Blueprint\Infrastructure\Volume
+ *
+ * @deprecated Please use Rancherize\Blueprint\Infrastructure\Service\Volume
  */
 class Volume {
 

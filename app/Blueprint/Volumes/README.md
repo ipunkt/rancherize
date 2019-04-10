@@ -9,8 +9,10 @@ Note: volume-name can always be a volume name(named volume) or a host path(host 
 If the volume is given as string then the string is seen as the path inside the container while the array key is seen
 as the volume-name
 ```json
-"volumes":{
-	"volume-name":"/path/in/volume"
+{
+	"volumes":{
+		"volume-name":"/path/in/volume"
+	}
 }
 ```
 #### Object
@@ -22,33 +24,39 @@ Possible keys:
 - `driver` Volume driver to use for this volume. Defaults to `local`
 - `driver-options` Pass additional driver options to the driver.
 - `mount-options` Add additional mount options like `rw` or a mount propagation.
+- `external` If set to true `external: true` is added to the volume definition. This causes rancher to use a global volume rather than create its own stack-prefixed volume
 ```json
-"volumes":{
-	"volume-name":{
-	  "name":"volume-name",
-	  "path":"/path/in/volume",
-	  "mount-options":[
-	 	 'rshared'
-	  ],
-	  "driver":"rancher-nfs",
-	  "driver-options":{
-	    "some-option":"1000"
-	  }
+{
+	"volumes":{
+		"volume-name":{
+		  "name":"volume-name",
+		  "path":"/path/in/volume",
+		  "mount-options":[
+			 "slave"
+		  ],
+		  "driver":"rancher-nfs",
+		  "driver-options":{
+			"some-option":"1000"
+		  }
+		}
 	}
 }
 ```
 ```json
-"volumes":[
-	{
-	  "name":"volume-name",
-	  "path":"/path/in/volume",
-	  "driver":"rancher-nfs",
-	}
-    "driver-options":{
-	  "some-option":"1000"
-    }
-]
+{
+	"volumes":[
+		{
+			"name":"volume-name",
+			"path":"/path/in/volume",
+			"driver":"rancher-nfs",
+			"driver-options":{
+				"some-option":"1000"
+			}
+		}
+	]
+}
 ```
 
 ### Known Blueprints to support this
 - [WebserverBlueprint](../Webserver/README.md)
+- [PHP Cli Blueprint](https://github.com/ipunkt/rancherize-blueprint-php-cli) as of 1.2.0
