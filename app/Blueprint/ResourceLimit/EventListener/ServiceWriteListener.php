@@ -84,7 +84,7 @@ class ServiceWriteListener {
 	 */
 	private function addMemoryLimit( $dockerData, ResourceLimitExtraInformation $extraInformation ) {
 
-		if ( $extraInformation->getCpuPeriod() === null || $extraInformation->getCpuQuota() === null )
+        if ($extraInformation->getMemoryLimit() === null)
 			return $dockerData;
 
 		$memory = $extraInformation->getMemoryLimit();
