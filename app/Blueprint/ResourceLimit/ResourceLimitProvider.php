@@ -19,6 +19,10 @@ use Rancherize\Blueprint\ResourceLimit\Parser\Modes\InteractiveCpuMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\Modes\LowCpuMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\Modes\LowInteractiveCpuMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\Modes\MinimalCpuMode;
+use Rancherize\Blueprint\ResourceLimit\Parser\Modes\SharedCpuMode;
+use Rancherize\Blueprint\ResourceLimit\Parser\Modes\SharedImportantCpuMode;
+use Rancherize\Blueprint\ResourceLimit\Parser\Modes\SharedUnimportantCpuMode;
+use Rancherize\Blueprint\ResourceLimit\Parser\Modes\SharedVeryImportantCpuMode;
 use Rancherize\Blueprint\ResourceLimit\Parser\Parser;
 use Rancherize\Plugin\Provider;
 use Rancherize\Plugin\ProviderTrait;
@@ -44,6 +48,34 @@ class ResourceLimitProvider implements Provider
         };
         $this->container['resource-limit.cpu-limit.full'] = function ($c) {
             return $c[FullCpuMode::class];
+        };
+
+        $this->container[SharedUnimportantCpuMode::class] = function() {
+            return new SharedUnimportantCpuMode();
+        };
+        $this->container['resource-limit.cpu-limit.shared-unimportant'] = function ($c) {
+            return $c[SharedUnimportantCpuMode::class];
+        };
+
+        $this->container[SharedCpuMode::class] = function() {
+            return new SharedCpuMode();
+        };
+        $this->container['resource-limit.cpu-limit.shared'] = function ($c) {
+            return $c[SharedCpuMode::class];
+        };
+
+        $this->container[SharedImportantCpuMode::class] = function() {
+            return new SharedImportantCpuMode();
+        };
+        $this->container['resource-limit.cpu-limit.shared-important'] = function ($c) {
+            return $c[SharedImportantCpuMode::class];
+        };
+
+        $this->container[SharedVeryImportantCpuMode::class] = function() {
+            return new SharedVeryImportantCpuMode();
+        };
+        $this->container['resource-limit.cpu-limit.shared-very-important'] = function ($c) {
+            return $c[SharedVeryImportantCpuMode::class];
         };
 
         $this->container[HighCpuMode::class] = function () {

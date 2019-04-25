@@ -54,6 +54,7 @@ class ServiceWriteListener {
 
 		$rancherData = $this->addCpuReservation( $rancherData, $extraInformation );
 		$dockerData = $this->addCpuLimit( $dockerData, $extraInformation );
+        $dockerData = $this->addCpuShares( $dockerData, $extraInformation );
 		$dockerData = $this->addMemoryLimit( $dockerData, $extraInformation );
 		$dockerData = $this->addMemoryReservation( $dockerData, $extraInformation );
 
@@ -118,4 +119,15 @@ class ServiceWriteListener {
 
 		return $dockerData;
 	}
+
+    private function addCpuShares($dockerData, ResourceLimitExtraInformation $extraInformation) {
+
+	    if( $extraInformation->getCpuShares() === null )
+	        return $dockerData;
+
+	    $shares = $extraInformation->getCpuShares();
+        $dockerData[ 'cpu_shares' ] = $this->unitConversionService->convert( $shares );
+
+        return $dockerData;
+    }
 }
