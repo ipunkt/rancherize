@@ -25,9 +25,6 @@ class LaravelQueueWorker extends Service
         $this->setName('LaravelQueueWorker');
         $this->setImageVersion($imageVersion);
         $this->setRestart(self::RESTART_UNLESS_STOPPED);
-
-//		$this->setTty(true);
-//		$this->setKeepStdin(true);
     }
 
     public function setImageVersion($version)
