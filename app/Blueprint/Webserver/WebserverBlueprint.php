@@ -52,7 +52,6 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  */
 class WebserverBlueprint implements Blueprint, TakesDockerAccount
 {
-
     use HasFlagsTrait;
 
     use HasValidatorTrait;
@@ -64,6 +63,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount
     use ProjectNameTrait;
 
     use SlashPrefixerTrait;
+
+    const DEFAULT_PHP_MEMORY_LIMIT = 512;// in MB
 
     /**
      * @var ArrayAdder
@@ -116,8 +117,6 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount
         InputInterface $input,
         OutputInterface $output
     ) {
-
-
         $environmentConfigurable = new PrefixConfigurableDecorator($configurable, "project.environments.$environment.");
         $projectConfigurable = new PrefixConfigurableDecorator($configurable, "project.default.");
         $fallbackConfigurable = new ConfigurableFallback($environmentConfigurable, $projectConfigurable);
@@ -182,8 +181,6 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount
         $initializer->init($fallbackConfigurable, 'service-name', $projectName, $projectConfigurable);
         $initializer->init($fallbackConfigurable, 'docker.base-image', 'busybox', $projectConfigurable);
         $initializer->init($fallbackConfigurable, 'environment', ["EXAMPLE" => 'value']);
-
-
     }
 
 
@@ -194,7 +191,6 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount
      */
     public function validate(Configuration $configurable, string $environment)
     {
-
         $projectConfigurable = new PrefixConfigurationDecorator($configurable, "project.default.");
         $environmentConfigurable = new PrefixConfigurationDecorator($configurable,
             "project.environments.$environment.");
@@ -203,7 +199,6 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount
         $this->getValidator()->validate($config, [
             'docker.base-image' => 'required',
             'service-name' => 'required',
-
         ]);
 
         $failures = [];
@@ -221,15 +216,13 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount
 
         }
 
-
         if (!empty($failures)) {
             throw new ValidationFailedException($failures);
         }
-
     }
 
     /**
-     * @param Configurable $configuration
+     * @param \Rancherize\Configuration\Configuration $configuration
      * @param string $environment
      * @param string $version
      * @return Infrastructure
@@ -469,7 +462,6 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount
         $serverService->addLabel('version', $labelVersion);
     }
 
-
     /**
      * @param string $version
      * @param Configuration $config
@@ -577,6 +569,8 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount
         foreach ($queues as $key => $queue) {
             $name = $config->get("queues.$key.name", 'default');
             $connection = $config->get("queues.$key.connection", 'default');
+            $memoryLimit = intval($config->get("queues.$key.memory-limit", self::DEFAULT_PHP_MEMORY_LIMIT));
+            $useHorizon = $config->get("queues.$key.horizon", false) === true;
 
             $laravelQueueWorker = new LaravelQueueWorker($queueImageVersion);
             $laravelQueueWorker->setName(function () use ($serverService, $name) {
@@ -588,6 +582,10 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount
 
             $laravelQueueWorker->setEnvironmentVariable('QUEUE_NAME', $name);
             $laravelQueueWorker->setEnvironmentVariable('QUEUE_CONNECTION', $connection);
+            if ($useHorizon) {
+                $laravelQueueWorker->setEnvironmentVariable('LARAVEL_HORIZON', true);
+            }
+            $laravelQueueWorker->setEnvironmentVariable('PHP_MEMORY_LIMIT', $memoryLimit);
 
             $serverService->addSidekick($laravelQueueWorker);
             $infrastructure->addService($laravelQueueWorker);
