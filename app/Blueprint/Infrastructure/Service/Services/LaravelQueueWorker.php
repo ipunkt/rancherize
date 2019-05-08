@@ -15,6 +15,7 @@ class LaravelQueueWorker extends Service
         'php7.1-v2.0',
         'php7.2-v3.0',
         'php7.3-v4.0',
+        'php7.3-v4.1',
         'latest',
     ];
 
