@@ -292,10 +292,10 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount
         $publishUrlsParser->parseToService($serverService, $config);
 
         /**
-         * @var SchedulerParser $publishUrlsParser
+         * @var SchedulerParser $schedulerParser
          */
-        $publishUrlsParser = container('scheduler-parser');
-        $publishUrlsParser->parse($serverService, $config);
+        $schedulerParser = container('scheduler-parser');
+        $schedulerParser->parse($serverService, $config);
 
         $infrastructure->addService($serverService);
 
