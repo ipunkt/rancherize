@@ -32,6 +32,8 @@ class V2RancherSchedulerYamlWriter implements SchedulerWriterVersion {
 
 		if( !$information->isAllowSameHost() )
 			$dockerContent['labels']['io.rancher.scheduler.affinity:container_label_ne'] = 'io.rancher.stack_service.name=$${stack_name}/$${service_name}';
+		else
+            $dockerContent['labels']['io.rancher.scheduler.affinity:container_label_soft_ne'] = 'io.rancher.stack_service.name=$${stack_name}/$${service_name}';
 
 		$requiredTags = $information->getRequireTags();
 		if( !empty($requiredTags) ) {
