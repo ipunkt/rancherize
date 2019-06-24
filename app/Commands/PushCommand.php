@@ -122,6 +122,7 @@ class PushCommand extends Command implements LoadsConfiguration, RancherCommand 
 			->addArgument('environment', InputArgument::REQUIRED)
 			->addArgument('version', InputArgument::REQUIRED)
 			->addOption('image-exists', 'i', InputOption::VALUE_NONE, 'Do not build and push the image to dockerhub')
+            ->addOption('pull', 'p', InputOption::VALUE_NONE, 'Request rancher to force pull the image before upgrading the service')
 		;
 	}
 
@@ -143,6 +144,7 @@ class PushCommand extends Command implements LoadsConfiguration, RancherCommand 
 		$rancher = $this->rancherService;
 		$rancher->setAccount($account)
 			->setOutput($output)
+            ->setPullImages($input->getOption('pull'))
 			->setProcessHelper( $this->getHelper('process'));
 
 		$stackName = $environmentConfig->get('rancher.stack');

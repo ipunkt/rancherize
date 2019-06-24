@@ -43,6 +43,11 @@ class RancherService {
 	 */
 	private $cliMode = false;
 
+    /**
+     * @var bool
+     */
+	protected $pullImages = false;
+
 	use ProcessTrait;
 
 
@@ -231,7 +236,6 @@ class RancherService {
                 '-s',
                 $stackName,
                 '-d',
-                '-p'
             ];
 		else
             $command = [
@@ -244,8 +248,9 @@ class RancherService {
                 $stackName,
                 'up',
                 '-d',
-                '-p'
             ];
+		if($this->pullImages)
+            $command[] = '-p';
 
 		if($upgrade)
 			$command = array_merge($command, ['--upgrade']);
@@ -488,7 +493,7 @@ class RancherService {
 	 * @param string $serviceName
 	 * @param StateMatcher $stateMatcher defaults to SingleStateMatcher('active') - wait until active
 	 * @param Delayer $delayer defaults to FixedSleepDelayer(500000) - wait for half a second
-	 * @return string
+	 * @return array
 	 */
 	public function wait(string $stackName, string $serviceName, StateMatcher $stateMatcher = null, Delayer $delayer = null) {
 		if($stateMatcher === null)
@@ -603,5 +608,15 @@ class RancherService {
      */
     public function assertStackExists($stackName) {
         $this->getStackIdByName($stackName);
+    }
+
+    /**
+     * @param bool $pullImages
+     * @return RancherService
+     */
+    public function setPullImages(bool $pullImages): RancherService
+    {
+        $this->pullImages = $pullImages;
+        return $this;
     }
 }
