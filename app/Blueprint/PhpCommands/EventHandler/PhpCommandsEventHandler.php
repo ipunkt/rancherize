@@ -92,7 +92,7 @@ class PhpCommandsEventHandler {
 
             $event = new SidekickBuiltEvent($infrastructure, $service, $command->getConfiguration());
 			if( $command->isService() )
-                $event = new ServiceBuiltEvent($infrastructure, $service, $command->getConfiguration());
+                $event = new ServiceBuiltEvent($infrastructure, $service, $command->getConfiguration(), $config);
             $this->eventDispatcher->dispatch($event::NAME, $event);
 
 			$infrastructure->addService( $service );

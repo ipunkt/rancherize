@@ -24,19 +24,25 @@ class ServiceBuiltEvent extends Event
     /**
      * @var Configuration
      */
-    private $configuration;
+    private $commandConfiguration;
+    /**
+     * @var Configuration
+     */
+    private $environmentConfiguration;
 
     /**
      * ServiceBuiltEvent constructor.
      * @param Infrastructure $infrastructure
      * @param Service $service
-     * @param Configuration $configuration
+     * @param Configuration $commandConfiguration
+     * @param Configuration $environmentConfiguration
      */
-    public function __construct(Infrastructure $infrastructure, Service $service, Configuration $configuration)
+    public function __construct(Infrastructure $infrastructure, Service $service, Configuration $commandConfiguration, Configuration $environmentConfiguration)
     {
         $this->infrastructure = $infrastructure;
         $this->service = $service;
-        $this->configuration = $configuration;
+        $this->commandConfiguration = $commandConfiguration;
+        $this->environmentConfiguration = $environmentConfiguration;
     }
 
     /**
@@ -60,8 +66,16 @@ class ServiceBuiltEvent extends Event
      */
     public function getConfiguration(): Configuration
     {
-        return $this->configuration;
+        return $this->commandConfiguration;
     }
 
+
+    /**
+     * @return Configuration
+     */
+    public function getCommandConfiguration(): Configuration
+    {
+        return $this->commandConfiguration;
+    }
 
 }
