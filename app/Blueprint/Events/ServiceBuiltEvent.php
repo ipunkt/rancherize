@@ -78,4 +78,12 @@ class ServiceBuiltEvent extends Event
         return $this->commandConfiguration;
     }
 
+    /**
+     * @return Configuration
+     */
+    public function getEnvironmentConfiguration(): Configuration
+    {
+        return $this->environmentConfiguration;
+    }
+
 }
