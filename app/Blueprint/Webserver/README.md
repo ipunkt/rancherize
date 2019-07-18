@@ -60,12 +60,12 @@ This blueprint creates infrastructures to support apps using php7.
 |`php.upload-file-limit`| `2M` | PHP post_max_size option |
 |`php.default-timezone`| `UTC` | PHP date.timezone option |
 |`queues`| [] | Add Laravel Queue Worker, providing their name and connection in `name` and `connection`. Example: `"queues":[{"connection": "redis","name": "default","horizon":false,memory-limit":512}],` |
-|`queue-image-version`| `php7.0-v1.0` | Which docker image version do you need: (default: `php7.0-v1.0`; also `php7.1-v2.0`, `php7.2-v3.0`, `php7.3-v4.3` and `latest` are [valid](https://cloud.docker.com/u/ipunktbs/repository/docker/ipunktbs/laravel-queue-worker/tags) right now) |
+|`queue-image-version`| `php7.0-v1.0` | Which docker image version do you need: (default: `php7.0-v1.0`; also `php7.1-v2.0`, `php7.2-v3.0`, `php7.3-v4.4` and `latest` are [valid](https://cloud.docker.com/u/ipunktbs/repository/docker/ipunktbs/laravel-queue-worker/tags) right now) |
 |`add-redis`| false | Add a Redis server and link it to the main app, providing its name and port in `REDIS_HOST` and `REDIS_PORT` |
 
 ##### Queue Worker
 
-You can use [Laravel Horizon](https://laravel.com/docs/horizon) by setting a config key `horizon` to a boolean value. If true the queue worker needs laravel horizon in your source code and runs horizon command instead of `queue:work`.
+You can use [Laravel Horizon](https://laravel.com/docs/horizon) by setting a config key `horizon` to a boolean value. If true the queue worker needs laravel horizon in your source code and runs horizon command instead of `queue:work`. For Horizon you need version `php7.3-v4.4` at least to work correctly.
 
 Since queue image version `php7.3-v4.1` you can set an key `memory-limit` for each queue entry. It defaults to `512` and sets the limit to MB. The `-1` is for unlimited memory usage.
 
