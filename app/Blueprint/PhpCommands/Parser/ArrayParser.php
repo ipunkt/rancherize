@@ -38,7 +38,6 @@ class ArrayParser implements PhpCommandParser {
 
         if ( array_key_exists( 'keepalive', $data ) ) {
             $phpCommand->setKeepaliveService( $data['keepalive'] );
-            die('keepalive service!');
         }
 
 		return $phpCommand;
