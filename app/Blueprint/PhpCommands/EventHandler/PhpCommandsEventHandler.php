@@ -100,7 +100,6 @@ class PhpCommandsEventHandler {
                 $keepaliveService = new KeepaliveService();
                 $keepaliveService->setTargetService($service)->takeOver();
                 $infrastructure->addService( $keepaliveService );
-                return;
             }
 
 			$infrastructure->addService( $service );
