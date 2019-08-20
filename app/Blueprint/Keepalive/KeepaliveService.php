@@ -32,6 +32,11 @@ class KeepaliveService extends Service
         $this->tty = true;
         $this->keepStdin = true;
 
+        $targetService = $this->targetService;
+        $this->setName(function() use ($targetService) {
+            return 'Keepalive-'.$targetService->getName();
+        });
+
         $this->copySidekicks($this->targetService);
         $this->targetService->resetSidekicks();
         $this->copyLabels($this->targetService);
