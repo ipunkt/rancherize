@@ -38,6 +38,7 @@ class KeepaliveService extends Service
         });
 
         $this->copySidekicks($this->targetService);
+        $this->addSidekick($this->targetService);
         $this->targetService->resetSidekicks();
         $this->copyLabels($this->targetService);
         $this->targetService->setNetworkMode( new ShareNetworkMode($this) );
