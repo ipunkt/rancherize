@@ -39,6 +39,8 @@ class KeepaliveService extends Service
 
         $this->copySidekicks($this->targetService);
         $this->addSidekick($this->targetService);
+        // copy volumes from so volume-from sidekicks are also added
+        $this->addCopyVolumesFrom($this->targetService);
         $this->targetService->resetSidekicks();
         $this->copyLabels($this->targetService);
         $this->targetService->setNetworkMode( new ShareNetworkMode($this) );
