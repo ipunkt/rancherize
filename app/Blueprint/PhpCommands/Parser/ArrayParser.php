@@ -36,6 +36,9 @@ class ArrayParser implements PhpCommandParser {
 		if ( array_key_exists( 'restart', $data ) )
 			$phpCommand->setRestart( $data['restart'] );
 
+        if ( array_key_exists( 'keepalive', $data ) )
+            $phpCommand->setKeepaliveService( $data['keepalive'] );
+
 		return $phpCommand;
 	}
 }

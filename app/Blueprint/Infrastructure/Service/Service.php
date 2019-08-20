@@ -457,6 +457,11 @@ class Service {
 		return $this->labels;
 	}
 
+    public function copyLabels(Service $copyFrom)
+    {
+        $this->labels = $copyFrom->labels;
+	}
+
 	/**
 	 * @param string $name
 	 * @param string $label
@@ -472,11 +477,21 @@ class Service {
 		return $this->sidekicks;
 	}
 
+    public function copySidekicks(Service $copyFrom)
+    {
+        $this->sidekicks = $copyFrom->sidekicks;
+	}
+
 	/**
 	 * @param Service $sidekicks
 	 */
 	public function addSidekick(Service $sidekicks) {
 		$this->sidekicks[] = $sidekicks;
+	}
+
+    public function resetSidekicks()
+    {
+        $this->sidekicks = [];
 	}
 
 	/**
@@ -528,6 +543,14 @@ class Service {
 		$this->workDir = $workDir;
 	}
 
+    /**
+     * @return DefaultNetworkMode|NetworkMode
+     */
+    public function getNetworkModeObject()
+    {
+        return $this->networkMode;
+	}
+
 	/**
 	 * @return string
 	 */
@@ -571,6 +594,5 @@ class Service {
     {
         $this->copyVolumesFrom[] = $service;
     }
-
 
 }

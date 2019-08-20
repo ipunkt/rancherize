@@ -31,6 +31,7 @@ Use for commands that need to be run periodically
 		"migrate":{
 			"command":"/var/www/app/artisan migrate && /var/www/app/artisan db:seed",
 			"is-service":false,
+			"keepalive":false,
 			"schedule":{
 				"second":0,
 				"hour":18,
@@ -40,3 +41,7 @@ Use for commands that need to be run periodically
 	}
 }
 ```
+
+- `keepalive` adds a dummy container which does nothing but stays active. The commands then join the network of this active container.  
+  This helps with problems with the rancher dns service taking a few seconds after the container start to work. It also
+  improves reliability of sidekick services joining the network of your container because they don't have to restart with your original command.

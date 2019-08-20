@@ -29,6 +29,11 @@ class PhpCommand {
 	 */
 	protected $service = false;
 
+    /**
+     * @var bool
+     */
+	protected $keepaliveService = false;
+
 	/**
 	 * @var Configuration
 	 */
@@ -109,5 +114,23 @@ class PhpCommand {
 	public function isService(): bool {
 		return $this->service;
 	}
+
+    /**
+     * @param bool $keepaliveService
+     * @return PhpCommand
+     */
+    public function setKeepaliveService(bool $keepaliveService): PhpCommand
+    {
+        $this->keepaliveService = $keepaliveService;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasKeepaliveService(): bool
+    {
+        return $this->keepaliveService;
+    }
 
 }

@@ -8,6 +8,7 @@ use Rancherize\Blueprint\Events\ServiceBuiltEvent;
 use Rancherize\Blueprint\Events\SidekickBuiltEvent;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMaker;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
+use Rancherize\Blueprint\Keepalive\KeepaliveService;
 use Rancherize\Blueprint\PhpCommands\Parser\PhpCommandsParser;
 use Rancherize\Commands\Events\PushCommandInServiceUpgradeEvent;
 use Rancherize\Commands\Events\PushCommandStartEvent;
@@ -94,6 +95,13 @@ class PhpCommandsEventHandler {
 			if( $command->isService() )
                 $event = new ServiceBuiltEvent($infrastructure, $service, $command->getConfiguration(), $config);
             $this->eventDispatcher->dispatch($event::NAME, $event);
+
+            if( $command->hasKeepaliveService() ) {
+                $keepaliveService = new KeepaliveService();
+                $keepaliveService->setTargetService($service)->takeOver();
+                $infrastructure->addService( $keepaliveService );
+                return;
+            }
 
 			$infrastructure->addService( $service );
 		}
