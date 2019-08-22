@@ -34,7 +34,7 @@ class KeepaliveService extends Service
 
         $targetService = $this->targetService;
         $this->setName(function() use ($targetService) {
-            return 'Keepalive-'.$targetService->getName();
+            return 'KA-'.$targetService->getName();
         });
 
         $this->copySidekicks($this->targetService);
