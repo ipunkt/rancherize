@@ -29,9 +29,13 @@ class ArrayParser implements PhpCommandParser {
 		if(array_key_exists('is-service', $data) && is_bool($data['is-service']) )
 			$isService = $data['is-service'];
 
+
 		$command = $data['command'];
 
 		$phpCommand = new PhpCommand( $commandName, $command, $isService );
+
+        if(array_key_exists('share-network', $data) && is_bool($data['share-network']) )
+            $phpCommand->setNetworkShared($data['share-network']);
 
 		if ( array_key_exists( 'restart', $data ) )
 			$phpCommand->setRestart( $data['restart'] );

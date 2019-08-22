@@ -39,6 +39,11 @@ class PhpCommand {
 	 */
 	protected $configuration;
 
+    /**
+     * @var bool
+     */
+	protected $networkShared = false;
+
 	/**
 	 * PhpCommand constructor.
 	 * @param string $name
@@ -131,6 +136,24 @@ class PhpCommand {
     public function hasKeepaliveService(): bool
     {
         return $this->keepaliveService;
+    }
+
+    /**
+     * @param bool $networkShared
+     * @return PhpCommand
+     */
+    public function setNetworkShared(bool $networkShared): PhpCommand
+    {
+        $this->networkShared = $networkShared;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNetworkShared(): bool
+    {
+        return $this->networkShared;
     }
 
 }

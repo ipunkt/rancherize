@@ -42,6 +42,7 @@ Use for commands that need to be run periodically
 }
 ```
 
+- `share-network` share the network of the main container. Only available when running as sidekick
 - `keepalive` adds a dummy container which does nothing but stays active. The commands then join the network of this active container.  
   This helps with problems with the rancher dns service taking a few seconds after the container start to work. It also
   improves reliability of sidekick services joining the network of your container because they don't have to restart with your original command.
