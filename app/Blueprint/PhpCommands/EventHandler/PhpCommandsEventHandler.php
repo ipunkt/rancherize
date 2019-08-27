@@ -89,8 +89,10 @@ class PhpCommandsEventHandler {
 			];
 
 			$isSidekick = !$command->isService();
-			if( $isSidekick && $command->isNetworkShared() )
-			    $service->setNetworkMode(new ShareNetworkMode($mainService));
+			if( $isSidekick && $command->isNetworkShared() ) {
+			    $service->setMantleService($mainService);
+                $service->setNetworkMode(new ShareNetworkMode($mainService));
+            }
 
 			if ( array_key_exists( $command->getRestart(), $restart ) )
 				$service->setRestart( $restart[$command->getRestart()] );

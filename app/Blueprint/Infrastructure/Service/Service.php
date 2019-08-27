@@ -372,7 +372,6 @@ class Service {
 	 */
 	public function getLinks(): array {
 	    if($this->isMantled()) {
-	        echo $this->getName().' has mantled links!'.PHP_EOL;
             return [];
         }
 
@@ -635,9 +634,6 @@ class Service {
      */
     public function getCopyVolumesFrom(): array
     {
-        if($this->mantleService instanceof Service) {
-        }
-
         return $this->copyVolumesFrom;
     }
 
