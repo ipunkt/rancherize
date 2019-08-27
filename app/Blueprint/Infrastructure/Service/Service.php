@@ -371,8 +371,10 @@ class Service {
 	 * @return Service[]
 	 */
 	public function getLinks(): array {
-	    if($this->isMantled())
-	        return [];
+	    if($this->isMantled()) {
+	        echo $this->getName().' has mantled links!'.PHP_EOL;
+            return [];
+        }
 
 		return $this->links;
 	}
@@ -658,6 +660,6 @@ class Service {
     }
 
     protected function isMantled() {
-        return $this->mantleService instanceof Service;
+        return ($this->mantleService instanceof Service);
     }
 }
