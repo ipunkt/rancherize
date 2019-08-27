@@ -38,6 +38,7 @@ class KeepaliveService extends Service
         });
 
         $this->externalLinks = $targetService->externalLinks;
+        $targetService->externalLinks = [];
         $this->copySidekicks($this->targetService);
         $this->addSidekick($this->targetService);
         // copy volumes from so volume-from sidekicks are also added
