@@ -380,7 +380,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount
             }
         }
 
-        $dockerfile->run('rm -Rf /var/www/app/.rancherize');
+        $dockerfile->run('rm -Rf /var/www/app/.rancherize && rm -Rf /var/www/app/rancherize.json');
         $dockerfile->setCommand('/bin/true');
         return $dockerfile;
     }
