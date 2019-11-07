@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Blueprint\Keepalive;
 
+use Rancherize\Blueprint\Healthcheck\HealthcheckExtraInformation\HealthcheckExtraInformation;
 use Rancherize\Blueprint\Infrastructure\Service\NetworkMode\ShareNetworkMode;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 
@@ -9,6 +10,25 @@ use Rancherize\Blueprint\Infrastructure\Service\Service;
  */
 class KeepaliveService extends Service
 {
+
+    public function __construct() {
+        parent::__construct();
+
+        $this->image = 'busybox';
+        $this->command = 'httpd -f';
+        $this->tty = false;
+        $this->keepStdin = false;
+
+        $this->setHealthcheck();
+    }
+
+    private function setHealthcheck()
+    {
+        $healthcheckInformation = new HealthcheckExtraInformation();
+        $healthcheckInformation->setPort(80);
+        $healthcheckInformation->setInterval(10000);
+        $this->addExtraInformation($healthcheckInformation);
+    }
 
     /**
      * @var Service
@@ -27,10 +47,6 @@ class KeepaliveService extends Service
 
     public function takeOver()
     {
-        $this->image = 'busybox';
-        $this->command = '/bin/sh';
-        $this->tty = true;
-        $this->keepStdin = true;
 
         $targetService = $this->targetService;
         $this->setName(function() use ($targetService) {
