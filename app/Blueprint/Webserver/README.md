@@ -65,7 +65,7 @@ This blueprint creates infrastructures to support apps using php7.
 
 ##### Queue Worker
 
-You can use [Laravel Horizon](https://laravel.com/docs/horizon) by setting a config key `horizon` to a boolean value. If true the queue worker needs laravel horizon in your source code and runs horizon command instead of `queue:work`.
+You can use [Laravel Horizon](https://laravel.com/docs/horizon) by setting a config key `horizon` to a boolean value. If true the queue worker needs laravel horizon in your source code and runs horizon command instead of `queue:work`. For Horizon you need version `php7.3-v4.4` at least to work correctly.
 
 Since queue image version `php7.3-v4.1` you can set an key `memory-limit` for each queue entry. It defaults to `512` and sets the limit to MB. The `-1` is for unlimited memory usage.
 

@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Blueprint\Infrastructure\Service\Services;
 
+use Rancherize\Blueprint\Infrastructure\Service\NetworkMode\ShareNetworkMode;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
 
 /**
@@ -30,7 +31,11 @@ class LaravelQueueWorker extends Service
         $this->setRestart(self::RESTART_UNLESS_STOPPED);
     }
 
-    public function setImageVersion($version)
+    public function setParent(Service $service) {
+    	$this->setNetworkMode(new ShareNetworkMode($service));
+    }
+
+	public function setImageVersion($version)
     {
         if ($version === null) {
             $this->setImage('ipunktbs/laravel-queue-worker:' . self::DEFAULT_IMAGE_VERSION);

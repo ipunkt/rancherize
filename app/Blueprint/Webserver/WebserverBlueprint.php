@@ -11,6 +11,7 @@ use Rancherize\Blueprint\Healthcheck\HealthcheckConfigurationToService\Healthche
 use Rancherize\Blueprint\Healthcheck\HealthcheckInitService\HealthcheckInitService;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
 use Rancherize\Blueprint\Infrastructure\Infrastructure;
+use Rancherize\Blueprint\Infrastructure\Service\Events\QueueWorkerBuiltEvent;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\CustomFiles\CustomFilesTrait;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMakerTrait;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
@@ -567,6 +568,7 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount
         $queues = $config->get('queues', []);
         $queueImageVersion = $config->get('queue-image-version', null);
         foreach ($queues as $key => $queue) {
+        	$queueConfig = new PrefixConfigurationDecorator($config, "queues.$key.");
             $name = $config->get("queues.$key.name", 'default');
             $connection = $config->get("queues.$key.connection", 'default');
             $memoryLimit = intval($config->get("queues.$key.memory-limit", self::DEFAULT_PHP_MEMORY_LIMIT));
@@ -586,9 +588,12 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount
                 $laravelQueueWorker->setEnvironmentVariable('LARAVEL_HORIZON', true);
             }
             $laravelQueueWorker->setEnvironmentVariable('PHP_MEMORY_LIMIT', $memoryLimit);
+            $laravelQueueWorker->setParent($serverService);
 
             $serverService->addSidekick($laravelQueueWorker);
             $infrastructure->addService($laravelQueueWorker);
+
+            $this->event->dispatch(QueueWorkerBuiltEvent::NAME, new QueueWorkerBuiltEvent($laravelQueueWorker, $config, $queueConfig));
         }
     }
 
