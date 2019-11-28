@@ -2,6 +2,7 @@
 use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\DockerfileWriter;
 use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterServicePreparedEvent;
+use Rancherize\Blueprint\Infrastructure\Service\Events\ServiceWriterWritePreparedEvent;
 use Rancherize\Configuration\Exceptions\FileNotFoundException;
 use Rancherize\File\FileLoader;
 use Rancherize\File\FileWriter;
@@ -180,13 +181,23 @@ class ServiceWriter {
 
 		$rancherContentPreparedEvent = new ServiceWriterServicePreparedEvent($service, $content, $volumeDefinitions, $rancherContent);
 		$this->event->dispatch(ServiceWriterServicePreparedEvent::NAME, $rancherContentPreparedEvent);
+
 		// might have been changed by the listeners
 		$rancherContent = $rancherContentPreparedEvent->getRancherContent();
 		$content = $rancherContentPreparedEvent->getDockerContent();
 		$volumeDefinitions = $rancherContentPreparedEvent->getVolumeDefinition();
 
-		$this->writeYaml($this->path . '/docker-compose.yml', $service, $fileWriter, $content, $volumeDefinitions);
-		$this->writeYaml($this->path . '/rancher-compose.yml', $service, $fileWriter, $rancherContent);
+
+        $definition = ServiceYamlDefinition::make($content, $rancherContent, $volumeDefinitions);
+        $this->event->dispatch(ServiceWriterWritePreparedEvent::NAME,
+            new ServiceWriterWritePreparedEvent(
+                $service,
+                $definition
+            )
+        );
+
+		$this->writeYaml($this->path . '/docker-compose.yml', $service, $fileWriter, $definition->dockerComposeEntry, $definition->volumeDefinition);
+		$this->writeYaml($this->path . '/rancher-compose.yml', $service, $fileWriter, $definition->rancherComposeEntry);
 	}
 
 	/**

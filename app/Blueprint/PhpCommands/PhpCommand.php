@@ -29,10 +29,20 @@ class PhpCommand {
 	 */
 	protected $service = false;
 
+    /**
+     * @var bool
+     */
+	protected $keepaliveService = false;
+
 	/**
 	 * @var Configuration
 	 */
 	protected $configuration;
+
+    /**
+     * @var bool
+     */
+	protected $networkShared = false;
 
 	/**
 	 * PhpCommand constructor.
@@ -109,5 +119,41 @@ class PhpCommand {
 	public function isService(): bool {
 		return $this->service;
 	}
+
+    /**
+     * @param bool $keepaliveService
+     * @return PhpCommand
+     */
+    public function setKeepaliveService(bool $keepaliveService): PhpCommand
+    {
+        $this->keepaliveService = $keepaliveService;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasKeepaliveService(): bool
+    {
+        return $this->keepaliveService;
+    }
+
+    /**
+     * @param bool $networkShared
+     * @return PhpCommand
+     */
+    public function setNetworkShared(bool $networkShared): PhpCommand
+    {
+        $this->networkShared = $networkShared;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNetworkShared(): bool
+    {
+        return $this->networkShared;
+    }
 
 }

@@ -88,6 +88,11 @@ class Service {
      */
     protected $copyVolumesFrom = [];
 
+    /**
+     * @var Service
+     */
+    protected $mantleService;
+
 	const RESTART_UNLESS_STOPPED = 0;
 	const RESTART_NEVER = 1;
 	/**
@@ -247,6 +252,9 @@ class Service {
 	 * @return \int[]
 	 */
 	public function getExposedPorts(): array {
+	    if($this->isMantled())
+	        return [];
+
 		return $this->exposedPorts;
 	}
 
@@ -255,6 +263,11 @@ class Service {
 	 * @param int $externalPort
 	 */
 	public function expose(int $internalPort, int $externalPort) {
+	    if($this->isMantled()) {
+	        $this->mantleService->expose($internalPort, $externalPort);
+	        return;
+        }
+
 		$this->exposedPorts[$internalPort] = $externalPort;
 	}
 
@@ -358,6 +371,10 @@ class Service {
 	 * @return Service[]
 	 */
 	public function getLinks(): array {
+	    if($this->isMantled()) {
+            return [];
+        }
+
 		return $this->links;
 	}
 
@@ -368,6 +385,11 @@ class Service {
 	public function addLink(Service $service, $name = null) {
 		if($service === $this)
 			return;
+
+        if($this->isMantled()) {
+            $this->mantleService->addLink($service, $name);
+            return;
+        }
 
 		if($name === null) {
 			$this->links[] = $service;
@@ -382,6 +404,11 @@ class Service {
      * @param Service $service
      */
 	public function addLinksFrom(Service $service) {
+        if($this->isMantled()) {
+            $this->mantleService->addLinksFrom($service);
+            return;
+        }
+
 	    $links = $service->getLinks();
 	    foreach($links as $name => $link) {
 	        if (is_numeric($name)) {
@@ -406,6 +433,10 @@ class Service {
 	 * @return \string[]
 	 */
 	public function getExternalLinks(): array {
+        if($this->isMantled()) {
+            return [];
+        }
+
 		return $this->externalLinks;
 	}
 
@@ -414,6 +445,11 @@ class Service {
 	 * @param string $name
 	 */
 	public function addExternalLink(string $externalLink, string $name = null) {
+        if($this->isMantled()) {
+            $this->mantleService->addExternalLink($externalLink, $name);
+            return;
+        }
+
 		if($name === null) {
 			$this->externalLinks[] = $externalLink;
 			return;
@@ -457,6 +493,11 @@ class Service {
 		return $this->labels;
 	}
 
+    public function copyLabels(Service $copyFrom)
+    {
+        $this->labels = $copyFrom->labels;
+	}
+
 	/**
 	 * @param string $name
 	 * @param string $label
@@ -469,14 +510,38 @@ class Service {
 	 * @return Service[]
 	 */
 	public function getSidekicks(): array {
+        if($this->isMantled()) {
+            return [];
+        }
+
 		return $this->sidekicks;
+	}
+
+    public function copySidekicks(Service $copyFrom)
+    {
+        if($this->isMantled()) {
+            $this->mantleService->copySidekicks($copyFrom);
+            return;
+        }
+
+        $this->sidekicks = $copyFrom->sidekicks;
 	}
 
 	/**
 	 * @param Service $sidekicks
 	 */
 	public function addSidekick(Service $sidekicks) {
+        if($this->isMantled()) {
+            $this->mantleService->addSidekick($sidekicks);
+            return;
+        }
+
 		$this->sidekicks[] = $sidekicks;
+	}
+
+    public function resetSidekicks()
+    {
+        $this->sidekicks = [];
 	}
 
 	/**
@@ -528,6 +593,14 @@ class Service {
 		$this->workDir = $workDir;
 	}
 
+    /**
+     * @return DefaultNetworkMode|NetworkMode
+     */
+    public function getNetworkModeObject()
+    {
+        return $this->networkMode;
+	}
+
 	/**
 	 * @return string
 	 */
@@ -572,5 +645,17 @@ class Service {
         $this->copyVolumesFrom[] = $service;
     }
 
+    /**
+     * @param Service $mantleService
+     * @return Service
+     */
+    public function setMantleService(Service $mantleService): Service
+    {
+        $this->mantleService = $mantleService;
+        return $this;
+    }
 
+    protected function isMantled() {
+        return ($this->mantleService instanceof Service);
+    }
 }

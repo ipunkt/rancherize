@@ -1,13 +1,14 @@
 <?php namespace Rancherize\Blueprint\PhpCommands\EventHandler;
 
 use Rancherize\Blueprint\Cron\CronService\CronService;
-use Rancherize\Blueprint\Cron\Schedule\Exceptions\NoScheduleConfiguredException;
 use Rancherize\Blueprint\Cron\Schedule\ScheduleParser;
 use Rancherize\Blueprint\Events\MainServiceBuiltEvent;
 use Rancherize\Blueprint\Events\ServiceBuiltEvent;
 use Rancherize\Blueprint\Events\SidekickBuiltEvent;
 use Rancherize\Blueprint\Infrastructure\Service\Maker\PhpFpm\PhpFpmMaker;
+use Rancherize\Blueprint\Infrastructure\Service\NetworkMode\ShareNetworkMode;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
+use Rancherize\Blueprint\Keepalive\KeepaliveService;
 use Rancherize\Blueprint\PhpCommands\Parser\PhpCommandsParser;
 use Rancherize\Commands\Events\PushCommandInServiceUpgradeEvent;
 use Rancherize\Commands\Events\PushCommandStartEvent;
@@ -87,6 +88,12 @@ class PhpCommandsEventHandler {
 				'start-once' => Service::RESTART_START_ONCE,
 			];
 
+			$isSidekick = !$command->isService();
+			if( $isSidekick && $command->isNetworkShared() ) {
+			    $service->setMantleService($mainService);
+                $service->setNetworkMode(new ShareNetworkMode($mainService));
+            }
+
 			if ( array_key_exists( $command->getRestart(), $restart ) )
 				$service->setRestart( $restart[$command->getRestart()] );
 
@@ -94,6 +101,12 @@ class PhpCommandsEventHandler {
 			if( $command->isService() )
                 $event = new ServiceBuiltEvent($infrastructure, $service, $command->getConfiguration(), $config);
             $this->eventDispatcher->dispatch($event::NAME, $event);
+
+            if( $command->hasKeepaliveService() ) {
+                $keepaliveService = new KeepaliveService();
+                $keepaliveService->setTargetService($service)->takeOver();
+                $infrastructure->addService( $keepaliveService );
+            }
 
 			$infrastructure->addService( $service );
 		}
