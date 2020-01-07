@@ -1,5 +1,6 @@
 <?php namespace Rancherize\Blueprint\Keepalive;
 
+use Rancherize\Blueprint\Healthcheck\HealthcheckExtraInformation\HealthcheckDefaultInformationSetter;
 use Rancherize\Blueprint\Healthcheck\HealthcheckExtraInformation\HealthcheckExtraInformation;
 use Rancherize\Blueprint\Infrastructure\Service\NetworkMode\ShareNetworkMode;
 use Rancherize\Blueprint\Infrastructure\Service\Service;
@@ -24,7 +25,13 @@ class KeepaliveService extends Service
 
     private function setHealthcheck()
     {
+        /**
+         * @var HealthcheckDefaultInformationSetter $defaultSetter
+         */
+        $defaultSetter = container(HealthcheckDefaultInformationSetter::class);
+
         $healthcheckInformation = new HealthcheckExtraInformation();
+        $defaultSetter->setDefaults($healthcheckInformation);
         $healthcheckInformation->setPort(80);
         $healthcheckInformation->setInterval(10000);
         $this->addExtraInformation($healthcheckInformation);
