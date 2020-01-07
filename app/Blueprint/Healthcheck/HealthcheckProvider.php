@@ -42,7 +42,7 @@ class HealthcheckProvider implements Provider {
 		};
 
         $this->container[HealthcheckConfigurationToService::class] = function ($c) {
-            return new HealthcheckConfigurationToService( $c['healthcheck-default-setter'] );
+            return new HealthcheckConfigurationToService( $c[HealthcheckDefaultInformationSetter::class] );
         };
 		$this->container['healthcheck-parser'] = function ($c) {
 			return $c[HealthcheckConfigurationToService::class];
