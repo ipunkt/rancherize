@@ -3,6 +3,7 @@
 use Closure;
 use Rancherize\Blueprint\Infrastructure\Dockerfile\Dockerfile;
 use Rancherize\Blueprint\Infrastructure\Service\NetworkMode\DefaultNetworkMode;
+use Rancherize\Blueprint\Infrastructure\Service\NetworkMode\ForbidsLinks;
 use Rancherize\Blueprint\Infrastructure\Service\NetworkMode\NetworkMode;
 
 /**
@@ -373,6 +374,10 @@ class Service {
 	public function getLinks(): array {
 	    if($this->isMantled()) {
             return [];
+        }
+
+        if($this->networkMode instanceof ForbidsLinks) {
+	        return [];
         }
 
 		return $this->links;

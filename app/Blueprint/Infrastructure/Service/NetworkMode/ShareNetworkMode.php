@@ -6,7 +6,7 @@ use Rancherize\Blueprint\Infrastructure\Service\Service;
  * Class ShareNetworkMode
  * @package Rancherize\Blueprint\Infrastructure\Service\NetworkMode
  */
-class ShareNetworkMode implements NetworkMode {
+class ShareNetworkMode implements NetworkMode, ForbidsLinks {
 	/**
 	 * @var Service
 	 */
