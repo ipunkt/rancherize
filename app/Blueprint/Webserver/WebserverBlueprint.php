@@ -580,7 +580,9 @@ class WebserverBlueprint implements Blueprint, TakesDockerAccount
             });
             $laravelQueueWorker->addVolumeFrom($serverService);
             $laravelQueueWorker->addLinksFrom($serverService);
-            $laravelQueueWorker->setEnvironmentVariablesFrom($serverService);
+            $laravelQueueWorker->setEnvironmentVariablesCallback(function() use ($serverService) {
+                return $serverService->getEnvironmentVariables();
+            });
 
             $laravelQueueWorker->setEnvironmentVariable('QUEUE_NAME', $name);
             $laravelQueueWorker->setEnvironmentVariable('QUEUE_CONNECTION', $connection);
