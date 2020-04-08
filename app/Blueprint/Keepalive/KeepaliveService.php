@@ -34,6 +34,7 @@ class KeepaliveService extends Service
         $defaultSetter->setDefaults($healthcheckInformation);
         $healthcheckInformation->setPort(80);
         $healthcheckInformation->setInterval(10000);
+        $healthcheckInformation->setRecreateStrategy();
         $this->addExtraInformation($healthcheckInformation);
     }
 

@@ -73,7 +73,7 @@ class HealthcheckExtraInformation implements ServiceExtraInformation {
 	 * Rancher strategy recreate unhealthy containers
 	 * TODO: find recreate value
 	 */
-	const STRATEGY_RECREATE = '???';
+	const STRATEGY_RECREATE = 'recreate';
 
 	/**
 	 * Rancher strategy recreate unhealthy containers if at least X containers are still healthy
@@ -221,6 +221,14 @@ class HealthcheckExtraInformation implements ServiceExtraInformation {
 	 */
 	public function setStrategy( string $strategy ) {
 		$this->strategy = $strategy;
+	}
+
+	public function setRecreateStrategy() {
+		$this->strategy = self::STRATEGY_RECREATE;
+	}
+
+	public function setDoNothingStrategy() {
+		$this->strategy = self::STRATEGY_NONE;
 	}
 
 
